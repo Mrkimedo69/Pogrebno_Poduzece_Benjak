@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from './components/header/header.component';
 
 import { ToolbarModule } from 'primeng/toolbar';
-import { AvatarModule } from 'primeng/avatar';
-import { AvatarGroupModule } from 'primeng/avatargroup';
+import { ButtonModule } from 'primeng/button';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -12,10 +12,13 @@ import { AvatarGroupModule } from 'primeng/avatargroup';
   ],
   imports: [
     CommonModule,
+    SharedModule,
     ToolbarModule,
-    AvatarModule,
-    AvatarGroupModule
+    ButtonModule
   ],
-  exports:[HeaderComponent]
+  exports:[
+    HeaderComponent,
+    ButtonModule
+  ]
 })
 export class CoreModule { }
