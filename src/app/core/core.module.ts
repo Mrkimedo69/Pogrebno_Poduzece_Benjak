@@ -5,6 +5,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ButtonModule } from 'primeng/button';
 import { SharedModule } from '../shared/shared.module';
+import { MenubarModule } from 'primeng/menubar';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { SharedModule } from '../shared/shared.module';
     CommonModule,
     SharedModule,
     ToolbarModule,
-    ButtonModule
+    ButtonModule,
+    MenubarModule,
   ],
   exports:[
     HeaderComponent,

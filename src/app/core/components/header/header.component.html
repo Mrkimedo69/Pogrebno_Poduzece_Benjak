@@ -1,4 +1,18 @@
-<p>header works!</p>
-<div class="card flex justify-content-center">
-    <p-button label="Check" icon="pi pi-check"></p-button>
-</div>
+<p-menubar [model]="items" class="mb-4 shadow-2 border-round-xl">
+    <!-- Lijeva strana: Logo + naziv -->
+    <ng-template pTemplate="start">
+        <div class="flex align-items-center gap-2">
+            <img src="assets/logo.png" alt="Logo" height="40" />
+            <span class="text-xl font-bold">Pogrebno poduzeće Benjak</span>
+        </div>
+    </ng-template>
+
+
+    <!-- Desna strana: Avatar + prijava/košarica -->
+    <ng-template pTemplate="end">
+        <div class="flex align-items-center gap-2">
+            <button pButton icon="pi pi-user" class="p-button-rounded p-button-text" label="Prijava"></button>
+            <button pButton icon="pi pi-shopping-cart" class="p-button-rounded p-button-text"></button>
+        </div>
+    </ng-template>
+</p-menubar>
