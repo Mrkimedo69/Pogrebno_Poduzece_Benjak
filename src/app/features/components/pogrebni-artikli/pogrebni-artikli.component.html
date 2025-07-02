@@ -1,0 +1,27 @@
+<section class="surface-section text-center py-5 px-3">
+  <h2 class="text-3xl font-bold mb-2">Pogrebni artikli</h2>
+  <p class="text-lg">Sve što vam je potrebno za dostojanstven ispraćaj na jednom mjestu.</p>
+</section>
+
+<section class="p-4">
+  <div class="flex flex-column gap-4">
+    <div class="flex flex-column md:flex-row gap-3 align-items-center surface-100 p-3 border-round shadow-1" *ngFor="let item of pogrebni_artikli">
+      <img [src]="item.slika" alt="{{ item.naziv }}" class="w-10rem border-round" />
+      <div class="flex-1">
+        <h4 class="m-0">{{ item.naziv }}</h4>
+        <p class="my-2">{{ item.opis }}</p>
+        <span class="font-medium text-lg">{{ item.cijena }} €</span>
+      </div>
+      <div>
+        <button pButton label="Dodaj u košaricu" icon="pi pi-cart-plus" class="p-button-sm"></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="surface-200 text-center py-5 mt-4">
+  <h3 class="text-2xl font-semibold mb-2">Niste pronašli što tražite?</h3>
+  <p class="mb-3">Kontaktirajte nas za posebne zahtjeve ili narudžbe.</p>
+  <button pButton label="Kontakt" icon="pi pi-phone"></button>
+</section>

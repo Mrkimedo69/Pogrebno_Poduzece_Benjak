@@ -1,0 +1,25 @@
+<!-- NASLOV -->
+<section class="surface-section text-center py-5 px-3">
+  <h2 class="text-3xl font-bold mb-2">Naša cvjećara</h2>
+  <p class="text-lg">Široka ponuda buketa, aranžmana i vijenca za dostojanstveni ispraćaj.</p>
+</section>
+
+<!-- CVJETNI KATALOG -->
+<section class="p-4">
+  <div class="grid">
+    <div class="col-12 md:col-6 lg:col-4" *ngFor="let cvijet of cvijece">
+      <p-card [header]="cvijet.naziv" [subheader]="cvijet.cijena + ' €'" styleClass="h-full">
+        <img [src]="cvijet.slika" alt="{{ cvijet.naziv }}" class="w-full mb-3" />
+        <p>{{ cvijet.opis }}</p>
+        <button pButton label="Naruči" icon="pi pi-shopping-cart" class="mt-2 w-full"></button>
+      </p-card>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="surface-100 text-center py-5">
+  <h3 class="text-2xl font-semibold mb-2">Trebate savjet ili posebnu narudžbu?</h3>
+  <p class="mb-3">Kontaktirajte nas za prilagođene cvjetne aranžmane.</p>
+  <button pButton label="Kontaktiraj nas" icon="pi pi-envelope"></button>
+</section>

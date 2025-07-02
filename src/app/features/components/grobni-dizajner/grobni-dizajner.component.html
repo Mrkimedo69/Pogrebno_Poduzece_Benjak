@@ -1,0 +1,82 @@
+<section class="surface-section py-5 px-3">
+  <h2 class="text-3xl font-bold text-center mb-4">Dizajner grobnog spomenika</h2>
+
+  <!-- OPCIJE -->
+  <div class="grid mb-4">
+    <!-- Materijal -->
+    <div class="col-12 md:col-6">
+      <h4>Odaberite materijal</h4>
+      <p-selectButton 
+        [options]="materijali" 
+        [(ngModel)]="odabraniMaterijal"
+        (ngModelChange)="onPromjenaMaterijala()" 
+        optionLabel="label"
+        class="w-full" />
+    </div>
+
+    <!-- Oblik -->
+    <div class="col-12 md:col-6">
+      <h4>Odaberite oblik</h4>
+      <p-dropdown 
+        [options]="oblici" 
+        [(ngModel)]="odabraniOblik" 
+        placeholder="Odaberite oblik"
+        optionLabel="label"
+        class="w-full" />
+    </div>
+  </div>
+
+<!-- 2D PRIKAZ GROBNICE -->
+<div class="flex flex-column align-items-center gap-3 mt-5">
+    <!-- NADGROBNI SPOMENIK (inline SVG ovisno o obliku) -->
+    <div class="text-center my-3">
+        <div [innerHTML]="svgContent" style="width: 100px; height: 120px;"></div>
+    </div>
+    <!-- GORNJA PLOČA -->
+    <div 
+        class="border-round flex align-items-center justify-content-center text-white font-medium"
+        style="width: 260px; height: 40px;"
+        [ngStyle]="{ 'background-color': bojaMramora }">
+        Gornja ploča
+    </div>
+
+    <!-- STRANICE -->
+    <div class="flex gap-3">
+        <div 
+        class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
+        style="width: 40px; height: 100px;"
+        [ngStyle]="{ 'background-color': bojaMramora }">
+        Lijeva
+        </div>
+        <div 
+        class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
+        style="width: 100px; height: 100px;"
+        [ngStyle]="{ 'background-color': bojaMramora }">
+        Prednja
+        </div>
+        <div 
+        class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
+        style="width: 40px; height: 100px;"
+        [ngStyle]="{ 'background-color': bojaMramora }">
+        Desna
+        </div>
+        <div 
+        class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
+        style="width: 100px; height: 100px;"
+        [ngStyle]="{ 'background-color': bojaMramora }">
+        Stražnja
+        </div>
+    </div>
+</div>
+
+
+  <!-- CIJENA -->
+  <div class="text-center text-xl font-bold my-5">
+    Ukupna cijena: {{ izracunajCijenu() }} €
+  </div>
+
+  <!-- CTA -->
+  <div class="text-center">
+    <button pButton label="Zatraži ponudu" icon="pi pi-envelope"></button>
+  </div>
+</section>
