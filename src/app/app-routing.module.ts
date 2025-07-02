@@ -4,6 +4,7 @@ import { HomepageComponent } from './features/components/homepage/homepage.compo
 import { CvjecaraComponent } from './features/components/cvjecara/cvjecara.component';
 import { PogrebniArtikliComponent } from './features/components/pogrebni-artikli/pogrebni-artikli.component';
 import { GrobniDizajnerComponent } from './features/components/grobni-dizajner/grobni-dizajner.component';
+import { KontaktComponent } from './features/components/kontakt/kontakt.component';
 
 const routes: Routes = [
     {
@@ -23,6 +24,8 @@ const routes: Routes = [
   { path: 'grobni_dizajner', 
     component: GrobniDizajnerComponent 
   },
+  { path: 'kontakt', 
+    component: KontaktComponent }
 ];
 
 @NgModule({

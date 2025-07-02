@@ -1,0 +1,32 @@
+<section class="surface-section py-6">
+  <div class="surface-card p-5 shadow-3 border-round max-w-4xl mx-auto">
+    <h2 class="text-3xl font-semibold text-start mb-5">Kontaktirajte nas</h2>
+
+    <div class="p-fluid formgrid grid">
+      <!-- Ime -->
+      <div class="field col-12 md:col-6 px-2">
+        <label for="ime" class="font-medium text-sm mb-2 block">Ime i prezime *</label>
+        <input id="ime" type="text" pInputText [(ngModel)]="ime" name="ime" class="p-inputtext-sm p-3 border-round-md" />
+      </div>
+
+      <!-- Email -->
+      <div class="field col-12 md:col-6 px-2">
+        <label for="email" class="font-medium text-sm mb-2 block">Email *</label>
+        <input id="email" type="email" pInputText [(ngModel)]="email" name="email" class="p-inputtext-sm p-3 border-round-md" />
+      </div>
+
+      <!-- Poruka -->
+      <div class="field col-12 px-2">
+        <label for="poruka" class="font-medium text-sm mb-2 block">Poruka *</label>
+        <textarea id="poruka" pInputTextarea rows="10" [(ngModel)]="poruka" name="poruka"
+          class="w-full p-3 border-round-md" placeholder="Vaša poruka..."></textarea>
+      </div>
+
+      <!-- Gumb -->
+      <div class="col-12 text-center mt-4">
+        <button pButton type="button" label="Pošalji poruku" icon="pi pi-send"
+          (click)="posaljiPoruku()" class="p-button-lg w-full md:w-auto"></button>
+      </div>
+    </div>
+  </div>
+</section>
