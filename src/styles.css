@@ -1,1 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Ukloni stilove s linkova */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+

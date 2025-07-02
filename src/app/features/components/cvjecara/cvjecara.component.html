@@ -1,25 +1,49 @@
 <!-- NASLOV -->
-<section class="surface-section text-center py-5 px-3">
-  <h2 class="text-3xl font-bold mb-2">Naša cvjećara</h2>
-  <p class="text-lg">Široka ponuda buketa, aranžmana i vijenca za dostojanstveni ispraćaj.</p>
+<section class="surface-section text-center py-8">
+  <h2 class="text-4xl font-bold mb-3">Naša cvjećara</h2>
+  <p class="text-xl text-gray-600">Široka ponuda buketa, aranžmana i vijenaca za dostojanstven ispraćaj.</p>
 </section>
 
 <!-- CVJETNI KATALOG -->
 <section class="p-4">
   <div class="grid">
-    <div class="col-12 md:col-6 lg:col-4" *ngFor="let cvijet of cvijece">
-      <p-card [header]="cvijet.naziv" [subheader]="cvijet.cijena + ' €'" styleClass="h-full">
-        <img [src]="cvijet.slika" alt="{{ cvijet.naziv }}" class="w-full mb-3" />
-        <p>{{ cvijet.opis }}</p>
-        <button pButton label="Naruči" icon="pi pi-shopping-cart" class="mt-2 w-full"></button>
+    <div
+      class="col-12 md:col-6 lg:col-4"
+      *ngFor="let cvijet of prikazanoCvijece"
+    >
+      <p-card [header]="cvijet.naziv" [subheader]="cvijet.cijena + ' €'" class="h-full">
+        <img
+          [src]="cvijet.slika || 'assets/img/placeholder_flower.png'"
+          alt="{{ cvijet.naziv }}"
+          class="w-full mb-3 border-round flower-image"
+        />
+        <p class="mb-2">{{ cvijet.opis }}</p>
+        <button
+          pButton
+          label="Naruči"
+          icon="pi pi-shopping-cart"
+          class="mt-auto w-full"
+        ></button>
       </p-card>
     </div>
   </div>
+
+  <!-- PAGINACIJA -->
+  <p-paginator
+    [rows]="stavkiPoStranici"
+    [totalRecords]="cvijece.length"
+    [rowsPerPageOptions]="[6, 9, 12]"
+    (onPageChange)="promijeniStranicu($event)"
+    class="mt-5"
+  ></p-paginator>
 </section>
 
+
 <!-- CTA -->
-<section class="surface-100 text-center py-5">
-  <h3 class="text-2xl font-semibold mb-2">Trebate savjet ili posebnu narudžbu?</h3>
-  <p class="mb-3">Kontaktirajte nas za prilagođene cvjetne aranžmane.</p>
-  <button pButton label="Kontaktiraj nas" icon="pi pi-envelope"></button>
+<section class="surface-100 text-center py-8 mt-8">
+  <h3 class="text-3xl font-semibold mb-2">Trebate savjet ili posebnu narudžbu?</h3>
+  <p class="mb-3 text-lg text-gray-600">Kontaktirajte nas za prilagođene cvjetne aranžmane.</p>
+    <a routerLink="/kontakt">
+  <button pButton label="Kontaktirajte nas" icon="pi pi-envelope"></button>
+  </a>
 </section>

@@ -7,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { FormsModule } from '@angular/forms';
+import { PaginatorModule } from 'primeng/paginator';
 
 @NgModule({
   declarations: [],
@@ -18,6 +19,7 @@ import { FormsModule } from '@angular/forms';
     DropdownModule,
     SelectButtonModule,
     FormsModule,
+    PaginatorModule,
   ],
   exports:[
     MenubarModule,
@@ -26,6 +28,7 @@ import { FormsModule } from '@angular/forms';
     DropdownModule,
     SelectButtonModule,
     FormsModule,
+    PaginatorModule,
   ]
 })
 export class SharedModule { }
