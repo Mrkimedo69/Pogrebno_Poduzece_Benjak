@@ -1,0 +1,18 @@
+textarea, input {
+  font-size: 1rem;
+}
+
+label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+:host ::ng-deep textarea {
+  resize: vertical;
+}
+
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-inputtextarea {
+  border-radius: 0.5rem;
+  padding: 1rem;
+}

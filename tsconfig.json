@@ -21,7 +21,8 @@
     "lib": [
       "ES2022",
       "dom"
-    ]
+    ],
+    "types": ["emailjs-com"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
