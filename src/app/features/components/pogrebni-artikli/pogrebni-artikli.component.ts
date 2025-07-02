@@ -3,10 +3,10 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-pogrebni-artikli',
   templateUrl: './pogrebni-artikli.component.html',
-  styleUrl: './pogrebni-artikli.component.css'
+  styleUrls: ['./pogrebni-artikli.component.css']
 })
 export class PogrebniArtikliComponent {
-    pogrebni_artikli = [
+  pogrebni_artikli = [
     {
       naziv: 'Grobna svijeća - klasična',
       cijena: 3,
@@ -24,8 +24,36 @@ export class PogrebniArtikliComponent {
       cijena: 25,
       opis: 'Kvalitetan drveni križ s mogućnošću personalizirane gravure.',
       slika: 'assets/potrepstine/kriz1.jpg'
-    }, 
-    
+    },
+    {
+      naziv: 'Bijela svijeća s anđelom',
+      cijena: 4,
+      opis: 'Dekorativna svijeća s motivom anđela i zlatnim detaljima.',
+      slika: 'assets/potrepstine/svijeca2.jpg'
+    },
+    {
+      naziv: 'Lampaš rustikalni',
+      cijena: 10,
+      opis: 'Lampaš s rustikalnim izgledom i dugim trajanjem.',
+      slika: 'assets/potrepstine/lampas2.jpg'
+    }
   ];
 
+  itemsPerPage = 10;
+  currentPage = 1;
+
+  get totalPages(): number {
+    return Math.ceil(this.pogrebni_artikli.length / this.itemsPerPage);
+  }
+
+  getCurrentItems() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.pogrebni_artikli.slice(start, start + this.itemsPerPage);
+  }
+
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
 }

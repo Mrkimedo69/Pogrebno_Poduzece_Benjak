@@ -1,0 +1,36 @@
+.card-item {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.card-item:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.product-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+}
+
+.item-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.item-description {
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.price {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #10b981;
+}
