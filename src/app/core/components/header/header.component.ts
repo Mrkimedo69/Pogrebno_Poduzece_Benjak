@@ -13,11 +13,6 @@ export class HeaderComponent {
   ngOnInit() {
     this.items = [
       {
-        label: 'Početna',
-        icon: 'pi pi-home',
-        routerLink: '/'
-      },
-      {
         label: 'Cvjećara',
         icon: 'pi pi-sun',
         routerLink: '/cvjecara'
@@ -25,12 +20,12 @@ export class HeaderComponent {
       {
         label: 'Potrepštine',
         icon: 'pi pi-box',
-        routerLink: '/potrepstine'
+        routerLink: '/pogrebni_artikli'
       },
       {
         label: 'Dizajner groba',
         icon: 'pi pi-cog',
-        routerLink: '/dizajner'
+        routerLink: '/grobni_dizajner'
       }
     ];
   }
