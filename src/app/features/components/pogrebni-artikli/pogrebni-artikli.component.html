@@ -10,18 +10,18 @@
     <div class="col-12 md:col-6" *ngFor="let item of getCurrentItems()">
       <div class="bg-white border-round-xl p-4 shadow-2 hover:shadow-4 transition-duration-200">
         <div class="flex flex-column sm:flex-row align-items-center gap-4">
-          <img [src]="item.slika"
-               alt="{{ item.naziv }}"
-               (error)="item.slika = 'assets/placeholder_artikli.png'"
+          <img [src]="item.imageUrl"
+               alt="{{ item.name }}"
+               (error)="item.imageUrl = 'assets/placeholder_artikli.png'"
                class="w-8rem h-8rem border-1 border-300 border-round object-cover" />
 
           <div class="flex-1 text-left">
-            <h4 class="text-xl font-semibold mb-1">{{ item.naziv }}</h4>
-            <p class="text-color-secondary mb-2">{{ item.opis }}</p>
+            <h4 class="text-xl font-semibold mb-1">{{ item.name }}</h4>
+            <p class="text-color-secondary mb-2">{{ item.description }}</p>
 
             <div class="flex flex-column sm:flex-row align-items-start sm:align-items-center justify-content-between gap-2 mt-2">
               <span class="text-lg font-medium text-green-600">
-                <i class="pi pi-euro mr-1"></i>{{ item.cijena }}
+                <i class="pi pi-euro mr-1"></i>{{ item.price }}
               </span>
               <button pButton label="Dodaj u košaricu" icon="pi pi-cart-plus" class="p-button-success p-button-sm p-button-rounded"></button>
             </div>

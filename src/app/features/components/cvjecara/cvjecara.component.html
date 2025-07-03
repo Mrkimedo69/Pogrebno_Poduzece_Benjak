@@ -11,13 +11,13 @@
       class="col-12 md:col-6 lg:col-4"
       *ngFor="let cvijet of prikazanoCvijece"
     >
-      <p-card [header]="cvijet.naziv" [subheader]="cvijet.cijena + ' €'" class="h-full">
+      <p-card [header]="cvijet.name" [subheader]="cvijet.price + ' €'" class="h-full">
         <img
-          [src]="cvijet.slika || 'assets/img/placeholder_flower.png'"
-          alt="{{ cvijet.naziv }}"
+          [src]="cvijet.imageUrl || 'assets/img/placeholder_flower.png'"
+          alt="{{ cvijet.name }}"
           class="w-full mb-3 border-round flower-image"
         />
-        <p class="mb-2">{{ cvijet.opis }}</p>
+        <p class="mb-2">{{ cvijet.description }}</p>
         <button
           pButton
           label="Naruči"
