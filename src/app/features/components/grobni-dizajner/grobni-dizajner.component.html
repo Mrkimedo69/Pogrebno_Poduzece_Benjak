@@ -6,12 +6,15 @@
     <!-- Materijal -->
     <div class="col-12 md:col-6">
       <h4>Odaberite materijal</h4>
-      <p-selectButton 
+      <div *ngIf="materijali.length > 0">      
+        <p-dropdown 
         [options]="materijali" 
-        [(ngModel)]="odabraniMaterijal"
+        [(ngModel)]="odabraniMaterijal" 
         (ngModelChange)="osvjeziSVG()" 
-        optionLabel="label"
+        placeholder="Odaberite materijal"
+        optionLabel="name"
         class="w-full" />
+      </div>
     </div>
 
     <!-- Oblik -->

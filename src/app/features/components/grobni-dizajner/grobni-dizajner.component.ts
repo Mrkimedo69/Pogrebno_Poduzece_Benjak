@@ -8,6 +8,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import * as THREE from 'three';
+import { StoneMaterial } from '../../models/stone-material.model';
 
 @Component({
   selector: 'app-grobni-dizajner',
@@ -28,11 +29,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   stranice: THREE.Mesh[] = [];
   spomenik!: THREE.Mesh | THREE.Group;
 
-  materijali = [
-    { label: 'Crni mramor', value: 'crni', cijena: 200 },
-    { label: 'Sivi granit', value: 'sivi', cijena: 180 },
-    { label: 'Bijeli kamen', value: 'bijeli', cijena: 160 }
-  ];
+  materijali:StoneMaterial[]=[]
 
   oblici = [
     { label: 'Klasični', value: 'klasicni', cijena: 100 },
@@ -40,7 +37,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     { label: 'Moderni', value: 'moderni', cijena: 150 }
   ];
 
-  odabraniMaterijal = this.materijali[0];
+  odabraniMaterijal!: StoneMaterial;
   odabraniOblik = this.oblici[0];
 
   constructor(
@@ -49,8 +46,14 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    this.osvjeziSVG();
+    this.http.get<StoneMaterial[]>('http://localhost:3000/stone-materials')
+      .subscribe((data) => {
+        this.materijali = data;
+        this.odabraniMaterijal = this.materijali[0];
+        this.osvjeziSVG();
+      });
   }
+  
 
   ngAfterViewInit() {
     this.initThreeJS();
@@ -70,7 +73,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   }
 
   get bojaMramora(): string {
-    switch (this.odabraniMaterijal?.value) {
+    switch (this.odabraniMaterijal?.color) {
       case 'crni':
         return '#2c2c2c';
       case 'sivi':
@@ -83,13 +86,13 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   }
 
   izracunajCijenu(): number {
-    const m = this.odabraniMaterijal?.cijena || 0;
+    const m = this.odabraniMaterijal?.pricePerM3 || 0;
     const o = this.odabraniOblik?.cijena || 0;
     return m + o;
   }
 
   trenutniPrikaz(): string {
-    const mat = this.odabraniMaterijal?.value || 'prazno';
+    const mat = this.odabraniMaterijal?.pricePerM3 || 'prazno';
     const obl = this.odabraniOblik?.value || 'prazno';
     return `assets/dizajn/${mat}-${obl}.png`;
   }
