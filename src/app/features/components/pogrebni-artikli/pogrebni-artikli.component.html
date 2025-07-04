@@ -1,31 +1,31 @@
 <!-- Naslov i opis -->
-<section class="surface-section text-center py-5 px-3">
-  <h2 class="text-3xl font-bold mb-2">Pogrebni artikli</h2>
-  <p class="text-lg text-gray-600">Sve što vam je potrebno za dostojanstven ispraćaj na jednom mjestu.</p>
+<section class="surface-section text-center py-6 px-3">
+  <h2 class="text-3xl md:text-4xl font-bold text-primary-800 mb-2">Pogrebni artikli</h2>
+  <p class="text-lg md:text-xl text-gray-600">Sve što vam je potrebno za dostojanstven ispraćaj na jednom mjestu.</p>
 </section>
 
 <!-- Artikli grid -->
-<section class="p-4">
-  <div class="grid">
-    <div class="col-12 md:col-6" *ngFor="let item of getCurrentItems()">
-      <div class="bg-white border-round-xl p-4 shadow-2 hover:shadow-4 transition-duration-200">
-        <div class="flex flex-column sm:flex-row align-items-center gap-4">
+<section class="p-3 md:px-5">
+  <div class="grid grid-nogutter -mx-2">
+    <div class="w-full sm:w-6 p-2" *ngFor="let item of getCurrentItems()">
+      <div class="surface-card border-round-xl p-4 shadow-2 hover:shadow-4 transition-duration-200 h-full flex flex-column">
+        <div class="flex flex-column sm:flex-row align-items-center gap-4 mb-3">
           <img [src]="item.imageUrl"
                alt="{{ item.name }}"
                (error)="item.imageUrl = 'assets/placeholder_artikli.png'"
-               class="w-8rem h-8rem border-1 border-300 border-round object-cover" />
+               class="w-full sm:w-8rem h-auto sm:h-8rem border-1 border-300 border-round object-cover" />
 
           <div class="flex-1 text-left">
-            <h4 class="text-xl font-semibold mb-1">{{ item.name }}</h4>
-            <p class="text-color-secondary mb-2">{{ item.description }}</p>
-
-            <div class="flex flex-column sm:flex-row align-items-start sm:align-items-center justify-content-between gap-2 mt-2">
-              <span class="text-lg font-medium text-green-600">
-                <i class="pi pi-euro mr-1"></i>{{ item.price }}
-              </span>
-              <button pButton label="Dodaj u košaricu" icon="pi pi-cart-plus" class="p-button-success p-button-sm p-button-rounded"></button>
-            </div>
+            <h4 class="text-xl font-semibold mb-2 text-primary-700">{{ item.name }}</h4>
+            <p class="text-gray-600 text-sm md:text-base">{{ item.description }}</p>
           </div>
+        </div>
+
+        <div class="flex flex-column sm:flex-row align-items-start sm:align-items-center justify-content-between gap-2 mt-auto">
+          <span class="text-lg font-medium text-green-600">
+            <i class="pi pi-euro mr-1"></i>{{ item.price }}
+          </span>
+          <button pButton label="Dodaj u košaricu" icon="pi pi-cart-plus" class="p-button-success p-button-sm p-button-rounded"></button>
         </div>
       </div>
     </div>
@@ -48,8 +48,8 @@
 </section>
 
 <!-- CTA -->
-<section class="surface-200 text-center py-5 mt-4">
-  <h3 class="text-2xl font-semibold mb-2">Niste pronašli što tražite?</h3>
-  <p class="mb-3 text-gray-600">Kontaktirajte nas za posebne zahtjeve ili narudžbe.</p>
-  <button pButton label="Kontakt" icon="pi pi-phone"></button>
+<section class="surface-100 text-center py-6 px-3 mt-6 border-top-1 surface-border">
+  <h3 class="text-2xl md:text-3xl font-semibold mb-2 text-primary-700">Niste pronašli što tražite?</h3>
+  <p class="mb-4 text-md md:text-lg text-gray-600">Kontaktirajte nas za posebne zahtjeve ili narudžbe.</p>
+  <button pButton label="Kontakt" icon="pi pi-phone" class="p-button-lg"></button>
 </section>

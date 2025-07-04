@@ -1,92 +1,106 @@
-<section class="surface-section py-5 px-3">
-  <h2 class="text-3xl font-bold text-center mb-4">Dizajner grobnog spomenika</h2>
+<!-- Sekcija: Interaktivni dizajn grobnice i spomenika -->
+<section class="surface-section py-6 px-4">
+  <div class="max-w-screen-lg mx-auto">
+    <h2 class="text-3xl md:text-4xl font-bold text-center text-primary-800 mb-6">
+      Interaktivni dizajn grobnice i spomenika
+    </h2>
+    <p class="text-lg text-center text-gray-600 max-w-2xl mx-auto mb-6">
+      Isprobajte kako bi izgledao vaš personalizirani grobni prostor – odaberite materijal, oblik i pogledajte model u 2D i 3D prikazu.
+    </p>
+    <!-- Odabir opcija -->
+    <div class="grid mb-5 gap-4">
+      <!-- Materijal -->
+      <div class="col-12 md:col-6">
+        <h4 class="mb-2 text-lg font-medium text-primary-700">Odaberite materijal</h4>
+        <p-dropdown
+          [options]="materijali"
+          [(ngModel)]="odabraniMaterijal"
+          (ngModelChange)="osvjeziSVG()"
+          placeholder="Odaberite materijal"
+          optionLabel="name"
+          class="w-full shadow-1 border-round"
+        />
+      </div>
 
-  <!-- OPCIJE -->
-  <div class="grid mb-4">
-    <!-- Materijal -->
-    <div class="col-12 md:col-6">
-      <h4>Odaberite materijal</h4>
-      <div *ngIf="materijali.length > 0">      
-        <p-dropdown 
-        [options]="materijali" 
-        [(ngModel)]="odabraniMaterijal" 
-        (ngModelChange)="osvjeziSVG()" 
-        placeholder="Odaberite materijal"
-        optionLabel="name"
-        class="w-full" />
+      <!-- Oblik -->
+      <div class="col-12 md:col-6">
+        <h4 class="mb-2 text-lg font-medium text-primary-700">Odaberite oblik</h4>
+        <p-dropdown
+          [options]="oblici"
+          [(ngModel)]="odabraniOblik"
+          (ngModelChange)="osvjeziSVG()"
+          placeholder="Odaberite oblik"
+          optionLabel="label"
+          class="w-full shadow-1 border-round"
+        />
       </div>
     </div>
 
-    <!-- Oblik -->
-    <div class="col-12 md:col-6">
-      <h4>Odaberite oblik</h4>
-      <p-dropdown 
-        [options]="oblici" 
-        [(ngModel)]="odabraniOblik" 
-        (ngModelChange)="osvjeziSVG()" 
-        placeholder="Odaberite oblik"
-        optionLabel="label"
-        class="w-full" />
-    </div>
-  </div>
-
-  <!-- 2D PRIKAZ GROBNICE -->
-  <div class="flex flex-column align-items-center gap-3 mt-5">
-    <!-- NADGROBNI SPOMENIK (inline SVG ovisno o obliku) -->
-    <div class="text-center my-3">
-      <div [innerHTML]="svgContent" style="width: 100px; height: 120px;"></div>
-    </div>
-
-    <!-- GORNJA PLOČA -->
-    <div 
-      class="border-round flex align-items-center justify-content-center text-white font-medium"
-      style="width: 260px; height: 40px;"
-      [ngStyle]="{ 'background-color': bojaMramora }">
-      Gornja ploča
-    </div>
-
-    <!-- STRANICE -->
-    <div class="flex gap-3">
-      <div 
-        class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
-        style="width: 40px; height: 100px;"
-        [ngStyle]="{ 'background-color': bojaMramora }">
-        Lijeva
+    <!-- 2D Prikaz -->
+    <div class="bg-gray-50 border-round shadow-1 p-4 flex flex-column align-items-center gap-4">
+      <div class="text-center">
+        <div [innerHTML]="svgContent" style="width: 100px; height: 120px;"></div>
       </div>
-      <div 
-        class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
-        style="width: 100px; height: 100px;"
-        [ngStyle]="{ 'background-color': bojaMramora }">
-        Prednja
+
+      <div class="border-round flex align-items-center justify-content-center text-white font-medium"
+           style="width: 260px; height: 40px;"
+           [ngStyle]="{ 'background-color': bojaMramora }">
+        Gornja ploča
       </div>
-      <div 
-        class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
-        style="width: 40px; height: 100px;"
-        [ngStyle]="{ 'background-color': bojaMramora }">
-        Desna
-      </div>
-      <div 
-        class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
-        style="width: 100px; height: 100px;"
-        [ngStyle]="{ 'background-color': bojaMramora }">
-        Stražnja
+
+      <div class="flex gap-3 flex-wrap justify-content-center">
+        <div class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
+             style="width: 40px; height: 100px;"
+             [ngStyle]="{ 'background-color': bojaMramora }">
+          Lijeva
+        </div>
+        <div class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
+             style="width: 100px; height: 100px;"
+             [ngStyle]="{ 'background-color': bojaMramora }">
+          Prednja
+        </div>
+        <div class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
+             style="width: 40px; height: 100px;"
+             [ngStyle]="{ 'background-color': bojaMramora }">
+          Desna
+        </div>
+        <div class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
+             style="width: 100px; height: 100px;"
+             [ngStyle]="{ 'background-color': bojaMramora }">
+          Stražnja
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- CIJENA -->
-  <div class="text-center text-xl font-bold my-5">
-    Ukupna cijena: {{ izracunajCijenu() }} €
-  </div>
+    <!-- Cijena -->
+    <div class="text-center text-xl font-bold text-green-700 my-5">
+      Ukupna cijena: {{ izracunajCijenu() }} €
+    </div>
 
-  <!-- CTA -->
-  <div class="text-center">
-    <button pButton label="Zatraži ponudu" icon="pi pi-envelope"></button>
-  </div>
+    <!-- CTA -->
+    <div class="text-center mb-5">
+      <button pButton label="Zatraži ponudu" icon="pi pi-envelope" class="p-button-lg p-button-outlined"></button>
+    </div>
 
-  <!-- 3D PRIKAZ -->
-  <div class="mt-5 text-center">
-    <h4>3D Prikaz</h4>
-    <div #threeContainer style="width: 1000px; height: 800px; margin: auto; border: 1px solid #ccc;"></div>
+    <!-- Gumb za prikaz/skrivanje 3D prikaza -->
+    <div class="text-center mb-4">
+      <button 
+        pButton 
+        [label]="prikazi3D ? 'Sakrij 3D prikaz' : 'Prikaži 3D model'" 
+        icon="pi pi-cube" 
+        class="p-button-lg" 
+        (click)="toggle3D()">
+      </button>
+    </div>
+
+    <!-- Prikaz 3D modela -->
+    <div class="mt-5 text-center" *ngIf="prikazi3D">
+      <h4 class="text-xl font-semibold text-primary-700 mb-3">3D Prikaz</h4>
+      <div #threeContainer style="width: 100%; max-width: 1000px; height: 800px; margin: auto; border: 1px solid #ccc; border-radius: 6px;"></div>
+      <div class="mt-5 text-center text-sm text-gray-500">
+        <p><strong>Materijal:</strong> {{ odabraniMaterijal.name }}</p>
+        <p><strong>Oblik:</strong> {{ odabraniOblik.label }}</p>
+      </div>
+    </div>
   </div>
 </section>

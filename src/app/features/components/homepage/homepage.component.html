@@ -1,63 +1,79 @@
-<!-- HERO SEKCJA -->
-<section class="surface-section py-6 px-4 text-center">
-  <div class="mb-4">
-    <h1 class="text-4xl font-bold mb-2">Dostojanstvena pratnja vašim najmilijima</h1>
-    <p class="text-lg mb-4">Pogrebno poduzeće Benjak - tradicija, poštovanje i briga.</p>
-    <a href="#usluge">
-      <button pButton type="button" label="Naša ponuda" class="mr-2"></button>
-    </a>
-    <a href="#kontakt">
-      <button pButton type="button" label="Kontaktirajte nas" class="p-button-outlined"></button>
-    </a>
+<!-- HERO SEKCIJA -->
+<section class="hero min-h-screen flex flex-column align-items-center justify-content-center text-center bg-no-repeat bg-cover bg-center px-3" style="background-image: url('assets/placeholder.png');">
+  <div class="bg-black-alpha-80 p-4 md:p-5 border-round shadow-6 w-full max-w-30rem">
+    <h1 class="text-3xl md:text-5xl font-bold text-white mb-3 md:mb-4">Dostojanstvena pratnja vašim najmilijima</h1>
+    <p class="text-base md:text-lg text-white mb-3 md:mb-4">Pogrebno poduzeće Benjak – više od 25 godina tradicije, poštovanja i brige.</p>
+    <div class="flex flex-column md:flex-row justify-content-center align-items-center gap-2">
+      <a href="#usluge" class="w-full md:w-auto">
+        <button pButton type="button" label="Naša ponuda" class="p-button-lg p-button-outlined text-white border-white w-full md:w-auto"></button>
+      </a>
+      <a href="#kontakt" class="w-full md:w-auto">
+        <button pButton type="button" label="Kontaktirajte nas" class="p-button-lg p-button-raised bg-white text-gray-900 w-full md:w-auto"></button>
+      </a>
+    </div>
   </div>
 </section>
 
 <!-- O NAMA -->
-<section class="surface-100 p-4 text-center">
-  <h2 class="text-2xl font-semibold mb-2">Tko smo mi</h2>
-  <p class="max-w-30rem mx-auto mb-4">
-    Već više od 25 godina pružamo dostojanstvene pogrebne usluge s naglaskom na ljudskost i profesionalnost.
-  </p>
-  <!-- Zamijenjen placeholder za sliku -->
-  <img src="assets/placeholder.png" alt="O nama" class="w-full max-w-30rem mx-auto border-round shadow-1" />
+<section class="surface-section py-6 px-4">
+  <div class="grid grid-nogutter align-items-center flex-column md:flex-row">
+    <div class="col-12 md:col-6 p-3">
+      <img src="assets/placeholder.png" alt="O nama" class="w-full border-round shadow-2" />
+    </div>
+    <div class="col-12 md:col-6 p-3">
+      <h2 class="text-2xl md:text-3xl font-semibold mb-3 text-primary-700 text-center md:text-left">Tko smo mi</h2>
+      <p class="text-base md:text-lg text-gray-700 text-center md:text-left">
+        Više od 25 godina pružamo dostojanstvene pogrebne usluge s naglaskom na ljudskost, profesionalnost i pažnju prema detaljima. Djelujemo u Novom Marofu i okolici, pružajući kompletnu podršku obiteljima u teškim trenucima.
+      </p>
+    </div>
+  </div>
 </section>
 
 <!-- USLUGE -->
-<section id="usluge" class="surface-section p-4">
-  <h2 class="text-2xl font-semibold text-center mb-4">Naše usluge</h2>
+<section id="usluge" class="surface-100 py-6 px-3">
+  <h2 class="text-2xl md:text-3xl font-semibold text-center text-primary-800 mb-5">Naše usluge</h2>
   <div class="grid">
-    <div class="col-12 md:col-6 lg:col-3">
-      <p-card header="Cvjećara" styleClass="h-full">
-        <img src="assets/placeholder.png" alt="Cvjećara" class="w-full mb-2 border-round" />
-        <p>Online narudžba buketa, vijenaca i aranžmana.</p>
-      </p-card>
+    <div class="col-12 md:col-6 lg:col-3 mb-4">
+      <div class="surface-card p-3 border-round shadow-2 h-full text-center">
+        <img src="assets/placeholder.png" alt="Cvjećara" class="w-full mb-3 border-round shadow-1" />
+        <h3 class="text-lg md:text-xl font-medium mb-2">Cvjećara</h3>
+        <p class="text-gray-600 text-sm md:text-base">Online narudžba buketa, vijenaca i aranžmana.</p>
+      </div>
     </div>
-    <div class="col-12 md:col-6 lg:col-3">
-      <p-card header="Pogrebne potrepštine" styleClass="h-full">
-        <img src="assets/placeholder.png" alt="Pogrebne potrepštine" class="w-full mb-2 border-round" />
-        <p>Svijeće, križevi, urne i više.</p>
-      </p-card>
+    <div class="col-12 md:col-6 lg:col-3 mb-4">
+      <div class="surface-card p-3 border-round shadow-2 h-full text-center">
+        <img src="assets/placeholder.png" alt="Pogrebne potrepštine" class="w-full mb-3 border-round shadow-1" />
+        <h3 class="text-lg md:text-xl font-medium mb-2">Pogrebne potrepštine</h3>
+        <p class="text-gray-600 text-sm md:text-base">Svijeće, križevi, urne i dodatna oprema.</p>
+      </div>
     </div>
-    <div class="col-12 md:col-6 lg:col-3">
-      <p-card header="Dizajner grobova" styleClass="h-full">
-        <img src="assets/placeholder.png" alt="Dizajner grobova" class="w-full mb-2 border-round" />
-        <p>Konfigurator za 2D/3D izradu grobnih spomenika.</p>
-      </p-card>
+    <div class="col-12 md:col-6 lg:col-3 mb-4">
+      <div class="surface-card p-3 border-round shadow-2 h-full text-center">
+        <img src="assets/placeholder.png" alt="Dizajner grobova" class="w-full mb-3 border-round shadow-1" />
+        <h3 class="text-lg md:text-xl font-medium mb-2">Dizajner grobova</h3>
+        <p class="text-gray-600 text-sm md:text-base">Izradite vlastiti 2D/3D spomenik putem našeg konfiguratora.</p>
+      </div>
     </div>
-    <div class="col-12 md:col-6 lg:col-3">
-      <p-card header="Organizacija sprovoda" styleClass="h-full">
-        <img src="assets/placeholder.png" alt="Organizacija sprovoda" class="w-full mb-2 border-round" />
-        <p>Pomoć pri cjelokupnoj organizaciji ispraćaja.</p>
-      </p-card>
+    <div class="col-12 md:col-6 lg:col-3 mb-4">
+      <div class="surface-card p-3 border-round shadow-2 h-full text-center">
+        <img src="assets/placeholder.png" alt="Organizacija sprovoda" class="w-full mb-3 border-round shadow-1" />
+        <h3 class="text-lg md:text-xl font-medium mb-2">Organizacija sprovoda</h3>
+        <p class="text-gray-600 text-sm md:text-base">Potpuna organizacija ispraćaja s osobnim pristupom.</p>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- KONTAKT CTA -->
-<section id="kontakt" class="surface-100 text-center p-5 mt-4">
-  <h2 class="text-2xl font-semibold mb-2">Tu smo za vas</h2>
-  <p class="mb-3">Kontaktirajte nas za informacije, narudžbe ili savjete.</p>
+<section id="kontakt" class="surface-section py-6 px-4 text-center">
+  <h2 class="text-2xl md:text-3xl font-semibold text-primary-700 mb-3">Tu smo za vas</h2>
+  <p class="mb-4 text-gray-600 text-base md:text-lg">Kontaktirajte nas za informacije, narudžbe ili savjete.</p>
   <a routerLink="/kontakt">
-  <button pButton label="Kontakt forma" icon="pi pi-envelope"></button>
+    <button pButton label="Kontakt forma" icon="pi pi-envelope" class="p-button-lg w-full md:w-auto"></button>
   </a>
 </section>
+
+<!-- FOOTER -->
+<footer class="surface-200 text-center text-sm p-4 mt-6">
+  <p class="text-gray-600">&copy; 2025 Benjak d.o.o. Novi Marof. Sva prava pridržana.</p>
+</footer>
