@@ -25,7 +25,13 @@
           <span class="text-lg font-medium text-green-600">
             <i class="pi pi-euro mr-1"></i>{{ item.price }}
           </span>
-          <button pButton label="Dodaj u košaricu" icon="pi pi-cart-plus" class="p-button-success p-button-sm p-button-rounded"></button>
+          <button
+            pButton
+            label="Dodaj u košaricu"
+            icon="pi pi-cart-plus"
+            class="p-button-success p-button-sm p-button-rounded"
+            (click)="dodajUKosaricu(item)"
+          ></button>
         </div>
       </div>
     </div>

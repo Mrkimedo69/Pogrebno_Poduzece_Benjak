@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.services';
 
 @Component({
   selector: 'app-cvjecara',
@@ -8,7 +10,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CvjecaraComponent implements OnInit {
 
-  constructor(private http: HttpClient){}
+  constructor(private http: HttpClient, private authService: AuthService, private router: Router){}
 
   cvijece: any[] = [];
   prikazanoCvijece: any[] = [];
@@ -29,5 +31,12 @@ export class CvjecaraComponent implements OnInit {
     const start = event.first;
     const end = start + this.stavkiPoStranici;
     this.prikazanoCvijece = this.cvijece.slice(start, end);
+  }
+  naruci(cvijet: any) {
+    if (!this.authService.hasToken()) {
+      this.router.navigate(['/auth']);
+      return;
+    }
+    console.log('Dodaj u košaricu:', cvijet);
   }
 }
