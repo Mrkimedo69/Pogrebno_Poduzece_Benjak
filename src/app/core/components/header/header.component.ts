@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
+import { AuthService } from '../../services/auth.services';
 
 @Component({
   selector: 'app-header',
@@ -7,8 +9,12 @@ import { MenuItem } from 'primeng/api';
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
+  
+  constructor(public authService: AuthService, private router: Router) {}
 
   items: MenuItem[] = [];
+  isLoggedIn = false;
+  user: any;
 
   ngOnInit() {
     this.items = [
@@ -28,5 +34,16 @@ export class HeaderComponent {
         routerLink: '/grobni_dizajner'
       }
     ];
+    this.authService.isLoggedIn$.subscribe((status) => {
+      this.isLoggedIn = status;
+    });
+
+    this.authService.user$.subscribe((user) => {
+      this.user = user;
+    });
+  }
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }

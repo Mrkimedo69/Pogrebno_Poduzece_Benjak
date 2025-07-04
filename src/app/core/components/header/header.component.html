@@ -1,4 +1,4 @@
-<p-menubar [model]="items" class="mb-4 shadow-2 border-round-xl surface-100 px-3 py-2">
+<p-menubar [model]="items" class="mb-4 surface-100 px-3 py-2">
     <!-- Lijeva strana: Logo + naziv -->
     <ng-template pTemplate="start">
         <a class="flex align-items-center gap-2 text-decoration-none" routerLink="/">
@@ -10,12 +10,39 @@
   
     </ng-template>
   
-    <!-- Desna strana: Avatar + košarica -->
     <ng-template pTemplate="end">
-      <div class="flex align-items-center gap-2">
-        <button pButton icon="pi pi-user" class="p-button-rounded p-button-text text-primary-700" label="Prijava"></button>
-        <button pButton icon="pi pi-shopping-cart" class="p-button-rounded p-button-text text-primary-700"></button>
-      </div>
-    </ng-template>
+        <div class="flex align-items-center gap-3">
+          <ng-container *ngIf="!isLoggedIn; else loggedIn">
+            <button
+              pButton
+              icon="pi pi-user"
+              class="p-button-rounded p-button-text text-primary-700"
+              label="Prijava"
+              [routerLink]="'/auth'"
+            ></button>
+          </ng-container>
+      
+          <ng-template #loggedIn>
+            <div class="flex align-items-center gap-2">
+              <span class="text-sm font-medium text-primary-800">
+                {{ user?.fullName }}
+              </span>
+              <button
+                pButton
+                icon="pi pi-sign-out"
+                class="p-button-rounded p-button-text text-primary-700"
+                label="Odjavi se"
+                (click)="logout()"
+              ></button>
+            </div>
+          </ng-template>
+      
+          <button
+            pButton
+            icon="pi pi-shopping-cart"
+            class="p-button-rounded p-button-text text-primary-700"
+          ></button>
+        </div>
+      </ng-template>
   </p-menubar>
   
