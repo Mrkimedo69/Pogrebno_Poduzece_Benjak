@@ -1,49 +1,55 @@
 <!-- NASLOV -->
-<section class="surface-section text-center py-8">
-  <h2 class="text-4xl font-bold mb-3">Naša cvjećara</h2>
-  <p class="text-xl text-gray-600">Široka ponuda buketa, aranžmana i vijenaca za dostojanstven ispraćaj.</p>
+<section class="surface-section text-center py-6 px-3">
+  <h2 class="text-3xl md:text-4xl font-bold text-primary-800 mb-3">Naša cvjećara</h2>
+  <p class="text-lg md:text-xl text-gray-600">Široka ponuda buketa, aranžmana i vijenaca za dostojanstven ispraćaj.</p>
 </section>
 
 <!-- CVJETNI KATALOG -->
-<section class="p-4">
+<section class="p-3 md:px-5">
   <div class="grid">
     <div
-      class="col-12 md:col-6 lg:col-4"
+      class="col-12 sm:col-6 lg:col-4 mb-4"
       *ngFor="let cvijet of prikazanoCvijece"
     >
-      <p-card [header]="cvijet.name" [subheader]="cvijet.price + ' €'" class="h-full">
-        <img
-          [src]="cvijet.imageUrl || 'assets/img/placeholder_flower.png'"
-          alt="{{ cvijet.name }}"
-          class="w-full mb-3 border-round flower-image"
-        />
-        <p class="mb-2">{{ cvijet.description }}</p>
-        <button
-          pButton
-          label="Naruči"
-          icon="pi pi-shopping-cart"
-          class="mt-auto w-full"
-        ></button>
+      <p-card [header]="cvijet.name" [subheader]="cvijet.price + ' €'" styleClass="h-full border-round shadow-3 flex flex-column justify-content-between">
+        <ng-template pTemplate="content">
+          <div class="flex flex-column h-full">
+            <img
+              [src]="cvijet.imageUrl || 'assets/img/placeholder_flower.png'"
+              alt="{{ cvijet.name }}"
+              class="w-full mb-3 border-round shadow-1 object-cover"
+              style="aspect-ratio: 4/3;"
+            />
+            <p class="text-gray-700 mb-3 flex-grow-1">{{ cvijet.description }}</p>
+            <button
+              pButton
+              label="Naruči"
+              icon="pi pi-shopping-cart"
+              class="p-button-success w-full mt-auto"
+            ></button>
+          </div>
+        </ng-template>
       </p-card>
     </div>
   </div>
 
   <!-- PAGINACIJA -->
-  <p-paginator
-    [rows]="stavkiPoStranici"
-    [totalRecords]="cvijece.length"
-    [rowsPerPageOptions]="[6, 9, 12]"
-    (onPageChange)="promijeniStranicu($event)"
-    class="mt-5"
-  ></p-paginator>
+  <div class="flex justify-content-center mt-5">
+    <p-paginator
+      [rows]="stavkiPoStranici"
+      [totalRecords]="cvijece.length"
+      [rowsPerPageOptions]="[6, 9, 12]"
+      (onPageChange)="promijeniStranicu($event)"
+      styleClass="shadow-1 border-round surface-card p-2"
+    ></p-paginator>
+  </div>
 </section>
 
-
 <!-- CTA -->
-<section class="surface-100 text-center py-8 mt-8">
-  <h3 class="text-3xl font-semibold mb-2">Trebate savjet ili posebnu narudžbu?</h3>
-  <p class="mb-3 text-lg text-gray-600">Kontaktirajte nas za prilagođene cvjetne aranžmane.</p>
-    <a routerLink="/kontakt">
-  <button pButton label="Kontaktirajte nas" icon="pi pi-envelope"></button>
+<section class="surface-100 text-center py-6 px-3 mt-6 border-top-1 surface-border">
+  <h3 class="text-2xl md:text-3xl font-semibold mb-2 text-primary-700">Trebate savjet ili posebnu narudžbu?</h3>
+  <p class="mb-4 text-md md:text-lg text-gray-600">Kontaktirajte nas za prilagođene cvjetne aranžmane.</p>
+  <a routerLink="/kontakt">
+    <button pButton label="Kontaktirajte nas" icon="pi pi-envelope" class="p-button-lg"></button>
   </a>
 </section>
