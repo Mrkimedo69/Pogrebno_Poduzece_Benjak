@@ -6,7 +6,7 @@ import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
 
 @NgModule({
@@ -19,6 +19,7 @@ import { PaginatorModule } from 'primeng/paginator';
     DropdownModule,
     SelectButtonModule,
     FormsModule,
+    ReactiveFormsModule,
     PaginatorModule,
   ],
   exports:[
@@ -28,6 +29,7 @@ import { PaginatorModule } from 'primeng/paginator';
     DropdownModule,
     SelectButtonModule,
     FormsModule,
+    ReactiveFormsModule,
     PaginatorModule,
   ]
 })
