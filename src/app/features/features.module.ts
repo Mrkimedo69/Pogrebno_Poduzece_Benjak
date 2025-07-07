@@ -6,6 +6,7 @@ import { CvjecaraComponent } from './components/cvjecara/cvjecara.component';
 import { PogrebniArtikliComponent } from './components/pogrebni-artikli/pogrebni-artikli.component';
 import { GrobniDizajnerComponent } from './components/grobni-dizajner/grobni-dizajner.component';
 import { KontaktComponent } from './components/kontakt/kontakt.component';
+import { CartComponent } from './components/cart/cart.component';
 
 
 
@@ -15,7 +16,8 @@ import { KontaktComponent } from './components/kontakt/kontakt.component';
     CvjecaraComponent,
     PogrebniArtikliComponent,
     GrobniDizajnerComponent,
-    KontaktComponent
+    KontaktComponent,
+    CartComponent
   ],
   imports: [
     CommonModule,
