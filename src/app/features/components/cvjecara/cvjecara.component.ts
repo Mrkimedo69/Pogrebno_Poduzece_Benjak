@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.services';
+import { CartService } from '../../services/cart.service';
+import { NotificationComponent } from '../../../shared/components/notification/notification.component';
 
 @Component({
   selector: 'app-cvjecara',
@@ -9,8 +11,15 @@ import { AuthService } from '../../../core/services/auth.services';
   styleUrls: ['./cvjecara.component.css']
 })
 export class CvjecaraComponent implements OnInit {
+  items: any;
 
-  constructor(private http: HttpClient, private authService: AuthService, private router: Router){}
+  constructor(
+    private http: HttpClient, 
+    private authService: AuthService, 
+    private router: Router,
+    private cartService:CartService,
+    private notificationService:NotificationComponent
+  ){}
 
   cvijece: any[] = [];
   prikazanoCvijece: any[] = [];
@@ -21,12 +30,12 @@ export class CvjecaraComponent implements OnInit {
   }
 
   ucitajCvijece(): void {
-    this.http.get<any[]>('http://localhost:3000/flowers').subscribe(data => {
+    this.http.get<any[]>('http://localhost:3000/api/flowers').subscribe(data => {
       this.cvijece = data;
       this.promijeniStranicu({ first: 0 });
     });
   }
-
+  
   promijeniStranicu(event: any): void {
     const start = event.first;
     const end = start + this.stavkiPoStranici;
@@ -37,6 +46,8 @@ export class CvjecaraComponent implements OnInit {
       this.router.navigate(['/auth']);
       return;
     }
-    console.log('Dodaj u košaricu:', cvijet);
+  
+    this.cartService.addToCart(cvijet.id, 'cvijet');
+    this.notificationService.showSuccess('Dodano!', `${cvijet.name} je dodan u košaricu.`);
   }
 }

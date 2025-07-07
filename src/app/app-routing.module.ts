@@ -6,6 +6,7 @@ import { PogrebniArtikliComponent } from './features/components/pogrebni-artikli
 import { GrobniDizajnerComponent } from './features/components/grobni-dizajner/grobni-dizajner.component';
 import { KontaktComponent } from './features/components/kontakt/kontakt.component';
 import { AuthComponent } from './core/components/header/auth/auth/auth.component';
+import { CartComponent } from './features/components/cart/cart.component';
 
 const routes: Routes = [
     {
@@ -29,6 +30,8 @@ const routes: Routes = [
     component: KontaktComponent },
   { path: 'auth', 
     component: AuthComponent },
+  { path: 'kosarica', 
+    component: CartComponent }
   ];
 
 @NgModule({

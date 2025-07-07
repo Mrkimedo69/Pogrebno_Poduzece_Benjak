@@ -49,7 +49,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    this.http.get<StoneMaterial[]>('http://localhost:3000/stone-materials')
+    this.http.get<StoneMaterial[]>('http://localhost:3000/api/stone-materials')
       .subscribe((data) => {
         this.materijali = data;
         this.odabraniMaterijal = this.materijali[0];

@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.services';
+import { NotificationComponent } from '../../../shared/components/notification/notification.component';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-pogrebni-artikli',
@@ -13,10 +15,16 @@ export class PogrebniArtikliComponent {
   itemsPerPage = 10;
   currentPage = 1;
 
-  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {}
+  constructor(
+    private http: HttpClient, 
+    private authService: AuthService, 
+    private router: Router,
+    private cartService: CartService,
+    private notificationService: NotificationComponent
+  ) {}
 
   ngOnInit(): void {
-    this.http.get<any[]>('http://localhost:3000/artikli').subscribe(data => {
+    this.http.get<any[]>('http://localhost:3000/api/artikli').subscribe(data => {
       this.pogrebni_artikli = data;
     });
   }
@@ -40,8 +48,10 @@ export class PogrebniArtikliComponent {
       this.router.navigate(['/auth']);
       return;
     }
-  
-    // Dodaj artikl u košaricu
+
+    this.cartService.addToCart(item.id, 'artikl');
+    this.notificationService.showSuccess('Dodano!', `${item.name} je dodan u košaricu.`);
   }
+  
   
 }
