@@ -30,8 +30,12 @@
             label="Dodaj u košaricu"
             icon="pi pi-cart-plus"
             class="p-button-success p-button-sm p-button-rounded"
-            (click)="dodajUKosaricu(item)"
-          ></button>
+            [disabled]="itemQuantities[item.id] >= item.stock"
+            (click)="dodajUKosaricu(item)">
+          </button>
+          <small *ngIf="getItemQuantity(item.id)  !== undefined" class="text-sm text-gray-600 mt-1">
+            Dodano: {{ getItemQuantity(item.id) }}
+          </small>                
         </div>
       </div>
     </div>

@@ -8,15 +8,16 @@ import { DropdownModule } from 'primeng/dropdown';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { NotificationComponent } from './components/notification/notification.component';
 import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @NgModule({
   declarations: [
     NotificationComponent
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   imports: [
     CommonModule,
     MenubarModule,
@@ -28,6 +29,7 @@ import { ToastModule } from 'primeng/toast';
     ReactiveFormsModule,
     PaginatorModule,
     ToastModule,
+    ConfirmDialogModule,
   ],
   exports:[
     MenubarModule,
@@ -39,7 +41,8 @@ import { ToastModule } from 'primeng/toast';
     ReactiveFormsModule,
     PaginatorModule,
     ToastModule,
-    NotificationComponent
+    NotificationComponent,
+    ConfirmDialogModule
   ]
 })
 export class SharedModule { }

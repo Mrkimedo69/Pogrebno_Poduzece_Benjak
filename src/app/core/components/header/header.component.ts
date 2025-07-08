@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AuthService } from '../../services/auth.services';
+import { CartService } from '../../../features/services/cart.service';
 
 @Component({
   selector: 'app-header',
@@ -10,7 +11,11 @@ import { AuthService } from '../../services/auth.services';
 })
 export class HeaderComponent {
   
-  constructor(public authService: AuthService, private router: Router) {}
+  constructor(
+    public authService: AuthService, 
+    private router: Router,
+    private cartService: CartService
+  ) {}
 
   items: MenuItem[] = [];
   isLoggedIn = false;
@@ -44,6 +49,7 @@ export class HeaderComponent {
   }
   logout() {
     this.authService.logout();
+    this.cartService.clearCart();
     this.router.navigate(['/']);
   }
 }

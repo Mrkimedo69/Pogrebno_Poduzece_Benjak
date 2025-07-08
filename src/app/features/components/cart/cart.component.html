@@ -27,6 +27,27 @@
             </div>
             <p class="text-sm text-gray-600 mt-1">{{ item.price | currency:'EUR' }}</p>
           </div>
+          <!-- Količina -->
+          <div class="flex align-items-center gap-2 mt-2">
+            <button
+              pButton icon="pi pi-minus"
+              (click)="changeQuantity(item, -1)"
+              [disabled]="item.quantity <= 1">
+            </button>
+
+            <span class="text-lg font-semibold w-3rem text-center">{{ item.quantity }}</span>
+
+            <button
+              pButton icon="pi pi-plus"
+              (click)="changeQuantity(item, 1)"
+              [disabled]="item.quantity >= item.stock">
+            </button>
+          </div>
+
+          <!-- Upozorenje ako traži više od dostupnog -->
+          <div *ngIf="item.quantity > item.stock" class="text-sm text-red-500 mt-1">
+            Dostupno samo {{ item.stock }} kom.
+          </div>
 
           <!-- Uklanjanje -->
           <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" (click)="removeItem(i)"></button>
@@ -37,6 +58,14 @@
       <div class="flex justify-content-between mt-5 text-lg font-bold text-gray-800">
         <span>Ukupno:</span>
         <span>{{ total | currency:'EUR' }}</span>
+      </div>
+      <div class="flex justify-content-end mt-3">
+        <button pButton 
+                label="Isprazni košaricu" 
+                icon="pi pi-trash" 
+                class="p-button-warning p-button-text" 
+                (click)="clearAll()">
+        </button>
       </div>
 
       <!-- Gumb za plaćanje -->
@@ -54,3 +83,4 @@
     </ng-template>
   </div>
 </section>
+<p-confirmDialog></p-confirmDialog>
