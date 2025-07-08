@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth.services';
+import { CartService } from '../../../../../features/services/cart.service';
 
 @Component({
   selector: 'app-auth',
@@ -13,7 +14,12 @@ export class AuthComponent {
   loading = false;
   errorMessage = '';
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(
+    private fb: FormBuilder, 
+    private authService: AuthService, 
+    private router: Router,
+    private cartService:CartService
+  ) {
     this.form = this.buildForm();
   }
 
@@ -42,6 +48,7 @@ export class AuthComponent {
           email: this.form.value.email,
           password: this.form.value.password, 
         }).toPromise();
+        this.cartService.syncLocalToBackend();
         if (res?.access_token) {
           this.authService.storeToken(res.access_token);
           this.authService.storeUser(res.user);
@@ -58,6 +65,7 @@ export class AuthComponent {
           email: this.form.value.email,
           password: this.form.value.password,
         }).toPromise();
+        this.cartService.syncLocalToBackend();
         if (loginRes?.access_token) {
           this.authService.storeToken(loginRes.access_token);
           this.authService.storeUser(loginRes.user);

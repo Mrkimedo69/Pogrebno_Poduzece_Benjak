@@ -1,4 +1,4 @@
-export interface Flower {
+export interface FlowerModel {
     id: number;
     name: string;
     description?: string;

@@ -1,7 +1,8 @@
 import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { AuthResponse } from '../models/auth.model';
+import { CartService } from '../../features/services/cart.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -13,7 +14,14 @@ export class AuthService {
   private userSubject = new BehaviorSubject<any>(this.loadUser());
   public user$ = this.userSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient, 
+    private injector: Injector
+  ) {}
+
+  private get cartService(): CartService {
+    return this.injector.get(CartService);
+  }
 
   login(data: { email: string; password: string }) {
     return this.http.post<AuthResponse>(`${this.api}/login`, data);
@@ -38,7 +46,13 @@ export class AuthService {
   }
 
   logout() {
+    const wasLoggedIn = this.hasToken();
+
     localStorage.removeItem('token');
+  
+    if (wasLoggedIn) {
+      this.cartService.clearCart();
+    }
     localStorage.removeItem('user');
     this.isLoggedInSubject.next(false);
     this.userSubject.next(null);
