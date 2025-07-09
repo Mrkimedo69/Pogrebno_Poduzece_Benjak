@@ -5,6 +5,10 @@ import { User } from '../../features/models/user.model';
 export class AuthStore {
   private readonly _user = signal<User | null>(this.loadUser());
   private readonly _token = signal<string | null>(this.loadToken());
+  readonly role = computed(() => this._user()?.role ?? 'guest');
+
+  readonly isAdmin = computed(() => this.role() === 'admin');
+  readonly isEmployee = computed(() => this.role() === 'employee');
 
   readonly user = computed(() => this._user());
   readonly token = computed(() => this._token());

@@ -12,8 +12,6 @@ import { ArtikliStore } from './store/pogrebni-artikli.store';
   styleUrls: ['./pogrebni-artikli.component.css']
 })
 export class PogrebniArtikliComponent implements OnInit {
-  itemsPerPage = 10;
-  currentPage = 1;
 
   constructor(
     public artikliStore: ArtikliStore,
@@ -22,6 +20,10 @@ export class PogrebniArtikliComponent implements OnInit {
     private router: Router,
     private notificationService: NotificationComponent
   ) {}
+
+  itemsPerPage = 10;
+  currentPage = 1;
+  isAdmin = this.authStore.isAdmin();
 
   ngOnInit(): void {
     this.artikliStore.fetchAll();
@@ -68,4 +70,32 @@ export class PogrebniArtikliComponent implements OnInit {
   getItemQuantity(id: number): number {
     return this.cartStore.artiklQuantities()[id] ?? 0;
   }
+
+  modalOpen = false;
+  selectedArtikl: PogrebniArtikl | null = null;
+
+  onAddNew() {
+    this.selectedArtikl = null;
+    this.modalOpen = true;
+  }
+
+  onEdit(item: PogrebniArtikl) {
+    this.selectedArtikl = { ...item };
+    this.modalOpen = true;
+  }
+
+  onDelete(id: number) {
+    if (confirm('Obrisati artikl?')) {
+      this.artikliStore.delete(id).subscribe(() => this.artikliStore.fetchAll());
+    }
+  }
+  closeModal(potrebanRefresh: boolean) {
+    this.modalOpen = false;
+    this.selectedArtikl = null;
+  
+    if (potrebanRefresh) {
+      this.artikliStore.fetchAll();
+    }
+  
+}
 }

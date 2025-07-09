@@ -15,3 +15,14 @@ export class AuthGuard implements CanActivate {
     }
   }
 }
+@Injectable({ providedIn: 'root' })
+export class AdminGuard implements CanActivate {
+  constructor(private auth: AuthStore, private router: Router) {}
+
+  canActivate(): boolean {
+    if (this.auth.isAdmin()) return true;
+    this.router.navigate(['/']);
+    return false;
+  }
+}
+
