@@ -5,10 +5,9 @@ import {
   AfterViewInit,
   OnInit
 } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import * as THREE from 'three';
-import { StoneMaterial } from '../../models/stone-material.model';
+import { GrobniDizajnerStore } from './grobni-dizajner.store';
 
 @Component({
   selector: 'app-grobni-dizajner',
@@ -18,23 +17,11 @@ import { StoneMaterial } from '../../models/stone-material.model';
 export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   @ViewChild('threeContainer', { static: false }) threeContainer!: ElementRef;
 
-  // UI
   prikazi3D = false;
   threeInicijaliziran = false;
 
-  // Materijali i oblici
-  materijali: StoneMaterial[] = [];
-  oblici = [
-    { label: 'Klasični', value: 'klasicni', cijena: 100 },
-    { label: 'Polukružni', value: 'polukruzni', cijena: 120 },
-    { label: 'Moderni', value: 'moderni', cijena: 150 }
-  ];
-
-  odabraniMaterijal!: StoneMaterial;
-  odabraniOblik = this.oblici[0];
   svgContent: SafeHtml | null = null;
 
-  // Three.js
   scene!: THREE.Scene;
   camera!: THREE.PerspectiveCamera;
   renderer!: THREE.WebGLRenderer;
@@ -44,17 +31,14 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   spomenik!: THREE.Mesh | THREE.Group;
 
   constructor(
-    private http: HttpClient,
+    public store: GrobniDizajnerStore,
     private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
-    this.http.get<StoneMaterial[]>('http://localhost:3000/api/stone-materials')
-      .subscribe((data) => {
-        this.materijali = data;
-        this.odabraniMaterijal = this.materijali[0];
-        this.osvjeziSVG();
-      });
+    this.store.fetchMaterijali().subscribe(() => {
+      this.osvjeziSVG();
+    });
   }
 
   ngAfterViewInit() {
@@ -68,14 +52,12 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
 
   toggle3D() {
     this.prikazi3D = !this.prikazi3D;
-  
     if (this.prikazi3D) {
       setTimeout(() => {
         if (this.renderer && this.renderer.domElement) {
           this.renderer.dispose();
-          this.threeContainer.nativeElement.innerHTML = ''; 
+          this.threeContainer.nativeElement.innerHTML = '';
         }
-  
         this.initThreeJS();
         this.animate();
         this.azuriraj3DBoju();
@@ -83,42 +65,21 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     }
   }
 
-  get bojaMramora(): string {
-    switch (this.odabraniMaterijal?.color) {
-      case 'crni': return '#2c2c2c';
-      case 'sivi': return '#888888';
-      case 'bijeli': return '#e0e0e0';
-      default: return '#cccccc';
-    }
-  }
-
-  izracunajCijenu(): number {
-    const m = this.odabraniMaterijal?.pricePerM3 || 0;
-    const o = this.odabraniOblik?.cijena || 0;
-    return m + o;
-  }
-
-  trenutniPrikaz(): string {
-    const mat = this.odabraniMaterijal?.pricePerM3 || 'prazno';
-    const obl = this.odabraniOblik?.value || 'prazno';
-    return `assets/dizajn/${mat}-${obl}.png`;
-  }
-
   osvjeziSVG() {
-    if (this.odabraniOblik) {
-      this.ucitajSVG(this.odabraniOblik.value);
-      this.dodajSpomenik();
-      this.azuriraj3DBoju();
-    }
+    const oblik = this.store.odabraniOblik().value;
+    this.ucitajSVG(oblik);
+    this.dodajSpomenik();
+    this.azuriraj3DBoju();
   }
 
   ucitajSVG(naziv: string) {
-    this.http
-      .get(`assets/spomenici/${naziv}.svg`, { responseType: 'text' })
-      .subscribe(svg => {
+    fetch(`assets/spomenici/${naziv}.svg`)
+      .then(res => res.text())
+      .then(svg => {
+        const boja = this.store.bojaMramora();
         const obojani = svg
-          .replace(/fill="[^"]*"/g, `fill="${this.bojaMramora}"`)
-          .replace(/style="[^"]*fill:[^;"]*;?/g, `style="fill:${this.bojaMramora};`);
+          .replace(/fill="[^"]*"/g, `fill="${boja}"`)
+          .replace(/style="[^\"]*fill:[^;\"]*;?/g, `style="fill:${boja};`);
         this.svgContent = this.sanitizer.bypassSecurityTrustHtml(obojani);
       });
   }
@@ -153,7 +114,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   }
 
   azuriraj3DBoju() {
-    const novaBoja = new THREE.Color(this.bojaMramora);
+    const novaBoja = new THREE.Color(this.store.bojaMramora());
 
     const updateBoja = (objekt: THREE.Object3D) => {
       if (objekt instanceof THREE.Mesh) {
@@ -171,7 +132,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   }
 
   createGrobniElementi() {
-    const materijal = new THREE.MeshStandardMaterial({ color: this.bojaMramora });
+    const materijal = new THREE.MeshStandardMaterial({ color: this.store.bojaMramora() });
     const borderMaterijal = new THREE.MeshStandardMaterial({ color: '#444444' });
 
     this.grobnicaGroup = new THREE.Group();
@@ -188,22 +149,19 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     this.grobnicaGroup.add(this.gornjaPloca);
 
     const straniceInfo = [
-      { x: -sirina / 2 + debljina / 2, z: 0, label: 'lijeva' },
-      { x:  sirina / 2 - debljina / 2, z: 0, label: 'desna' },
-      { x: 0, z: -dubina / 2 + debljina / 2, label: 'stražnja' },
-      { x: 0, z:  dubina / 2 - debljina / 2, label: 'prednja' }
+      { x: -sirina / 2 + debljina / 2, z: 0 },
+      { x:  sirina / 2 - debljina / 2, z: 0 },
+      { x: 0, z: -dubina / 2 + debljina / 2 },
+      { x: 0, z:  dubina / 2 - debljina / 2 }
     ];
 
     straniceInfo.forEach(s => {
-      let geom;
-      if (s.label === 'lijeva' || s.label === 'desna') {
-        geom = new THREE.BoxGeometry(debljina, visina, dubina);
-      } else {
-        geom = new THREE.BoxGeometry(sirina - 2 * debljina, visina, debljina);
-      }
+      let geom = (s.x === 0)
+        ? new THREE.BoxGeometry(sirina - 2 * debljina, visina, debljina)
+        : new THREE.BoxGeometry(debljina, visina, dubina);
+
       const mesh = new THREE.Mesh(geom, borderMaterijal);
       mesh.position.set(s.x, visina / 2, s.z);
-      mesh.name = s.label;
       this.grobnicaGroup.add(mesh);
       this.stranice.push(mesh);
       this.dodajRubove(mesh, this.grobnicaGroup);
@@ -222,9 +180,10 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
       this.grobnicaGroup.remove(this.spomenik);
     }
 
-    const materijal = new THREE.MeshStandardMaterial({ color: this.bojaMramora });
+    const materijal = new THREE.MeshStandardMaterial({ color: this.store.bojaMramora() });
+    const oblik = this.store.odabraniOblik().value;
 
-    if (this.odabraniOblik?.value === 'klasicni') {
+    if (oblik === 'klasicni') {
       const base = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1, 1.2), materijal);
       const arc = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.2, 32, 1, false, 0, Math.PI), materijal);
       arc.rotation.z = Math.PI / 2;
@@ -241,7 +200,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     }
 
     let geom: THREE.BufferGeometry;
-    switch (this.odabraniOblik?.value) {
+    switch (oblik) {
       case 'polukruzni':
         geom = new THREE.CylinderGeometry(0.5, 0.5, 1.2, 32, 1, false, 0, Math.PI);
         break;
@@ -255,7 +214,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     this.spomenik = new THREE.Mesh(geom, materijal);
     this.spomenik.position.set(-1.7, 1.4, 0);
 
-    if (this.odabraniOblik?.value === 'polukruzni') {
+    if (oblik === 'polukruzni') {
       this.spomenik.rotation.z = Math.PI / 2;
     }
 
