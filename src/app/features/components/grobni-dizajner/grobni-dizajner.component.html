@@ -13,8 +13,8 @@
       <div class="col-12 md:col-6">
         <h4 class="mb-2 text-lg font-medium text-primary-700">Odaberite materijal</h4>
         <p-dropdown
-          [options]="materijali"
-          [(ngModel)]="odabraniMaterijal"
+          [options]="store.materijali()"
+          [(ngModel)]="store.odabraniMaterijal"
           (ngModelChange)="osvjeziSVG()"
           placeholder="Odaberite materijal"
           optionLabel="name"
@@ -26,8 +26,8 @@
       <div class="col-12 md:col-6">
         <h4 class="mb-2 text-lg font-medium text-primary-700">Odaberite oblik</h4>
         <p-dropdown
-          [options]="oblici"
-          [(ngModel)]="odabraniOblik"
+          [options]="store.oblici"
+          [(ngModel)]="store.odabraniOblik"
           (ngModelChange)="osvjeziSVG()"
           placeholder="Odaberite oblik"
           optionLabel="label"
@@ -44,29 +44,29 @@
 
       <div class="border-round flex align-items-center justify-content-center text-white font-medium"
            style="width: 260px; height: 40px;"
-           [ngStyle]="{ 'background-color': bojaMramora }">
+           [ngStyle]="{ 'background-color': store.bojaMramora() }">
         Gornja ploča
       </div>
 
       <div class="flex gap-3 flex-wrap justify-content-center">
         <div class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
              style="width: 40px; height: 100px;"
-             [ngStyle]="{ 'background-color': bojaMramora }">
+             [ngStyle]="{ 'background-color': store.bojaMramora() }">
           Lijeva
         </div>
         <div class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
              style="width: 100px; height: 100px;"
-             [ngStyle]="{ 'background-color': bojaMramora }">
+             [ngStyle]="{ 'background-color': store.bojaMramora() }">
           Prednja
         </div>
         <div class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
              style="width: 40px; height: 100px;"
-             [ngStyle]="{ 'background-color': bojaMramora }">
+             [ngStyle]="{ 'background-color': store.bojaMramora() }">
           Desna
         </div>
         <div class="border-round flex align-items-center justify-content-center text-white text-xs text-center"
              style="width: 100px; height: 100px;"
-             [ngStyle]="{ 'background-color': bojaMramora }">
+             [ngStyle]="{ 'background-color': store.bojaMramora() }">
           Stražnja
         </div>
       </div>
@@ -74,7 +74,7 @@
 
     <!-- Cijena -->
     <div class="text-center text-xl font-bold text-green-700 my-5">
-      Ukupna cijena: {{ izracunajCijenu() }} €
+      Ukupna cijena: {{ store.cijena() }} €
     </div>
 
     <!-- CTA -->
@@ -98,8 +98,8 @@
       <h4 class="text-xl font-semibold text-primary-700 mb-3">3D Prikaz</h4>
       <div #threeContainer style="width: 100%; max-width: 1000px; height: 800px; margin: auto; border: 1px solid #ccc; border-radius: 6px;"></div>
       <div class="mt-5 text-center text-sm text-gray-500">
-        <p><strong>Materijal:</strong> {{ odabraniMaterijal.name }}</p>
-        <p><strong>Oblik:</strong> {{ odabraniOblik.label }}</p>
+        <p><strong>Materijal:</strong> {{ store.odabraniMaterijal()?.name }}</p>
+        <p><strong>Oblik:</strong> {{ store.odabraniOblik().label }}</p>
       </div>
     </div>
   </div>
