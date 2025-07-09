@@ -1,56 +1,43 @@
-import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.services';
+import { CartStore } from '../../components/cart/store/cart.store';
+import { AuthStore } from '../../../core/store/auth.store';
 import { NotificationComponent } from '../../../shared/components/notification/notification.component';
-import { CartService } from '../../services/cart.service';
 import { PogrebniArtikl } from '../../models/pogrebni-artikli.model';
+import { ArtikliStore } from './store/pogrebni-artikli.store';
 
 @Component({
   selector: 'app-pogrebni-artikli',
   templateUrl: './pogrebni-artikli.component.html',
   styleUrls: ['./pogrebni-artikli.component.css']
 })
-export class PogrebniArtikliComponent {
-  pogrebni_artikli: PogrebniArtikl[] = [];
+export class PogrebniArtikliComponent implements OnInit {
   itemsPerPage = 10;
   currentPage = 1;
-  itemQuantities: { [id: number]: number } = {};
-
 
   constructor(
-    private http: HttpClient, 
-    private authService: AuthService, 
+    public artikliStore: ArtikliStore,
+    private cartStore: CartStore,
+    private authStore: AuthStore,
     private router: Router,
-    private cartService: CartService,
     private notificationService: NotificationComponent
   ) {}
 
   ngOnInit(): void {
-    this.http.get<any[]>('http://localhost:3000/api/artikli').subscribe(data => {
-      this.pogrebni_artikli = data;
+    this.artikliStore.fetchAll();
+  }
 
-      this.cartService.getCartItems().subscribe((cart) => {
-        this.itemQuantities = {};
-        cart
-          .filter(i => i.type === 'artikl')
-          .forEach(i => {
-            this.itemQuantities[i.itemId] = i.quantity;
-          });
-      });
-      
-      
-    });
-
+  get artikli(): PogrebniArtikl[] {
+    return this.artikliStore.artikli();
   }
 
   get totalPages(): number {
-    return Math.ceil(this.pogrebni_artikli.length / this.itemsPerPage);
+    return Math.ceil(this.artikli.length / this.itemsPerPage);
   }
 
   getCurrentItems() {
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.pogrebni_artikli.slice(start, start + this.itemsPerPage);
+    return this.artikli.slice(start, start + this.itemsPerPage);
   }
 
   changePage(page: number) {
@@ -58,25 +45,27 @@ export class PogrebniArtikliComponent {
       this.currentPage = page;
     }
   }
-  dodajUKosaricu(item: any) {
-    // if (!this.authService.hasToken()) {
+
+  dodajUKosaricu(item: PogrebniArtikl) {
+    // Ako želiš zahtijevati login, otkomentiraj:
+    // if (!this.authStore.isLoggedIn()) {
     //   this.router.navigate(['/auth']);
     //   return;
     // }
-  
-    this.cartService.addToCart(item.id, 'artikl');
-  
-    if (this.itemQuantities[item.id] === undefined) {
-      this.itemQuantities[item.id] = 1;
-    } else {
-      this.itemQuantities[item.id]++;
-    }
+
+    this.cartStore.addItem({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      stock: item.stock,
+      quantity: 1,
+      type: 'artikl'
+    });
+
     this.notificationService.showSuccess('Dodano!', `${item.name} je dodan u košaricu.`);
   }
-  
-  getItemQuantity(id: number): number | undefined {
-    return this.itemQuantities[id];
+
+  getItemQuantity(id: number): number {
+    return this.cartStore.artiklQuantities()[id] ?? 0;
   }
-  
-  
 }

@@ -1,28 +1,21 @@
-import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AuthResponse } from '../models/auth.model';
-import { CartService } from '../../features/services/cart.service';
+import { AuthStore } from '../store/auth.store';
+import { CartStore } from '../../features/components/cart/store/cart.store';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private api = 'http://localhost:3000/api/auth';
 
-  private isLoggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
-  public isLoggedIn$ = this.isLoggedInSubject.asObservable();
-
-  private userSubject = new BehaviorSubject<any>(this.loadUser());
-  public user$ = this.userSubject.asObservable();
-
   constructor(
-    private http: HttpClient, 
-    private injector: Injector
+    private http: HttpClient,
+    private authStore: AuthStore,
+    private cartStore: CartStore
   ) {}
 
-  private get cartService(): CartService {
-    return this.injector.get(CartService);
-  }
 
+  // HTTP pozivi
   login(data: { email: string; password: string }) {
     return this.http.post<AuthResponse>(`${this.api}/login`, data);
   }
@@ -31,39 +24,28 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.api}/register`, data);
   }
 
-  storeToken(token: string) {
-    localStorage.setItem('token', token);
-    this.isLoggedInSubject.next(true);
-  }
-
-  storeUser(user: any) {
-    localStorage.setItem('user', JSON.stringify(user));
-    this.userSubject.next(user);
-  }
-
+  // TOKEN dohvaća iz store-a
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return this.authStore.token();
   }
 
+  // LOGOUT sinkronizira se s cartom i store-om
   logout() {
-    const wasLoggedIn = this.hasToken();
+    const token = this.authStore.token();
 
-    localStorage.removeItem('token');
-  
-    if (wasLoggedIn) {
-      this.cartService.clearCart();
+    if (token) {
+      this.cartStore.clearCart();
     }
-    localStorage.removeItem('user');
-    this.isLoggedInSubject.next(false);
-    this.userSubject.next(null);
+
+    this.authStore.logout();
   }
 
-  hasToken(): boolean {
-    return !!localStorage.getItem('token');
+  // Korisnik dohvaćen iz store-a
+  get currentUser() {
+    return this.authStore.user();
   }
 
-  loadUser() {
-    const data = localStorage.getItem('user');
-    return data ? JSON.parse(data) : null;
+  get isLoggedIn() {
+    return this.authStore.isLoggedIn();
   }
 }

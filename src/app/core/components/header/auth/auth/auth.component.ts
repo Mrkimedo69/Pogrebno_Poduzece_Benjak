@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth.services';
-import { CartService } from '../../../../../features/services/cart.service';
+import { AuthStore } from '../../../../store/auth.store';
+import { CartStore } from '../../../../../features/components/cart/store/cart.store';
 
 @Component({
   selector: 'app-auth',
@@ -15,25 +16,27 @@ export class AuthComponent {
   errorMessage = '';
 
   constructor(
-    private fb: FormBuilder, 
-    private authService: AuthService, 
-    private router: Router,
-    private cartService:CartService
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private authStore: AuthStore,
+    private cartStore: CartStore,
+    private router: Router
   ) {
     this.form = this.buildForm();
   }
 
-  buildForm() {
+  buildForm(): FormGroup {
     return this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
-      fullName: [''], 
+      fullName: [''],
     });
   }
 
   toggleMode() {
     this.authMode = this.authMode === 'login' ? 'register' : 'login';
     this.errorMessage = '';
+    this.form.reset();
   }
 
   async onSubmit() {
@@ -42,35 +45,26 @@ export class AuthComponent {
     this.loading = true;
     this.errorMessage = '';
 
+    const { email, password, fullName } = this.form.value;
+
     try {
       if (this.authMode === 'login') {
-        const res = await this.authService.login({          
-          email: this.form.value.email,
-          password: this.form.value.password, 
-        }).toPromise();
-        this.cartService.syncLocalToBackend();
-        if (res?.access_token) {
-          this.authService.storeToken(res.access_token);
-          this.authService.storeUser(res.user);
+        const res = await this.authService.login({ email, password }).toPromise();
+
+        if (res?.access_token && res?.user) {
+          this.authStore.login(res.user, res.access_token);
         }
+
         this.router.navigate(['/']);
       } else {
-        const res = await this.authService.register({
-          email: this.form.value.email,
-          password: this.form.value.password,
-          fullName: this.form.value.fullName,
-        }).toPromise();
+        const regRes = await this.authService.register({ email, password, fullName }).toPromise();
 
-        const loginRes = await this.authService.login({           
-          email: this.form.value.email,
-          password: this.form.value.password,
-        }).toPromise();
-        this.cartService.syncLocalToBackend();
-        if (loginRes?.access_token) {
-          this.authService.storeToken(loginRes.access_token);
-          this.authService.storeUser(loginRes.user);
+        const loginRes = await this.authService.login({ email, password }).toPromise();
+
+        if (loginRes?.access_token && loginRes?.user) {
+          this.authStore.login(loginRes.user, loginRes.access_token);
         }
-        
+
         this.router.navigate(['/']);
       }
     } catch (err) {
