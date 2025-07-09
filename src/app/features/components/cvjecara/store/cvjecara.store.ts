@@ -22,4 +22,16 @@ export class CvjecaraStore {
   clear() {
     this._flowers.set([]);
   }
+  add(flower: Partial<FlowerModel>) {
+    return this.http.post<FlowerModel>('http://localhost:3000/api/flowers', flower);
+  }
+  
+  update(id: number, flower: Partial<FlowerModel>) {
+    return this.http.put<FlowerModel>(`http://localhost:3000/api/flowers/${id}`, flower);
+  }
+  
+  delete(id: number) {
+    return this.http.delete(`http://localhost:3000/api/flowers/${id}`);
+  }
+  
 }

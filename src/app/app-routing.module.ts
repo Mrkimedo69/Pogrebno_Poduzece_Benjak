@@ -7,6 +7,8 @@ import { GrobniDizajnerComponent } from './features/components/grobni-dizajner/g
 import { KontaktComponent } from './features/components/kontakt/kontakt.component';
 import { AuthComponent } from './core/components/header/auth/auth/auth.component';
 import { CartComponent } from './features/components/cart/cart.component';
+import { AdminGuard } from './core/guard/auth.guard';
+import { AdminArtiklFormComponent } from './features/components/pogrebni-artikli/admin-artikl-form/admin-artikl-form.component';
 
 const routes: Routes = [
     {
@@ -31,7 +33,12 @@ const routes: Routes = [
   { path: 'auth', 
     component: AuthComponent },
   { path: 'kosarica', 
-    component: CartComponent }
+    component: CartComponent },
+  {
+    path: 'admin-panel',
+    component: AdminArtiklFormComponent,
+    canActivate: [AdminGuard]
+  }
   ];
 
 @NgModule({

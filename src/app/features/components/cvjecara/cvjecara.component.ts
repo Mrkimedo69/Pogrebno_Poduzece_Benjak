@@ -1,10 +1,10 @@
-import { Component, effect, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CartStore } from '../../components/cart/store/cart.store';
-import { CvjecaraStore } from './store/cvjecara.store';
 import { AuthStore } from '../../../core/store/auth.store';
 import { NotificationComponent } from '../../../shared/components/notification/notification.component';
 import { FlowerModel } from '../../models/flower.model';
+import { CvjecaraStore } from './store/cvjecara.store';
 
 @Component({
   selector: 'app-cvjecara',
@@ -12,54 +12,85 @@ import { FlowerModel } from '../../models/flower.model';
   styleUrls: ['./cvjecara.component.css']
 })
 export class CvjecaraComponent implements OnInit {
+  flowers: FlowerModel[] = [];
   prikazanoCvijece: FlowerModel[] = [];
-  stavkiPoStranici: number = 9;
+  selectedFlower: FlowerModel | null = null;
+  modalOpen = false;
+  stavkiPoStranici = 6;
+  isAdmin = this.authStore.isAdmin();
 
   constructor(
-    public cvjecaraStore: CvjecaraStore,
+    private store: CvjecaraStore,
     private cartStore: CartStore,
     private authStore: AuthStore,
-    private router: Router,
-    private notificationService: NotificationComponent
+    private notificationService: NotificationComponent,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.cvjecaraStore.fetchAll().subscribe(() => {
-      this.promijeniStranicu({ first: 0 });
+    this.store.fetchAll();
+    this.store.fetchAll().subscribe(() => {
+      this.flowers = this.store.flowers();
+      this.prikazanoCvijece = this.flowers.slice(0, this.stavkiPoStranici);
     });
+    
+    this.prikazanoCvijece = this.flowers.slice(0, this.stavkiPoStranici);
+    
   }
 
-  get cvijece(): FlowerModel[] {
-    return this.cvjecaraStore.flowers();
-  }
-
-  promijeniStranicu(event: any): void {
+  promijeniStranicu(event: any) {
     const start = event.first;
-    const end = start + this.stavkiPoStranici;
-    this.prikazanoCvijece = this.cvjecaraStore.flowers().slice(start, end);
+    const end = start + event.rows;
+    this.prikazanoCvijece = this.flowers.slice(start, end);
   }
 
-  naruci(cvijet: FlowerModel) {
-    // Ako želiš zahtijevati login:
-    // if (!this.authStore.isLoggedIn()) {
-    //   this.router.navigate(['/auth']);
-    //   return;
-    // }
-
+  naruci(flower: FlowerModel) {
     this.cartStore.addItem({
-      id: cvijet.id,
-      name: cvijet.name,
-      price: cvijet.price,
-      stock: cvijet.stock,
+      id: flower.id,
+      name: flower.name,
+      price: flower.price,
+      stock: flower.stock,
       quantity: 1,
-      type: 'cvijet'
+      type:'cvijet'
     });
 
-    this.notificationService.showSuccess('Dodano!', `${cvijet.name} je dodan u košaricu.`);
+    this.notificationService.showSuccess('Dodano!', `${flower.name} je dodan u košaricu.`);
   }
 
   getItemQuantity(id: number): number {
-    return this.cartStore.cvijetQuantities()[id] ?? 0;
+    return this.cartStore.artiklQuantities()[id] ?? 0;
+  }
+
+  onAddNew() {
+    this.selectedFlower = undefined as any;
+    setTimeout(() => {
+      this.selectedFlower = null;
+      this.modalOpen = true;
+    });
+  }
+
+  onEdit(flower: FlowerModel) {
+    this.selectedFlower = { ...flower };
+    this.modalOpen = true;
+  }
+  
+
+  onDelete(id: number) {
+    if (confirm('Obrisati cvijet?')) {
+      this.store.delete(id).subscribe(() => this.store.fetchAll());
+    }
+  }
+
+  closeModal(potrebanRefresh: boolean) {
+    if (potrebanRefresh) {
+      this.store.fetchAll().subscribe(() => {
+        this.flowers = this.store.flowers();
+        this.prikazanoCvijece = this.flowers.slice(0, this.stavkiPoStranici);
+      });
+    }
+  
+    this.modalOpen = false;
+    this.selectedFlower = null;
   }
   
 }

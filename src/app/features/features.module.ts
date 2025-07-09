@@ -7,6 +7,8 @@ import { PogrebniArtikliComponent } from './components/pogrebni-artikli/pogrebni
 import { GrobniDizajnerComponent } from './components/grobni-dizajner/grobni-dizajner.component';
 import { KontaktComponent } from './components/kontakt/kontakt.component';
 import { CartComponent } from './components/cart/cart.component';
+import { AdminArtiklFormComponent } from './components/pogrebni-artikli/admin-artikl-form/admin-artikl-form.component';
+import { AdminFlowerFormComponent } from './components/cvjecara/admin-flower-form/admin-flower-form.component';
 
 
 
@@ -17,7 +19,9 @@ import { CartComponent } from './components/cart/cart.component';
     PogrebniArtikliComponent,
     GrobniDizajnerComponent,
     KontaktComponent,
-    CartComponent
+    CartComponent,
+    AdminArtiklFormComponent,
+    AdminFlowerFormComponent,
   ],
   imports: [
     CommonModule,

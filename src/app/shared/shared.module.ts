@@ -11,7 +11,10 @@ import { PaginatorModule } from 'primeng/paginator';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { NotificationComponent } from './components/notification/notification.component';
 import { ToastModule } from 'primeng/toast';
+import { TableModule } from 'primeng/table';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @NgModule({
   declarations: [
@@ -29,7 +32,10 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     ReactiveFormsModule,
     PaginatorModule,
     ToastModule,
+    TableModule,
     ConfirmDialogModule,
+    DialogModule,
+    InputNumberModule,
   ],
   exports:[
     MenubarModule,
@@ -41,8 +47,11 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     ReactiveFormsModule,
     PaginatorModule,
     ToastModule,
+    TableModule,
     NotificationComponent,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    DialogModule,
+    InputNumberModule,
   ]
 })
 export class SharedModule { }

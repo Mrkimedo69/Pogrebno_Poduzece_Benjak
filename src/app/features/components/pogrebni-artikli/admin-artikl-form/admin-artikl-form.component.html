@@ -1,0 +1,40 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="p-fluid">
+
+    <div class="field mb-3">
+      <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Naziv artikla</label>
+      <input pInputText id="name" formControlName="name" class="w-full" />
+    </div>
+  
+    <div class="field mb-3">
+      <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Opis</label>
+      <textarea pInputTextarea id="description" formControlName="description" rows="3" class="w-full"></textarea>
+    </div>
+  
+    <div class="field mb-3">
+      <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Cijena (€)</label>
+      <p-inputNumber inputId="price" formControlName="price" [mode]="'decimal'" [minFractionDigits]="2" class="w-full" />
+    </div>
+  
+    <div class="field mb-3">
+      <label for="stock" class="block text-sm font-medium text-gray-700 mb-1">Stanje</label>
+      <p-inputNumber inputId="stock" formControlName="stock" [min]="0" class="w-full" />
+    </div>
+    <!-- URL slike -->
+    <div class="field mb-3">
+        <label for="imageUrl" class="block text-sm font-medium text-gray-700 mb-1">URL slike</label>
+        <input pInputText formControlName="imageUrl" class="w-full" placeholder="https://..." />
+    </div>
+    
+    <!-- Tip artikla (ručno) -->
+    <div class="field mb-3">
+        <label for="type" class="block text-sm font-medium text-gray-700 mb-1">Kategorija (tip)</label>
+        <input pInputText formControlName="type" class="w-full" />
+    </div>
+  
+    <!-- Gumbi -->
+    <div class="flex justify-content-end gap-2 mt-4">
+      <button pButton type="button" label="Odustani" class="p-button-outlined" (click)="close.emit()"></button>
+      <button pButton type="submit" label="Spremi" icon="pi pi-check" class="p-button-success"></button>
+    </div>
+  </form>
+  
