@@ -1,25 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
-import { AuthService } from '../../services/auth.services';
-import { CartService } from '../../../features/services/cart.service';
+import { AuthStore } from '../../store/auth.store';
+import { CartStore } from '../../../features/components/cart/store/cart.store';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
-  
-  constructor(
-    public authService: AuthService, 
-    private router: Router,
-    private cartService: CartService
-  ) {}
-
   items: MenuItem[] = [];
-  isLoggedIn = false;
-  user: any;
+
+  // signal computed vrijednosti
+  isLoggedIn = computed(() => this.authStore.isLoggedIn());
+  user = computed(() => this.authStore.user());
+
+  constructor(
+    private authStore: AuthStore,
+    private cartStore: CartStore,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.items = [
@@ -39,17 +40,11 @@ export class HeaderComponent {
         routerLink: '/grobni_dizajner'
       }
     ];
-    this.authService.isLoggedIn$.subscribe((status) => {
-      this.isLoggedIn = status;
-    });
-
-    this.authService.user$.subscribe((user) => {
-      this.user = user;
-    });
   }
+
   logout() {
-    this.authService.logout();
-    this.cartService.clearCart();
+    this.authStore.logout();
+    this.cartStore.clearCart();
     this.router.navigate(['/']);
   }
 }
