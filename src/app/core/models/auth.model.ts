@@ -2,6 +2,7 @@ import { UserRole } from "../../features/models/user.model";
 
 export interface AuthResponse {
     access_token: string;
+    token: string;
     user: {
     id: number;
     email: string;

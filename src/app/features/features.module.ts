@@ -9,6 +9,8 @@ import { KontaktComponent } from './components/kontakt/kontakt.component';
 import { CartComponent } from './components/cart/cart.component';
 import { AdminArtiklFormComponent } from './components/pogrebni-artikli/admin-artikl-form/admin-artikl-form.component';
 import { AdminFlowerFormComponent } from './components/cvjecara/admin-flower-form/admin-flower-form.component';
+import { NarudzbeComponent } from './narudzbe/narudzbe.component';
+import { NarudzbaDetaljiComponent } from './narudzbe/narudzba-detalji/narudzba-detalji.component';
 
 
 
@@ -22,6 +24,8 @@ import { AdminFlowerFormComponent } from './components/cvjecara/admin-flower-for
     CartComponent,
     AdminArtiklFormComponent,
     AdminFlowerFormComponent,
+    NarudzbeComponent,
+    NarudzbaDetaljiComponent,
   ],
   imports: [
     CommonModule,

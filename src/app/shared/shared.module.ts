@@ -15,6 +15,7 @@ import { TableModule } from 'primeng/table';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { BadgeModule } from 'primeng/badge';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
     ConfirmDialogModule,
     DialogModule,
     InputNumberModule,
+    BadgeModule,
   ],
   exports:[
     MenubarModule,
@@ -52,6 +54,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
     ConfirmDialogModule,
     DialogModule,
     InputNumberModule,
+    BadgeModule,
   ]
 })
 export class SharedModule { }
