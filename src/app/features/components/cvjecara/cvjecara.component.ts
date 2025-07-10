@@ -5,6 +5,7 @@ import { AuthStore } from '../../../core/store/auth.store';
 import { NotificationComponent } from '../../../shared/components/notification/notification.component';
 import { FlowerModel } from '../../models/flower.model';
 import { CvjecaraStore } from './store/cvjecara.store';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-cvjecara',
@@ -24,17 +25,14 @@ export class CvjecaraComponent implements OnInit {
     private cartStore: CartStore,
     private authStore: AuthStore,
     private notificationService: NotificationComponent,
-    private router: Router
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
-    this.store.fetchAll();
     this.store.fetchAll().subscribe(() => {
       this.flowers = this.store.flowers();
       this.prikazanoCvijece = this.flowers.slice(0, this.stavkiPoStranici);
     });
-    
-    this.prikazanoCvijece = this.flowers.slice(0, this.stavkiPoStranici);
     
   }
 
@@ -51,7 +49,7 @@ export class CvjecaraComponent implements OnInit {
       price: flower.price,
       stock: flower.stock,
       quantity: 1,
-      type:'cvijet'
+      category:'cvijet'
     });
 
     this.notificationService.showSuccess('Dodano!', `${flower.name} je dodan u košaricu.`);
@@ -62,11 +60,8 @@ export class CvjecaraComponent implements OnInit {
   }
 
   onAddNew() {
-    this.selectedFlower = undefined as any;
-    setTimeout(() => {
-      this.selectedFlower = null;
-      this.modalOpen = true;
-    });
+    this.selectedFlower = null;
+    this.modalOpen = true;
   }
 
   onEdit(flower: FlowerModel) {
@@ -76,10 +71,23 @@ export class CvjecaraComponent implements OnInit {
   
 
   onDelete(id: number) {
-    if (confirm('Obrisati cvijet?')) {
-      this.store.delete(id).subscribe(() => this.store.fetchAll());
-    }
+    this.confirmationService.confirm({
+      message: 'Jeste li sigurni da želite obrisati ovaj cvijet?',
+      header: 'Potvrda brisanja',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Da',
+      rejectLabel: 'Ne',
+      accept: () => {
+        this.store.delete(id).subscribe(() => {
+          this.store.fetchAll().subscribe(() => {
+            this.flowers = this.store.flowers();
+            this.prikazanoCvijece = this.flowers.slice(0, this.stavkiPoStranici);
+          });
+        });
+      }
+    });
   }
+  
 
   closeModal(potrebanRefresh: boolean) {
     if (potrebanRefresh) {
