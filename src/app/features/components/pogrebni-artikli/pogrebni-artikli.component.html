@@ -13,7 +13,14 @@
       <button pButton icon="pi pi-plus" label="Dodaj novi" (click)="onAddNew()" class="p-button-success"></button>
     </div>
 
-    <p-table [value]="artikli" responsiveLayout="scroll" class="p-datatable-sm">
+    <p-table
+      [value]="artikli"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      responsiveLayout="scroll"
+      class="p-datatable-sm"
+    >
       <ng-template pTemplate="header">
         <tr>
           <th>Slika</th>

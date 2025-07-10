@@ -19,8 +19,15 @@
       </button>
     </div>
 
-    <p-table [value]="flowers" responsiveLayout="scroll" class="p-datatable-sm">
-      <ng-template pTemplate="header">
+    <p-table
+      [value]="flowers"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      responsiveLayout="scroll"
+      class="p-datatable-sm"
+    >
+          <ng-template pTemplate="header">
         <tr>
           <th>Slika</th>
           <th>Naziv</th>
