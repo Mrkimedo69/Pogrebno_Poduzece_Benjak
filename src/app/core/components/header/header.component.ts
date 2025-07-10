@@ -20,9 +20,22 @@ export class HeaderComponent {
     private router: Router
   ) {
     effect(() => {
-      const user = this.authStore.user(); // direktni pristup signalu
-  
-      if (user?.role !== 'employee') {
+      const user = this.authStore.user();
+    
+      if (user?.role === 'employee') {
+        this.items = [
+          {
+            label: 'Narudžbe',
+            icon: 'pi pi-briefcase',
+            routerLink: '/narudzbe'
+          },
+          {
+            label: 'Arhiva narudžbi',
+            icon: 'pi pi-server',
+            routerLink: '/narudzbe/archiva'
+          }
+        ];
+      } else {
         this.items = [
           {
             label: 'Cvjećara',
@@ -40,10 +53,9 @@ export class HeaderComponent {
             routerLink: '/grobni_dizajner'
           }
         ];
-      } else {
-        this.items = [];
       }
     });
+    
   }
   
   
@@ -56,5 +68,4 @@ export class HeaderComponent {
   isEmployee() {
     return this.user()?.role === 'employee';
   }
-  
 }

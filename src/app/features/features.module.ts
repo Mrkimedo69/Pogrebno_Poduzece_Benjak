@@ -11,6 +11,7 @@ import { AdminArtiklFormComponent } from './components/pogrebni-artikli/admin-ar
 import { AdminFlowerFormComponent } from './components/cvjecara/admin-flower-form/admin-flower-form.component';
 import { NarudzbeComponent } from './narudzbe/narudzbe.component';
 import { NarudzbaDetaljiComponent } from './narudzbe/narudzba-detalji/narudzba-detalji.component';
+import { ArhivaNarudzbiComponent } from './narudzbe/arhiva-narudzbi/arhiva-narudzbi.component';
 
 
 
@@ -26,6 +27,7 @@ import { NarudzbaDetaljiComponent } from './narudzbe/narudzba-detalji/narudzba-d
     AdminFlowerFormComponent,
     NarudzbeComponent,
     NarudzbaDetaljiComponent,
+    ArhivaNarudzbiComponent,
   ],
   imports: [
     CommonModule,

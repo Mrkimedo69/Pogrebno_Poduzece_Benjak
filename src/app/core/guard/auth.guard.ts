@@ -32,17 +32,19 @@ export class EmployeeGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     if (this.auth.isEmployee()) {
-      if (state.url,startWith ('/narudzbe')) {
+      if (state.url.startsWith('/narudzbe')) {
         return true;
       } else {
         this.router.navigate(['/narudzbe']);
         return false;
       }
     }
+
     this.router.navigate(['/']);
     return false;
   }
 }
+
 @Injectable({ providedIn: 'root' })
 export class AuthRedirectGuard implements CanActivate {
   constructor(private auth: AuthStore, private router: Router) {}

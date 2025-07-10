@@ -11,6 +11,7 @@ import { AdminGuard, AuthRedirectGuard, EmployeeGuard } from './core/guard/auth.
 import { AdminArtiklFormComponent } from './features/components/pogrebni-artikli/admin-artikl-form/admin-artikl-form.component';
 import { NarudzbeComponent } from './features/narudzbe/narudzbe.component';
 import { NarudzbaDetaljiComponent } from './features/narudzbe/narudzba-detalji/narudzba-detalji.component';
+import { ArhivaNarudzbiComponent } from './features/narudzbe/arhiva-narudzbi/arhiva-narudzbi.component';
 
 const routes: Routes = [
   {
@@ -38,15 +39,20 @@ const routes: Routes = [
     component: AdminArtiklFormComponent,
     canActivate: [AdminGuard]
   },
-  { path: 'narudzbe', 
-    component: NarudzbeComponent, 
-    canActivate: [EmployeeGuard] 
+  {
+    path: 'narudzbe/archiva',
+    component: ArhivaNarudzbiComponent,
+    canActivate: [EmployeeGuard]
   },
   {
     path: 'narudzbe/:id',
     component: NarudzbaDetaljiComponent,
     canActivate: [EmployeeGuard]
-  }
+  },
+  { path: 'narudzbe', 
+    component: NarudzbeComponent, 
+    canActivate: [EmployeeGuard] 
+  },
   ];
 
 @NgModule({
