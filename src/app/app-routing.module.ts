@@ -7,17 +7,16 @@ import { GrobniDizajnerComponent } from './features/components/grobni-dizajner/g
 import { KontaktComponent } from './features/components/kontakt/kontakt.component';
 import { AuthComponent } from './core/components/header/auth/auth/auth.component';
 import { CartComponent } from './features/components/cart/cart.component';
-import { AdminGuard } from './core/guard/auth.guard';
+import { AdminGuard, AuthRedirectGuard, EmployeeGuard } from './core/guard/auth.guard';
 import { AdminArtiklFormComponent } from './features/components/pogrebni-artikli/admin-artikl-form/admin-artikl-form.component';
+import { NarudzbeComponent } from './features/narudzbe/narudzbe.component';
+import { NarudzbaDetaljiComponent } from './features/narudzbe/narudzba-detalji/narudzba-detalji.component';
 
 const routes: Routes = [
-    {
+  {
     path: '',
-    redirectTo: '',
-    pathMatch: 'full'
-  },
-  { path: '', 
-    component: HomepageComponent 
+    component: HomepageComponent,
+    canActivate: [AuthRedirectGuard]
   },
   { path: 'cvjecara', 
     component: CvjecaraComponent 
@@ -38,6 +37,15 @@ const routes: Routes = [
     path: 'admin-panel',
     component: AdminArtiklFormComponent,
     canActivate: [AdminGuard]
+  },
+  { path: 'narudzbe', 
+    component: NarudzbeComponent, 
+    canActivate: [EmployeeGuard] 
+  },
+  {
+    path: 'narudzbe/:id',
+    component: NarudzbaDetaljiComponent,
+    canActivate: [EmployeeGuard]
   }
   ];
 

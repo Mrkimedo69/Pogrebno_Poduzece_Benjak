@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { AuthResponse } from '../models/auth.model';
 import { AuthStore } from '../store/auth.store';
 import { CartStore } from '../../features/components/cart/store/cart.store';
+import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -11,13 +12,35 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private authStore: AuthStore,
-    private cartStore: CartStore
+    private cartStore: CartStore,
+    private router: Router
   ) {}
 
 
   // HTTP pozivi
   login(data: { email: string; password: string }) {
     return this.http.post<AuthResponse>(`${this.api}/login`, data);
+  }
+
+  loginAndRedirect(data: { email: string; password: string }) {
+    this.login(data).subscribe({
+      next: ({ user, token }) => {
+        this.authStore.login(user, token);
+  
+        // 🎯 REDIRECT prema roli
+        if (user.role === 'employee') {
+          this.router.navigate(['/narudzbe']);
+        } else if (user.role === 'admin') {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/']);
+        }
+      },
+      error: (err) => {
+        console.error('Login error', err);
+        // po želji: toast, error state, itd.
+      },
+    });
   }
 
   register(data: { email: string; password: string; fullName: string }) {

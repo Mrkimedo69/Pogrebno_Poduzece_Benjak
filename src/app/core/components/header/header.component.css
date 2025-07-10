@@ -1,0 +1,4 @@
+/* Sakrij hamburger meni kad nema stavki */
+.no-hamburger .p-menubar-button {
+    display: none;
+  }
