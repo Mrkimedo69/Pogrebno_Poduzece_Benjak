@@ -16,12 +16,17 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { BadgeModule } from 'primeng/badge';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { CalendarModule } from 'primeng/calendar';
 
 @NgModule({
   declarations: [
     NotificationComponent
   ],
-  providers: [MessageService, ConfirmationService],
+  providers: [
+    MessageService, 
+    ConfirmationService,
+  ],
   imports: [
     CommonModule,
     MenubarModule,
@@ -38,6 +43,8 @@ import { BadgeModule } from 'primeng/badge';
     DialogModule,
     InputNumberModule,
     BadgeModule,
+    ProgressSpinnerModule,
+    CalendarModule,
   ],
   exports:[
     MenubarModule,
@@ -55,6 +62,8 @@ import { BadgeModule } from 'primeng/badge';
     DialogModule,
     InputNumberModule,
     BadgeModule,
+    ProgressSpinnerModule,
+    CalendarModule,
   ]
 })
 export class SharedModule { }

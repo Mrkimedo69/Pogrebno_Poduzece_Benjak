@@ -13,7 +13,7 @@ export class NarudzbeComponent implements OnInit {
   narudzbe = this.store.narudzbe;
   loading = this.store.loading;
 
-  private router = inject(Router); // koristi inject za router
+  private router = inject(Router);
 
   statusOptions = [
     { label: 'Na čekanju', value: OrderStatus.PENDING },

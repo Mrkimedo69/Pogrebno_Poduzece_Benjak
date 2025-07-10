@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
 import { OrderModel } from '../../models/order.model';
 import { OrderStatus } from '../../models/order-status.enum';
+import { ArchivedOrderModel } from '../../models/archived-order.model';
+import { Observable, tap, catchError, throwError } from 'rxjs';
 
 @Injectable()
 export class NarudzbeStore {
@@ -44,8 +46,28 @@ export class NarudzbeStore {
     });
   }
 
-  // ✅ NOVO: Dohvati detalje jedne narudžbe
   dohvatiDetalje(id: number) {
     return this.http.get<OrderModel>(`http://localhost:3000/api/orders/${id}`);
   }
+  
+  private readonly _arhiva = signal<ArchivedOrderModel[]>([]);
+  readonly arhiva = this._arhiva.asReadonly();
+
+  ucitajArhivu(): Observable<ArchivedOrderModel[]> {
+    this._loading.set(true);
+  
+    return this.http.get<ArchivedOrderModel[]>('http://localhost:3000/api/orders/archived').pipe(
+      tap((data) => {
+        this._arhiva.set(data);
+        this.toast.add({ severity: 'success', summary: 'Učitano', detail: 'Arhiva učitana' });
+        this._loading.set(false);
+      }),
+      catchError((error) => {
+        this.toast.add({ severity: 'error', summary: 'Greška', detail: 'Greška kod učitavanja arhive' });
+        this._loading.set(false);
+        return throwError(() => error);
+      })
+    );
+  }
+  
 }
