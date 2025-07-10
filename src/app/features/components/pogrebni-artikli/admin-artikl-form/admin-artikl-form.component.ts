@@ -23,7 +23,7 @@ export class AdminArtiklFormComponent implements OnInit {
       price: [null, [Validators.required, Validators.min(0)]],
       stock: [0, [Validators.required, Validators.min(0)]],
       imageUrl: ['', Validators.required],
-      type: ['', Validators.required]
+      category: ['', Validators.required]
     });
   }
 

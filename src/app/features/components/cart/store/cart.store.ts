@@ -20,11 +20,11 @@ export class CartStore {
   }
 
   addItem(item: CartItem) {
-    const exists = this._items().find(i => i.id === item.id && i.type === item.type);
+    const exists = this._items().find(i => i.id === item.id && i.category === item.category);
     if (exists) {
       this._items.update(items =>
         items.map(i =>
-          i.id === item.id && i.type === item.type
+          i.id === item.id && i.category === item.category
             ? { ...i, quantity: i.quantity + item.quantity }
             : i
         )
@@ -87,11 +87,11 @@ export class CartStore {
     const items = this.getItems();
 
     const artikli = items
-      .filter(i => i.type === 'artikl')
+      .filter(i => i.category === 'artikl')
       .map(i => ({ id: i.id, quantity: i.quantity }));
 
     const cvijece = items
-      .filter(i => i.type === 'cvijet')
+      .filter(i => i.category === 'cvijet')
       .map(i => ({ id: i.id, quantity: i.quantity }));
 
     fetch('http://localhost:3000/api/cart/sync', {
@@ -118,7 +118,7 @@ export class CartStore {
   readonly artiklQuantities = computed(() => {
     const map: { [id: number]: number } = {};
     this._items().forEach(item => {
-      if (item.type === 'artikl') {
+      if (item.category === 'artikl') {
         map[item.id] = item.quantity;
       }
     });
@@ -129,7 +129,7 @@ export class CartStore {
     const map: { [id: number]: number } = {};
   
     for (const item of items) {
-      if (item.type === 'cvijet') {
+      if (item.category === 'cvijet') {
         map[item.id] = item.quantity;
       }
     }

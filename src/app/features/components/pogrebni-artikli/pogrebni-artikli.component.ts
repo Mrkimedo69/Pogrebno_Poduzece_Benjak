@@ -5,6 +5,7 @@ import { AuthStore } from '../../../core/store/auth.store';
 import { NotificationComponent } from '../../../shared/components/notification/notification.component';
 import { PogrebniArtikl } from '../../models/pogrebni-artikli.model';
 import { ArtikliStore } from './store/pogrebni-artikli.store';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-pogrebni-artikli',
@@ -17,8 +18,8 @@ export class PogrebniArtikliComponent implements OnInit {
     public artikliStore: ArtikliStore,
     private cartStore: CartStore,
     private authStore: AuthStore,
-    private router: Router,
-    private notificationService: NotificationComponent
+    private confirmationService: ConfirmationService,
+    private notificationService: NotificationComponent,
   ) {}
 
   itemsPerPage = 10;
@@ -61,7 +62,7 @@ export class PogrebniArtikliComponent implements OnInit {
       price: item.price,
       stock: item.stock,
       quantity: 1,
-      type: 'artikl'
+      category: 'artikl'
     });
 
     this.notificationService.showSuccess('Dodano!', `${item.name} je dodan u košaricu.`);
@@ -85,10 +86,21 @@ export class PogrebniArtikliComponent implements OnInit {
   }
 
   onDelete(id: number) {
-    if (confirm('Obrisati artikl?')) {
-      this.artikliStore.delete(id).subscribe(() => this.artikliStore.fetchAll());
-    }
+    this.confirmationService.confirm({
+      message: 'Jeste li sigurni da želite obrisati ovaj artikl?',
+      header: 'Potvrda brisanja',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Da',
+      rejectLabel: 'Ne',
+      accept: () => {
+        this.artikliStore.delete(id).subscribe(() => {
+          this.artikliStore.fetchAll();
+          this.notificationService.showSuccess('Obrisano', 'Artikl je uspješno obrisan.');
+        });
+      }
+    });
   }
+  
   closeModal(potrebanRefresh: boolean) {
     this.modalOpen = false;
     this.selectedArtikl = null;

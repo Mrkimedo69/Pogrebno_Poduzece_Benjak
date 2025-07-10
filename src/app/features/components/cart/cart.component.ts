@@ -26,8 +26,8 @@ export class CartComponent implements OnInit {
   ngOnInit() {
     const items = this.cartStore.getItems();
 
-    const artikliMap = new Map(items.filter(i => i.type === 'artikl').map(i => [i.id, i.quantity]));
-    const cvijeceMap = new Map(items.filter(i => i.type === 'cvijet').map(i => [i.id, i.quantity]));
+    const artikliMap = new Map(items.filter(i => i.category === 'artikl').map(i => [i.id, i.quantity]));
+    const cvijeceMap = new Map(items.filter(i => i.category === 'cvijet').map(i => [i.id, i.quantity]));
 
     const artikliIds = Array.from(artikliMap.keys());
     const cvijeceIds = Array.from(cvijeceMap.keys());
@@ -49,13 +49,13 @@ export class CartComponent implements OnInit {
     }).subscribe(({ artikli, cvijece }) => {
       const artikliWithType: CartItem[] = artikli.map(a => ({
         ...a,
-        type: 'artikl' as const,
+        category: 'artikl' as const,
         quantity: artikliMap.get(a.id) || 0
       }));
 
       const cvijeceWithType: CartItem[] = cvijece.map(f => ({
         ...f,
-        type: 'cvijet' as const,
+        category: 'cvijet' as const,
         quantity: cvijeceMap.get(f.id) || 0
       }));
 

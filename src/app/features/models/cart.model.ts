@@ -6,6 +6,6 @@ export interface CartItem {
     quantity: number;
     imageUrl?: string;
     price: number;
-    type: ItemType;
+    category: ItemType;
     stock: number;
   }
