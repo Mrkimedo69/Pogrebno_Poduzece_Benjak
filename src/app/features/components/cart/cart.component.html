@@ -67,11 +67,16 @@
                 (click)="clearAll()">
         </button>
       </div>
-
-      <!-- Gumb za plaćanje -->
       <div class="flex justify-content-end mt-4">
-        <button pButton label="Plati" icon="pi pi-credit-card" class="p-button-success p-button-lg"></button>
+        <button
+          pButton
+          label="Naruči"
+          icon="pi pi-send"
+          class="p-button-primary p-button-lg"
+          (click)="openOrderDialog()">
+        </button>
       </div>
+      <app-order-dialog (submitOrder)="onOrderSubmit($event)"></app-order-dialog>
     </ng-container>
 
     <!-- Prazna košarica -->

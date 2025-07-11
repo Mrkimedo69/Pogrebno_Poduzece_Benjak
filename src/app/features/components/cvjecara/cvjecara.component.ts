@@ -56,7 +56,7 @@ export class CvjecaraComponent implements OnInit {
   }
 
   getItemQuantity(id: number): number {
-    return this.cartStore.artiklQuantities()[id] ?? 0;
+    return this.cartStore.cvijetQuantities()[id] ?? 0;
   }
 
   onAddNew() {

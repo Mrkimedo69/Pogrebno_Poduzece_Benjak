@@ -1,0 +1,23 @@
+<p-dialog [(visible)]="visible" [modal]="true" [closable]="true" header="Podaci za narudžbu" [style]="{ width: '100%', maxWidth: '500px' }">
+  <form [formGroup]="form" (ngSubmit)="confirm()" class="flex flex-column gap-3">
+    <div>
+      <label for="fullName">Ime i prezime</label>
+      <input pInputText id="fullName" formControlName="fullName" class="w-full" />
+    </div>
+
+    <div>
+      <label for="email">Email</label>
+      <input pInputText id="email" formControlName="email" type="email" class="w-full" />
+    </div>
+
+    <div>
+      <label for="phone">Broj mobitela</label>
+      <input pInputText id="phone" formControlName="phone" class="w-full" />
+    </div>
+
+    <div class="flex justify-end mt-3">
+      <button pButton label="Odustani" class="p-button-text" (click)="hide()" type="button"></button>
+      <button pButton label="Potvrdi narudžbu" class="p-button-primary" type="submit" [disabled]="form.invalid"></button>
+    </div>
+  </form>
+</p-dialog>

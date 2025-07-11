@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, effect, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CartStore } from '../../components/cart/store/cart.store';
 import { AuthStore } from '../../../core/store/auth.store';
@@ -39,8 +39,9 @@ export class PogrebniArtikliComponent implements OnInit {
   }
 
   getCurrentItems() {
+    const allItems = this.artikli || [];
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.artikli.slice(start, start + this.itemsPerPage);
+    return allItems.slice(start, start + this.itemsPerPage);
   }
 
   changePage(page: number) {

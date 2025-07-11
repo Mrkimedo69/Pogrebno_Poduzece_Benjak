@@ -1,18 +1,23 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { AuthStore } from '../../../../core/store/auth.store';
 import { CartItem } from '../../../models/cart.model';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class CartStore {
   private readonly LOCAL_KEY = 'cart_items';
 
   private readonly _items = signal<CartItem[]>(this.loadFromStorage());
+
   readonly items = computed(() => this._items());
   readonly total = computed(() =>
     this._items().reduce((sum, item) => sum + item.price * item.quantity, 0)
   );
 
-  constructor(private auth: AuthStore) {
+  readonly artiklQuantities = computed(() => this.buildQuantitiesMap('artikl'));
+  readonly cvijetQuantities = computed(() => this.buildQuantitiesMap('cvijet'));
+
+  constructor(private auth: AuthStore, private http: HttpClient) {
     if (this.auth.isLoggedIn() && this.hasLocalItems()) {
       this.syncToBackend();
       this.clearStorage();
@@ -20,17 +25,19 @@ export class CartStore {
   }
 
   addItem(item: CartItem) {
-    const exists = this._items().find(i => i.id === item.id && i.category === item.category);
+    const currentItems = this._items();
+    const exists = currentItems.find(i => i.id === item.id && i.category === item.category);
+
     if (exists) {
-      this._items.update(items =>
-        items.map(i =>
+      this._items.set(
+        currentItems.map(i =>
           i.id === item.id && i.category === item.category
             ? { ...i, quantity: i.quantity + item.quantity }
             : i
         )
       );
     } else {
-      this._items.update(items => [...items, item]);
+      this._items.set([...currentItems, item]);
     }
 
     this.persist();
@@ -38,14 +45,16 @@ export class CartStore {
   }
 
   removeItem(id: number) {
-    this._items.update(items => items.filter(i => i.id !== id));
+    this._items.set(this._items().filter(i => i.id !== id));
     this.persist();
     if (this.auth.isLoggedIn()) this.syncToBackend();
   }
 
   updateQuantity(id: number, quantity: number) {
-    this._items.update(items =>
-      items.map(i => i.id === id ? { ...i, quantity } : i)
+    this._items.set(
+      this._items().map(i =>
+        i.id === id ? { ...i, quantity } : i
+      )
     );
     this.persist();
     if (this.auth.isLoggedIn()) this.updateItemOnBackend(id, quantity);
@@ -66,6 +75,38 @@ export class CartStore {
     return this._items();
   }
 
+  private syncToBackend() {
+    const items = this.getItems();
+    const artikli = this.filterByCategory(items, 'artikl');
+    const cvijece = this.filterByCategory(items, 'cvijet');
+
+    this.http.post('http://localhost:3000/api/cart/sync', { artikli, cvijece }).subscribe();
+  }
+
+  private clearBackendCart() {
+    this.http.post('http://localhost:3000/api/cart/clear', {}).subscribe();
+  }
+
+  private updateItemOnBackend(id: number, quantity: number) {
+    this.http.patch('http://localhost:3000/api/cart/item', { id, type: 'artikl', quantity }).subscribe();
+  }
+
+  private filterByCategory(items: CartItem[], category: 'artikl' | 'cvijet') {
+    return items
+      .filter(i => i.category === category)
+      .map(i => ({ id: i.id, quantity: i.quantity }));
+  }
+
+  private buildQuantitiesMap(category: 'artikl' | 'cvijet') {
+    const map: { [id: number]: number } = {};
+    this._items().forEach(item => {
+      if (item.category === category) {
+        map[item.id] = item.quantity;
+      }
+    });
+    return map;
+  }
+
   private persist() {
     localStorage.setItem(this.LOCAL_KEY, JSON.stringify(this._items()));
   }
@@ -82,59 +123,4 @@ export class CartStore {
   private clearStorage() {
     localStorage.removeItem(this.LOCAL_KEY);
   }
-
-  private syncToBackend() {
-    const items = this.getItems();
-
-    const artikli = items
-      .filter(i => i.category === 'artikl')
-      .map(i => ({ id: i.id, quantity: i.quantity }));
-
-    const cvijece = items
-      .filter(i => i.category === 'cvijet')
-      .map(i => ({ id: i.id, quantity: i.quantity }));
-
-    fetch('http://localhost:3000/api/cart/sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ artikli, cvijece })
-    });
-  }
-
-  private clearBackendCart() {
-    fetch('http://localhost:3000/api/cart/clear', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  private updateItemOnBackend(id: number, quantity: number) {
-    fetch('http://localhost:3000/api/cart/item', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, quantity })
-    });
-  }
-  readonly artiklQuantities = computed(() => {
-    const map: { [id: number]: number } = {};
-    this._items().forEach(item => {
-      if (item.category === 'artikl') {
-        map[item.id] = item.quantity;
-      }
-    });
-    return map;
-  });
-  readonly cvijetQuantities = computed(() => {
-    const items = this.items();
-    const map: { [id: number]: number } = {};
-  
-    for (const item of items) {
-      if (item.category === 'cvijet') {
-        map[item.id] = item.quantity;
-      }
-    }
-  
-    return map;
-  });
-  
 }

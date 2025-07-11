@@ -12,6 +12,7 @@ import { AdminFlowerFormComponent } from './components/cvjecara/admin-flower-for
 import { NarudzbeComponent } from './narudzbe/narudzbe.component';
 import { NarudzbaDetaljiComponent } from './narudzbe/narudzba-detalji/narudzba-detalji.component';
 import { ArhivaNarudzbiComponent } from './narudzbe/arhiva-narudzbi/arhiva-narudzbi.component';
+import { OrderDialogComponent } from './components/cart/order-dialog/order-dialog.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { ArhivaNarudzbiComponent } from './narudzbe/arhiva-narudzbi/arhiva-narud
     NarudzbeComponent,
     NarudzbaDetaljiComponent,
     ArhivaNarudzbiComponent,
+    OrderDialogComponent,
   ],
   imports: [
     CommonModule,
