@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NarudzbeStore } from '../store/narudzbe.store';
 import { OrderModel } from '../../models/order.model';
 import { OrderStatus } from '../../models/order-status.enum';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-narudzba-detalji',
@@ -24,7 +24,8 @@ export class NarudzbaDetaljiComponent implements OnInit {
     private route: ActivatedRoute,
     private store: NarudzbeStore,
     private router: Router,
-    private toast: MessageService
+    private toast: MessageService,
+    private confirmationService: ConfirmationService,
   ) {}
 
   ngOnInit(): void {
@@ -36,7 +37,7 @@ export class NarudzbaDetaljiComponent implements OnInit {
       return;
     }
 
-    this.store.dohvatiDetalje(id).subscribe({
+    this.store.dohvatiNarudzbuPoId(id).subscribe({
       next: (n) => {
         this.narudzba = n;
         this.loading = false;
@@ -47,11 +48,35 @@ export class NarudzbaDetaljiComponent implements OnInit {
     });
   }
 
-  promijeniStatus(status: OrderStatus) {
+  postaviStatus(noviStatus: OrderStatus) {
     if (!this.narudzba) return;
 
-    this.store.promijeniStatus(this.narudzba.id, status);
-    this.narudzba.status = status;
+    if (noviStatus === 'resolved') {
+      this.confirmationService.confirm({
+        message: 'Jeste li sigurni da je sve napravljeno?',
+        header: 'Potvrda',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Da',
+        rejectLabel: 'Ne',
+        accept: () => {
+          this.promijeniStatus(noviStatus);
+        }
+      });
+    } else {
+      this.promijeniStatus(noviStatus);
+    }
+  }
+
+  private promijeniStatus(noviStatus: OrderStatus) {
+    this.store.promijeniStatus(this.narudzba!.id, noviStatus).subscribe({
+      next: () => {
+        this.toast.add({ severity: 'success', summary: 'Status ažuriran' });
+        this.router.navigate(['/narudzbe']);
+      },
+      error: () => {
+        this.toast.add({ severity: 'error', summary: 'Greška', detail: 'Neuspješno ažuriranje statusa' });
+      }
+    });
   }
 
   nazadNaPopis() {

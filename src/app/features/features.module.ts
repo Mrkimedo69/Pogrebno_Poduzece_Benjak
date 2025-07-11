@@ -13,8 +13,6 @@ import { NarudzbeComponent } from './narudzbe/narudzbe.component';
 import { NarudzbaDetaljiComponent } from './narudzbe/narudzba-detalji/narudzba-detalji.component';
 import { ArhivaNarudzbiComponent } from './narudzbe/arhiva-narudzbi/arhiva-narudzbi.component';
 
-
-
 @NgModule({
   declarations: [
     HomepageComponent,
@@ -32,7 +30,6 @@ import { ArhivaNarudzbiComponent } from './narudzbe/arhiva-narudzbi/arhiva-narud
   imports: [
     CommonModule,
     SharedModule,
-
   ]
 })
 export class FeaturesModule { }
