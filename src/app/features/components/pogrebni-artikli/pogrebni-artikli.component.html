@@ -5,7 +5,7 @@
 </section>
 
 <!-- P-TABLE ADMIN PRIKAZ -->
-<section *ngIf="isAdmin" class="surface-section py-5 px-4">
+<section *ngIf="isAdmin; else userView" class="surface-section py-5 px-4">
   <div class="max-w-screen-xl mx-auto surface-card border-round-xl shadow-3 p-4">
 
     <div class="flex justify-between align-items-center mb-4">

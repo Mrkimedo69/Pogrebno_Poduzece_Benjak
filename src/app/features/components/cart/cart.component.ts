@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FlowerModel } from '../../models/flower.model';
 import { PogrebniArtikl } from '../../models/pogrebni-artikli.model';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { forkJoin, of } from 'rxjs';
 import { CartStore } from './store/cart.store';
 import { CartItem } from '../../models/cart.model';
+import { OrderDialogComponent } from './order-dialog/order-dialog.component';
 
 @Component({
   selector: 'app-cart',
@@ -16,11 +17,14 @@ export class CartComponent implements OnInit {
   itemsWithDetails: CartItem[] = [];
   total = 0;
   isLoaded = false;
+  @ViewChild(OrderDialogComponent) orderDialog!: OrderDialogComponent;
+
 
   constructor(
     private cartStore: CartStore,
     private http: HttpClient,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit() {
@@ -65,6 +69,37 @@ export class CartComponent implements OnInit {
       this.itemsWithDetails = allItems;
       this.total = this.cartStore.total();
       this.isLoaded = true;
+    });
+  }
+  openOrderDialog() {
+    this.orderDialog.show();
+  }
+
+  onOrderSubmit(userData: { fullName: string; email: string; phone: string }) {
+    const payload = {
+      ...userData,
+      totalPrice: this.total,
+      items: this.itemsWithDetails.map(i => ({
+        id: i.id,
+        name: i.name,
+        quantity: i.quantity,
+        price: i.price,
+        category: i.category,
+        type: i.category
+      }))
+    };
+
+    this.http.post('http://localhost:3000/api/orders', payload).subscribe(() => {
+      this.cartStore.clearCart();
+      this.itemsWithDetails = [];
+      this.total = 0;
+      this.isLoaded = true;
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Narudžba zaprimljena',
+        detail: 'Kontaktirat ćemo vas kada bude spremna.',
+        life: 5000
+      });
     });
   }
 
