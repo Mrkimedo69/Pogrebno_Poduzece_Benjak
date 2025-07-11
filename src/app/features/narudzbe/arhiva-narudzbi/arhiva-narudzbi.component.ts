@@ -14,7 +14,7 @@ import { font as openSansFont } from '../../../../assets/fonts/OpenSans-Regular'
 })
 export class ArhivaNarudzbiComponent implements OnInit {
   private store = inject(NarudzbeStore);
-  arhiviraneNarudzbe = this.store.arhiva;
+  arhiviraneNarudzbe = this.store.arhiviraneNarudzbe;
   loading = this.store.loading;
   error = false;
   selectedEmployee = '';
@@ -22,12 +22,7 @@ export class ArhivaNarudzbiComponent implements OnInit {
 
   ngOnInit(): void {
     this.error = false;
-    this.store.ucitajArhivu().subscribe({
-      next: () => {},
-      error: () => {
-        this.error = true;
-      }
-    });
+    this.store.ucitajArhiviraneNarudzbe();
   }
 
   get filtriraneNarudzbe() {
@@ -113,7 +108,7 @@ export class ArhivaNarudzbiComponent implements OnInit {
       doc.setFontSize(10);
       doc.setTextColor(150);
       doc.text('Hvala na korištenju naših usluga.', marginLeft, 285);
-      doc.save(`Narudzba_${narudzba.originalOrderId}.pdf`);
+      doc.save(`Narudzba_#${narudzba.originalOrderId}_${narudzba.fullName}.pdf`);
     };
   }
   

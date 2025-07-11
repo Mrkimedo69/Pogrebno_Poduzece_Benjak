@@ -10,7 +10,7 @@ import { NarudzbeStore } from './store/narudzbe.store';
 })
 export class NarudzbeComponent implements OnInit {
   store = inject(NarudzbeStore);
-  narudzbe = this.store.narudzbe;
+  narudzbe = this.store.aktivneNarudzbe;
   loading = this.store.loading;
 
   private router = inject(Router);
@@ -22,7 +22,7 @@ export class NarudzbeComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.store.ucitajNarudzbe();
+    this.store.ucitajAktivneNarudzbe();
   }
 
   idiNaDetalje(id: number) {
