@@ -1,91 +1,91 @@
 <section class="surface-section py-6 px-3">
-  <div class="max-w-screen-md mx-auto surface-card p-5 shadow-3 border-round-xl">
+  <div class="max-w-screen-md mx-auto surface-card p-5 shadow-3 border-round-xl relative min-h-[300px]">
     
-    <!-- Naslov -->
-    <h2 class="text-2xl md:text-3xl font-bold text-primary-800 text-center mb-5">
-      Vaša košarica
-    </h2>
+    <app-loader
+      *ngIf="!isLoaded"
+      message="Učitavanje košarice..."
+      class="absolute inset-0 z-50 flex justify-center items-center px-4 py-10"
+      style="background-color: rgba(255, 255, 255, 0.85);">
+    </app-loader>
 
-    <!-- Ako ima stavki -->
-    <ng-container *ngIf="isLoaded && itemsWithDetails.length > 0; else emptyCart">
-      <div class="flex flex-column gap-4">
-        <div *ngFor="let item of itemsWithDetails; let i = index" class="flex gap-3 align-items-center border-bottom pb-3">
-          
-          <!-- Slika -->
-          <div class="w-6rem h-6rem flex-shrink-0">
-            <img [src]="item.imageUrl || 'assets/img/placeholder.png'"
-                 alt="{{ item.name }}"
-                 (error)="item.imageUrl = 'assets/placeholder_artikli.png'"
-                 class="border-round shadow-2 w-full h-full object-cover" />
-          </div>
-
-          <!-- Detalji -->
-          <div class="flex-grow-1">
-            <div class="flex justify-content-between align-items-start flex-wrap">
-              <h4 class="m-0 text-lg font-semibold text-primary-700">{{ item.name }}</h4>
-              <span class="text-xs text-white bg-primary border-round px-2 py-1 mt-1">{{ item.category === 'cvijet' ? 'Cvijet' : 'Artikl' }}</span>
+    <div [class.opacity-30]="!isLoaded" [class.pointer-events-none]="!isLoaded">
+      <ng-container *ngIf="isLoaded && itemsWithDetails.length > 0; else emptyCart">
+        <div class="flex flex-column gap-4">
+          <div *ngFor="let item of itemsWithDetails; let i = index" class="flex gap-3 align-items-center border-bottom pb-3">
+            
+            <div class="w-6rem h-6rem flex-shrink-0">
+              <img [src]="item.imageUrl || 'assets/img/placeholder.png'"
+                   alt="{{ item.name }}"
+                   (error)="item.imageUrl = 'assets/placeholder_artikli.png'"
+                   class="border-round shadow-2 w-full h-full object-cover" />
             </div>
-            <p class="text-sm text-gray-600 mt-1">{{ item.price | currency:'EUR' }}</p>
+
+            <div class="flex-grow-1">
+              <div class="flex justify-content-between align-items-start flex-wrap">
+                <h4 class="m-0 text-lg font-semibold text-primary-700">{{ item.name }}</h4>
+                <span class="text-xs text-white bg-primary border-round px-2 py-1 mt-1">{{ item.category === 'cvijet' ? 'Cvijet' : 'Artikl' }}</span>
+              </div>
+              <p class="text-sm text-gray-600 mt-1">{{ item.price | currency:'EUR' }}</p>
+            </div>
+
+            <div class="flex align-items-center gap-2 mt-2">
+              <button
+                pButton icon="pi pi-minus"
+                (click)="changeQuantity(item, -1)"
+                [disabled]="item.quantity <= 1">
+              </button>
+
+              <span class="text-lg font-semibold w-3rem text-center">{{ item.quantity }}</span>
+
+              <button
+                pButton icon="pi pi-plus"
+                (click)="changeQuantity(item, 1)"
+                [disabled]="item.quantity >= item.stock">
+              </button>
+            </div>
+
+            <div *ngIf="item.quantity > item.stock" class="text-sm text-red-500 mt-1">
+              Dostupno samo {{ item.stock }} kom.
+            </div>
+
+            <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" (click)="removeItem(i)"></button>
           </div>
-          <!-- Količina -->
-          <div class="flex align-items-center gap-2 mt-2">
-            <button
-              pButton icon="pi pi-minus"
-              (click)="changeQuantity(item, -1)"
-              [disabled]="item.quantity <= 1">
-            </button>
-
-            <span class="text-lg font-semibold w-3rem text-center">{{ item.quantity }}</span>
-
-            <button
-              pButton icon="pi pi-plus"
-              (click)="changeQuantity(item, 1)"
-              [disabled]="item.quantity >= item.stock">
-            </button>
-          </div>
-
-          <!-- Upozorenje ako traži više od dostupnog -->
-          <div *ngIf="item.quantity > item.stock" class="text-sm text-red-500 mt-1">
-            Dostupno samo {{ item.stock }} kom.
-          </div>
-
-          <!-- Uklanjanje -->
-          <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" (click)="removeItem(i)"></button>
         </div>
-      </div>
 
-      <!-- Ukupno -->
-      <div class="flex justify-content-between mt-5 text-lg font-bold text-gray-800">
-        <span>Ukupno:</span>
-        <span>{{ total | currency:'EUR' }}</span>
-      </div>
-      <div class="flex justify-content-end mt-3">
-        <button pButton 
-                label="Isprazni košaricu" 
-                icon="pi pi-trash" 
-                class="p-button-warning p-button-text" 
-                (click)="clearAll()">
-        </button>
-      </div>
-      <div class="flex justify-content-end mt-4">
-        <button
-          pButton
-          label="Naruči"
-          icon="pi pi-send"
-          class="p-button-primary p-button-lg"
-          (click)="openOrderDialog()">
-        </button>
-      </div>
-      <app-order-dialog (submitOrder)="onOrderSubmit($event)"></app-order-dialog>
-    </ng-container>
+        <div class="flex justify-content-between mt-5 text-lg font-bold text-gray-800">
+          <span>Ukupno:</span>
+          <span>{{ total | currency:'EUR' }}</span>
+        </div>
 
-    <!-- Prazna košarica -->
-    <ng-template #emptyCart>
-      <div class="text-center py-5">
-        <p class="text-gray-500 text-lg mb-4">Vaša košarica je trenutno prazna.</p>
-        <button pButton label="Natrag na artikle" icon="pi pi-arrow-left" routerLink="/pogrebni-artikli" class="p-button-outlined"></button>
-      </div>
-    </ng-template>
+        <div class="flex justify-content-end mt-3">
+          <button pButton 
+                  label="Isprazni košaricu" 
+                  icon="pi pi-trash" 
+                  class="p-button-warning p-button-text" 
+                  (click)="clearAll()">
+          </button>
+        </div>
+
+        <div class="flex justify-content-end mt-4">
+          <button
+            pButton
+            label="Naruči"
+            icon="pi pi-send"
+            class="p-button-primary p-button-lg"
+            (click)="openOrderDialog()">
+          </button>
+        </div>
+
+        <app-order-dialog (submitOrder)="onOrderSubmit($event)"></app-order-dialog>
+      </ng-container>
+
+      <ng-template #emptyCart>
+        <div class="text-center py-5">
+          <p class="text-gray-500 text-lg mb-4">Vaša košarica je trenutno prazna.</p>
+          <button pButton label="Natrag na artikle" icon="pi pi-arrow-left" routerLink="/pogrebni-artikli" class="p-button-outlined"></button>
+        </div>
+      </ng-template>
+    </div>
   </div>
 </section>
 <p-confirmDialog></p-confirmDialog>

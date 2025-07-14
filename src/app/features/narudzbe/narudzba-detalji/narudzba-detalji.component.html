@@ -1,81 +1,91 @@
 <p-confirmDialog></p-confirmDialog>
+
 <div class="p-4 max-w-6xl mx-auto">
-    <!-- Gumb Natrag -->
-    <div class="mb-4">
-      <button
-        pButton
-        type="button"
-        label="Natrag na popis narudžbi"
-        icon="pi pi-arrow-left"
-        class="p-button-outlined"
-        (click)="nazadNaPopis()">
-      </button>
-    </div>
-  
-    <!-- Glavni sadržaj -->
-    <div class="surface-card shadow-2 border-round p-4">
+  <!-- Gumb Natrag -->
+  <div class="mb-4">
+    <button
+      pButton
+      type="button"
+      label="Natrag na popis narudžbi"
+      icon="pi pi-arrow-left"
+      class="p-button-outlined"
+      (click)="nazadNaPopis()">
+    </button>
+  </div>
+
+  <!-- Glavni sadržaj -->
+  <div class="surface-card shadow-2 border-round p-4 relative min-h-[300px]">
+    
+    <!-- Loader -->
+    <app-loader
+      *ngIf="loading"
+      message="Učitavanje narudžbe..."
+      class="absolute inset-0 z-50 flex justify-center items-center px-4 py-10"
+      style="background-color: rgba(255, 255, 255, 0.85);">
+    </app-loader>
+
+    <!-- Zamagljeni sadržaj -->
+    <div [class.opacity-30]="loading" [class.pointer-events-none]="loading">
       <h2 class="text-2xl font-bold mb-4 text-primary">
         Detalji narudžbe #{{ narudzba?.id }}
       </h2>
-  
+
       <!-- GRID: Osnovne informacije -->
       <div class="grid">
         <!-- Lijeva strana -->
         <div class="col-12 md:col-6">
           <p class="text-sm text-500 font-medium mb-1">Korisnik</p>
           <p class="text-base mb-3">{{ narudzba?.fullName }}</p>
-  
+
           <p class="text-sm text-500 font-medium mb-1">Email</p>
           <p class="text-base">{{ narudzba?.email }}</p>
         </div>
-  
+
         <!-- Desna strana -->
         <div class="col-12 md:col-6">
           <p class="text-sm text-500 font-medium mb-1">Status narudžbe</p>
           <p-dropdown 
-            *ngIf = "narudzba"
+            *ngIf="narudzba"
             [options]="statusOptions" 
             [(ngModel)]="narudzba.status" 
             (onChange)="postaviStatus($event.value)"
             placeholder="Odaberite status">
           </p-dropdown>
+
           <p class="mt-4 font-bold text-lg">
             Ukupno: {{ narudzba?.totalPrice | number:'1.2-2' }} €
           </p>
         </div>
       </div>
-  
-      <!-- Razdjelnik -->
+
       <hr class="my-4" />
-  
+
       <!-- Proizvodi -->
       <h3 class="text-xl font-semibold mb-3">Proizvodi</h3>
-  
+
       <div *ngIf="narudzba?.items?.length; else nemaProizvoda">
         <div
           *ngFor="let item of narudzba?.items; let last = last"
-          [ngClass]="{
-            'border-bottom-1 border-gray-200': !last
-          }"
+          [ngClass]="{ 'border-bottom-1 border-gray-200': !last }"
           class="grid grid-nogutter align-items-start py-3">
-          
+
           <!-- Naziv i količina -->
           <div class="col-9">
             <p class="font-medium text-base">{{ item.name }}</p>
             <p class="text-sm text-500">{{ item.quantity }} kom</p>
           </div>
-  
+
           <!-- Cijena -->
           <div class="col-3 text-right font-bold text-lg text-900">
             {{ item.price | number:'1.2-2' }} €
           </div>
         </div>
       </div>
-  
+
       <!-- Ako nema proizvoda -->
       <ng-template #nemaProizvoda>
         <p class="text-sm text-gray-500 italic">Nema proizvoda u ovoj narudžbi.</p>
       </ng-template>
     </div>
   </div>
-  
+</div>

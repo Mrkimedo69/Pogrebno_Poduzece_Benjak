@@ -4,9 +4,20 @@
   <p class="text-lg md:text-xl text-gray-600">Sve što vam je potrebno za dostojanstven ispraćaj.</p>
 </section>
 
-<!-- P-TABLE ADMIN PRIKAZ -->
-<section *ngIf="isAdmin; else userView" class="surface-section py-5 px-4">
-  <div class="max-w-screen-xl mx-auto surface-card border-round-xl shadow-3 p-4">
+<section *ngIf="isAdmin; else userView" class="surface-section py-5 px-4 relative">
+  <!-- LOADER -->
+  <app-loader
+    *ngIf="isLoading"
+    message="Učitavanje artikala..."
+    class="absolute inset-0 z-50 flex justify-center items-center px-4 py-10"
+    style="background-color: rgba(255,255,255,0.85); border-radius: 0.75rem;">
+  </app-loader>
+
+  <!-- WRAPPER koji se zamagli dok se učitava -->
+  <div class="max-w-screen-xl mx-auto surface-card border-round-xl shadow-3 p-4"
+       [class.opacity-30]="isLoading"
+       [class.pointer-events-none]="isLoading">
+
 
     <div class="flex justify-between align-items-center mb-4">
       <h2 class="text-2xl font-bold text-primary-800 pr-3">Upravljanje artiklima</h2>
@@ -68,54 +79,64 @@
   </div>
 </section>
 
-<!-- KORISNIČKI PRIKAZ -->
 <ng-template #userView>
   <section class="p-3 md:px-5">
-    <div class="grid grid-nogutter -mx-2">
-      <div class="w-full sm:w-6 p-2" *ngFor="let item of getCurrentItems()">
-        <div class="surface-card border-round-xl p-4 shadow-2 hover:shadow-4 transition-duration-200 h-full flex flex-column">
-          <div class="flex flex-column sm:flex-row align-items-center gap-4 mb-3">
-            <img [src]="item.imageUrl"
-                 alt="{{ item.name }}"
-                 (error)="item.imageUrl = 'assets/placeholder_artikli.png'"
-                 class="w-full sm:w-8rem h-auto sm:h-8rem border-1 border-300 border-round object-cover" />
+    <!-- Loader + artikli grid -->
+    <div class="relative min-h-[200px]">
+      <app-loader
+        *ngIf="isLoading"
+        message="Učitavanje artikala..."
+        class="absolute w-full top-0 left-0 z-5 bg-white-alpha-90 flex justify-content-center align-items-center border-round-lg px-4 py-6">
+      </app-loader>
 
-            <div class="flex-1 text-left">
-              <h4 class="text-xl font-semibold mb-2 text-primary-700">{{ item.name }}</h4>
-              <p class="text-gray-600 text-sm md:text-base">{{ item.description }}</p>
+      <div class="grid grid-nogutter -mx-2" *ngIf="!isLoading">
+        <div class="w-full sm:w-6 p-2" *ngFor="let item of getCurrentItems()">
+          <div class="surface-card border-round-xl p-4 shadow-2 hover:shadow-4 transition-duration-200 h-full flex flex-column">
+            <div class="flex flex-column sm:flex-row align-items-center gap-4 mb-3">
+              <img [src]="item.imageUrl"
+                   alt="{{ item.name }}"
+                   (error)="item.imageUrl = 'assets/placeholder_artikli.png'"
+                   class="w-full sm:w-8rem h-auto sm:h-8rem border-1 border-300 border-round object-cover" />
+
+              <div class="flex-1 text-left">
+                <h4 class="text-xl font-semibold mb-2 text-primary-700">{{ item.name }}</h4>
+                <p class="text-gray-600 text-sm md:text-base">{{ item.description }}</p>
+              </div>
             </div>
-          </div>
 
-          <div class="flex flex-column sm:flex-row align-items-start sm:align-items-center justify-content-between gap-2 mt-auto">
-            <span class="text-lg font-medium text-green-600">
-              <i class="pi pi-euro mr-1"></i>{{ item.price }}
-            </span>
+            <div class="flex flex-column sm:flex-row align-items-start sm:align-items-center justify-content-between gap-2 mt-auto">
+              <span class="text-lg font-medium text-green-600">
+                <i class="pi pi-euro mr-1"></i>{{ item.price }}
+              </span>
 
-            <button
-              pButton
-              label="Dodaj u košaricu"
-              icon="pi pi-cart-plus"
-              class="p-button-success p-button-sm p-button-rounded"
-              [disabled]="getItemQuantity(item.id) >= item.stock"
-              (click)="dodajUKosaricu(item)">
-            </button>
+              <button
+                pButton
+                label="Dodaj u košaricu"
+                icon="pi pi-cart-plus"
+                class="p-button-success p-button-sm p-button-rounded"
+                [disabled]="getItemQuantity(item.id) >= item.stock"
+                (click)="dodajUKosaricu(item)">
+              </button>
 
-            <small *ngIf="getItemQuantity(item.id) > 0" class="text-sm text-gray-600 mt-1">
-              Dodano: {{ getItemQuantity(item.id) }}
-            </small>
+              <small *ngIf="getItemQuantity(item.id) > 0" class="text-sm text-gray-600 mt-1">
+                Dodano: {{ getItemQuantity(item.id) }}
+              </small>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Paginacija -->
-    <div class="flex align-items-center justify-content-center gap-3 mt-5">
+    <div class="flex align-items-center justify-content-center gap-3 mt-5" *ngIf="!isLoading">
       <button pButton icon="pi pi-angle-left" class="p-button-text"
               [disabled]="currentPage === 1"
               (click)="changePage(currentPage - 1)">
       </button>
 
-      <span class="text-lg text-color-secondary font-medium">Stranica {{ currentPage }} od {{ totalPages }}</span>
+      <span class="text-lg text-color-secondary font-medium">
+        Stranica {{ currentPage }} od {{ totalPages }}
+      </span>
 
       <button pButton icon="pi pi-angle-right" class="p-button-text"
               [disabled]="currentPage === totalPages"
@@ -124,6 +145,7 @@
     </div>
   </section>
 </ng-template>
+
 
 <!-- CTA sekcija (samo korisnici) -->
 <section *ngIf="!isAdmin" class="surface-100 text-center py-6 px-3 mt-6 border-top-1 surface-border">

@@ -2,6 +2,7 @@ import { Injectable, computed, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PogrebniArtikl } from '../../../models/pogrebni-artikli.model';
 import { AuthStore } from '../../../../core/store/auth.store';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ArtikliStore {
@@ -12,9 +13,9 @@ export class ArtikliStore {
 
   constructor(private http: HttpClient, private authStore: AuthStore) {}
 
-  fetchAll() {
-    this.http.get<PogrebniArtikl[]>('http://localhost:3000/api/artikli')
-      .subscribe(artikli => this._artikli.set(artikli));
+  fetchAll(): Observable<PogrebniArtikl[]> {
+    return this.http.get<PogrebniArtikl[]>('http://localhost:3000/api/artikli')
+      .pipe(tap(artikli => this._artikli.set(artikli)));
   }
 
   getById(id: number): PogrebniArtikl | undefined {

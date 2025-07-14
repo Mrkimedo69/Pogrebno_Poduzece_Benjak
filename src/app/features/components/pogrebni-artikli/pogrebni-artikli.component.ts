@@ -25,9 +25,13 @@ export class PogrebniArtikliComponent implements OnInit {
   itemsPerPage = 10;
   currentPage = 1;
   isAdmin = this.authStore.isAdmin();
+  isLoading = true;
 
   ngOnInit(): void {
-    this.artikliStore.fetchAll();
+    this.isLoading = true;
+    this.artikliStore.fetchAll().subscribe(() => {
+      this.isLoading = false;
+    });
   }
 
   get artikli(): PogrebniArtikl[] {

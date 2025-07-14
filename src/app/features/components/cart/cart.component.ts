@@ -1,9 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FlowerModel } from '../../models/flower.model';
-import { PogrebniArtikl } from '../../models/pogrebni-artikli.model';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { forkJoin, of } from 'rxjs';
 import { CartStore } from './store/cart.store';
 import { CartItem } from '../../models/cart.model';
 import { OrderDialogComponent } from './order-dialog/order-dialog.component';
@@ -19,81 +16,32 @@ export class CartComponent implements OnInit {
   isLoaded = false;
   @ViewChild(OrderDialogComponent) orderDialog!: OrderDialogComponent;
 
-
   constructor(
     private cartStore: CartStore,
-    private http: HttpClient,
     private confirmationService: ConfirmationService,
     private messageService: MessageService
   ) {}
 
   ngOnInit() {
-    const items = this.cartStore.getItems();
+    this.isLoaded = false;
 
-    const artikliMap = new Map(items.filter(i => i.category === 'artikl').map(i => [i.id, i.quantity]));
-    const cvijeceMap = new Map(items.filter(i => i.category === 'cvijet').map(i => [i.id, i.quantity]));
-
-    const artikliIds = Array.from(artikliMap.keys());
-    const cvijeceIds = Array.from(cvijeceMap.keys());
-
-    if (artikliIds.length === 0 && cvijeceIds.length === 0) {
-      this.itemsWithDetails = [];
-      this.total = 0;
-      this.isLoaded = true;
-      return;
-    }
-
-    forkJoin({
-      artikli: artikliIds.length > 0
-        ? this.http.post<PogrebniArtikl[]>('http://localhost:3000/api/artikli/batch', { ids: artikliIds })
-        : of([]),
-      cvijece: cvijeceIds.length > 0
-        ? this.http.post<FlowerModel[]>('http://localhost:3000/api/flowers/batch', { ids: cvijeceIds })
-        : of([])
-    }).subscribe(({ artikli, cvijece }) => {
-      const artikliWithType: CartItem[] = artikli.map(a => ({
-        ...a,
-        category: 'artikl' as const,
-        quantity: artikliMap.get(a.id) || 0
-      }));
-
-      const cvijeceWithType: CartItem[] = cvijece.map(f => ({
-        ...f,
-        category: 'cvijet' as const,
-        quantity: cvijeceMap.get(f.id) || 0
-      }));
-
-      const allItems = [...artikliWithType, ...cvijeceWithType];
-
-      this.cartStore.setCart(allItems); // postavi punu košaricu u store
-      this.itemsWithDetails = allItems;
+    this.cartStore.loadFullCartDetails().subscribe(items => {
+      this.itemsWithDetails = items;
       this.total = this.cartStore.total();
       this.isLoaded = true;
     });
   }
+
   openOrderDialog() {
     this.orderDialog.show();
   }
 
   onOrderSubmit(userData: { fullName: string; email: string; phone: string }) {
-    const payload = {
-      ...userData,
-      totalPrice: this.total,
-      items: this.itemsWithDetails.map(i => ({
-        id: i.id,
-        name: i.name,
-        quantity: i.quantity,
-        price: i.price,
-        category: i.category,
-        type: i.category
-      }))
-    };
-
-    this.http.post('http://localhost:3000/api/orders', payload).subscribe(() => {
-      this.cartStore.clearCart();
+    this.cartStore.submitOrder(userData).subscribe(() => {
       this.itemsWithDetails = [];
       this.total = 0;
       this.isLoaded = true;
+
       this.messageService.add({
         severity: 'success',
         summary: 'Narudžba zaprimljena',
@@ -120,24 +68,6 @@ export class CartComponent implements OnInit {
       item.quantity = newQty;
       this.total = this.cartStore.total();
     }
-  }
-
-  pay() {
-    const invalid = this.itemsWithDetails.find(item => item.quantity > item.stock);
-    if (invalid) {
-      alert(`Nema dovoljno zaliha za "${invalid.name}".`);
-      return;
-    }
-
-    this.http
-      .post('http://localhost:3000/api/payment/create-checkout-session', {
-        items: this.itemsWithDetails
-      })
-      .subscribe((res: any) => {
-        if (res?.url) {
-          window.location.href = res.url;
-        }
-      });
   }
 
   clearAll() {

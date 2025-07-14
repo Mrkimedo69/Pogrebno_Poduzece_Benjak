@@ -19,6 +19,7 @@ export class CvjecaraComponent implements OnInit {
   modalOpen = false;
   stavkiPoStranici = 6;
   isAdmin = this.authStore.isAdmin();
+  isLoading = false;
 
   constructor(
     private store: CvjecaraStore,
@@ -29,9 +30,11 @@ export class CvjecaraComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.isLoading = true;
     this.store.fetchAll().subscribe(() => {
       this.flowers = this.store.flowers();
       this.prikazanoCvijece = this.flowers.slice(0, this.stavkiPoStranici);
+      this.isLoading = false;
     });
     
   }
@@ -71,6 +74,7 @@ export class CvjecaraComponent implements OnInit {
   
 
   onDelete(id: number) {
+    this.isLoading = true;
     this.confirmationService.confirm({
       message: 'Jeste li sigurni da želite obrisati ovaj cvijet?',
       header: 'Potvrda brisanja',
@@ -82,21 +86,26 @@ export class CvjecaraComponent implements OnInit {
           this.store.fetchAll().subscribe(() => {
             this.flowers = this.store.flowers();
             this.prikazanoCvijece = this.flowers.slice(0, this.stavkiPoStranici);
+            this.isLoading = false;
           });
         });
+      },
+      reject: () => {
+        this.isLoading = false;
       }
     });
   }
-  
 
   closeModal(potrebanRefresh: boolean) {
     if (potrebanRefresh) {
+      this.isLoading = true;
       this.store.fetchAll().subscribe(() => {
         this.flowers = this.store.flowers();
         this.prikazanoCvijece = this.flowers.slice(0, this.stavkiPoStranici);
+        this.isLoading = false;
       });
     }
-  
+
     this.modalOpen = false;
     this.selectedFlower = null;
   }

@@ -12,6 +12,7 @@ export class AdminArtiklFormComponent implements OnInit {
   @Output() close = new EventEmitter<boolean>();
 
   form: FormGroup;
+  isSubmitting = false;
 
   constructor(
     private fb: FormBuilder,
@@ -41,7 +42,6 @@ export class AdminArtiklFormComponent implements OnInit {
       }
     }
   }
-  
 
   submit() {
     if (this.form.invalid) {
@@ -49,13 +49,22 @@ export class AdminArtiklFormComponent implements OnInit {
       return;
     }
 
-    const data = this.form.value;
+    this.isSubmitting = true;
 
-    if (this.artikl) {
-      this.artikliStore.update(this.artikl.id, data).subscribe(() => this.close.emit(true));
-    } else {
-      this.artikliStore.add(data).subscribe(() => this.close.emit(true));
-    }
+    const data = this.form.value;
+    const request$ = this.artikl
+      ? this.artikliStore.update(this.artikl.id, data)
+      : this.artikliStore.add(data);
+
+    request$.subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.close.emit(true);
+      },
+      error: () => {
+        this.isSubmitting = false;
+      }
+    });
   }
 
   cancel() {
