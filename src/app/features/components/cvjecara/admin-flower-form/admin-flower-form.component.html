@@ -1,14 +1,29 @@
-<form [formGroup]="form" (ngSubmit)="submit()" class="p-fluid">
+<div class="relative">
+  <app-loader
+    *ngIf="isSubmitting"
+    message="Spremanje..."
+    class="absolute inset-0 z-50 flex justify-center items-center px-4 py-10"
+    style="background-color: rgba(255,255,255,0.85); border-radius: 0.5rem;">
+  </app-loader>
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    class="p-fluid"
+    [class.opacity-30]="isSubmitting"
+    [class.pointer-events-none]="isSubmitting"
+  >
+
     <div class="field mb-3">
       <label for="name">Naziv cvijeta</label>
       <input pInputText id="name" formControlName="name" class="w-full" />
     </div>
-  
+
     <div class="field mb-3">
       <label for="description">Opis</label>
       <textarea pInputTextarea id="description" formControlName="description" rows="3" class="w-full"></textarea>
     </div>
-  
+
     <div class="field mb-3">
       <label for="price">Cijena (€)</label>
       <p-inputNumber
@@ -16,28 +31,28 @@
         formControlName="price"
         [mode]="'decimal'"
         [minFractionDigits]="2"
-        class="w-full">
-      </p-inputNumber>
+        class="w-full"
+      ></p-inputNumber>
     </div>
-  
+
     <div class="field mb-3">
       <label for="stock">Stanje</label>
       <p-inputNumber
         inputId="stock"
         formControlName="stock"
         [min]="0"
-        class="w-full">
-      </p-inputNumber>
+        class="w-full"
+      ></p-inputNumber>
     </div>
-  
+
     <div class="field mb-3">
       <label for="imageUrl">URL slike</label>
       <input pInputText formControlName="imageUrl" placeholder="https://..." class="w-full" />
     </div>
-  
+
     <div class="flex justify-content-end gap-2 mt-4">
       <button pButton type="button" label="Odustani" class="p-button-outlined" (click)="cancel()"></button>
       <button pButton type="submit" label="Spremi" icon="pi pi-check" class="p-button-success"></button>
     </div>
   </form>
-  
+</div>

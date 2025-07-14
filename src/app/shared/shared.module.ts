@@ -18,10 +18,12 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { BadgeModule } from 'primeng/badge';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CalendarModule } from 'primeng/calendar';
+import { LoaderComponent } from './components/loader/loader.component';
 
 @NgModule({
   declarations: [
-    NotificationComponent
+    NotificationComponent,
+    LoaderComponent,
   ],
   providers: [
     MessageService, 
@@ -64,6 +66,7 @@ import { CalendarModule } from 'primeng/calendar';
     BadgeModule,
     ProgressSpinnerModule,
     CalendarModule,
+    LoaderComponent,
   ]
 })
 export class SharedModule { }

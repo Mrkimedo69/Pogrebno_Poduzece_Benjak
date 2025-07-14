@@ -2,6 +2,7 @@ import { Injectable, computed, signal } from '@angular/core';
 import { AuthStore } from '../../../../core/store/auth.store';
 import { CartItem } from '../../../models/cart.model';
 import { HttpClient } from '@angular/common/http';
+import { Observable, of, forkJoin, map, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class CartStore {
@@ -96,6 +97,48 @@ export class CartStore {
       .filter(i => i.category === category)
       .map(i => ({ id: i.id, quantity: i.quantity }));
   }
+    loadFullCartDetails(): Observable<CartItem[]> {
+    const items = this.getItems();
+
+    const artikliMap = new Map(items.filter(i => i.category === 'artikl').map(i => [i.id, i.quantity]));
+    const cvijeceMap = new Map(items.filter(i => i.category === 'cvijet').map(i => [i.id, i.quantity]));
+
+    const artikliIds = Array.from(artikliMap.keys());
+    const cvijeceIds = Array.from(cvijeceMap.keys());
+
+    if (artikliIds.length === 0 && cvijeceIds.length === 0) {
+      this._items.set([]);
+      return of([]);
+    }
+
+    return forkJoin({
+      artikli: artikliIds.length > 0
+        ? this.http.post<any[]>('http://localhost:3000/api/artikli/batch', { ids: artikliIds })
+        : of([]),
+      cvijece: cvijeceIds.length > 0
+        ? this.http.post<any[]>('http://localhost:3000/api/flowers/batch', { ids: cvijeceIds })
+        : of([])
+    }).pipe(
+      map(({ artikli, cvijece }) => {
+        const artikliWithType: CartItem[] = artikli.map(a => ({
+          ...a,
+          category: 'artikl' as const,
+          quantity: artikliMap.get(a.id) || 0
+        }));
+
+        const cvijeceWithType: CartItem[] = cvijece.map(f => ({
+          ...f,
+          category: 'cvijet' as const,
+          quantity: cvijeceMap.get(f.id) || 0
+        }));
+
+        const fullCart = [...artikliWithType, ...cvijeceWithType];
+
+        this.setCart(fullCart);
+        return fullCart;
+      })
+    );
+  }
 
   private buildQuantitiesMap(category: 'artikl' | 'cvijet') {
     const map: { [id: number]: number } = {};
@@ -106,7 +149,27 @@ export class CartStore {
     });
     return map;
   }
+  submitOrder(userData: { fullName: string; email: string; phone: string }): Observable<any> {
+    const payload = {
+      ...userData,
+      totalPrice: this.total(),
+      items: this.getItems().map(i => ({
+        id: i.id,
+        name: i.name,
+        quantity: i.quantity,
+        price: i.price,
+        category: i.category,
+        type: i.category
+      }))
+    };
 
+    return this.http.post('http://localhost:3000/api/orders', payload).pipe(
+      tap(() => {
+        this.clearCart();
+      })
+    );
+  }
+  
   private persist() {
     localStorage.setItem(this.LOCAL_KEY, JSON.stringify(this._items()));
   }

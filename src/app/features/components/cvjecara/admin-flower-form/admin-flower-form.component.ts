@@ -20,6 +20,7 @@ import {
     @Output() close = new EventEmitter<boolean>();
   
     form: FormGroup;
+    isSubmitting = false;
   
     constructor(private fb: FormBuilder, private store: CvjecaraStore) {
       this.form = this.fb.group({
@@ -46,28 +47,31 @@ import {
           }
         }
       }
-  
-    submit(): void {
-      if (this.form.invalid) {
-        this.form.markAllAsTouched();
-        return;
-      }
-  
-      const data = this.form.value;
-  
-      if (this.flower) {
-        // UPDATE
-        this.store.update(this.flower.id, data).subscribe(() => {
-          this.close.emit(true);
-        });
-      } else {
-        // CREATE
-        this.store.add(data).subscribe(() => {
-          this.close.emit(true);
-        });
-      }
+
+  submit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
     }
-  
+
+    this.isSubmitting = true;
+    const data = this.form.value;
+
+    const request$ = this.flower
+      ? this.store.update(this.flower.id, data)
+      : this.store.add(data);
+
+    request$.subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.close.emit(true);
+      },
+      error: () => {
+        this.isSubmitting = false;
+      }
+    });
+  }
+
     cancel(): void {
         this.close.emit(false);
     }
