@@ -1,0 +1,56 @@
+<p-toast></p-toast>
+
+<div class="card relative min-h-[300px]">
+  <!-- Loader -->
+  <app-loader
+    *ngIf="loading()"
+    message="Učitavanje narudžbi..."
+    class="absolute inset-0 z-50 flex justify-center items-center px-4 py-10"
+    style="background-color: rgba(255, 255, 255, 0.85);">
+  </app-loader>
+
+  <!-- Zamrznuti sadržaj dok traje učitavanje -->
+  <div [class.opacity-30]="loading()" [class.pointer-events-none]="loading()">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Pregled narudžbi</h2>
+      <p-badge [value]="narudzbe().length" severity="info"></p-badge>
+    </div>
+
+    <p-table
+      [value]="narudzbe()"
+      [responsiveLayout]="'scroll'"
+      [paginator]="true"
+      [rows]="10"
+      [selectionMode]="'single'"
+      (onRowSelect)="idiNaDetalje($event.data.id)"
+      emptyMessage="Nema dostupnih narudžbi"
+      class="p-datatable-gridlines cursor-pointer"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Korisnik</th>
+          <th>Status</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-narudzba>
+        <tr [pSelectableRow]="narudzba">
+          <td>{{ narudzba.id }}</td>
+          <td class="min-w-[200px]">
+            <div class="flex flex-column">
+              <span class="font-medium">{{ narudzba.fullName }}</span>
+              <span class="text-sm text-gray-500">{{ narudzba.email }}</span>
+            </div>
+          </td>
+          <td>
+            <p-badge
+              [value]="narudzba.status"
+              [severity]="getStatusSeverity(narudzba.status)">
+            </p-badge>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

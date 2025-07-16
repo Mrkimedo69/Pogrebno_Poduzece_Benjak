@@ -1,0 +1,119 @@
+<div class="card surface-card p-4 shadow-2 border-round relative">
+
+  <!-- Loader -->
+  <app-loader
+    *ngIf="loading()"
+    message="Učitavanje arhive..."
+    class="absolute inset-0 z-50 flex justify-center items-center px-4 py-10"
+    style="background-color: rgba(255, 255, 255, 0.85);">
+  </app-loader>
+
+  <!-- SVE što treba biti zamagljeno -->
+  <div [class.opacity-30]="loading()" [class.pointer-events-none]="loading()">
+    
+    <!-- Naslov -->
+    <div class="flex justify-between align-items-center mb-4">
+      <h2 class="text-2xl font-bold text-primary">📦 Arhivirane narudžbe</h2>
+    </div>
+
+    <!-- Filteri -->
+    <div class="grid formgrid p-fluid mb-3 align-items-end">
+      <div class="field col-12 md:col-5">
+        <label for="calendar">Datum narudžbe</label>
+        <p-calendar
+          [(ngModel)]="selectedDate"
+          dateFormat="dd.mm.yy"
+          placeholder="Odaberi datum"
+          showIcon
+          inputId="calendar"
+          class="w-full">
+        </p-calendar>
+      </div>
+
+      <div class="field col-12 md:col-5">
+        <label for="zaposlenik">Zaposlenik</label>
+        <div class="p-inputgroup">
+          <span class="p-inputgroup-addon">
+            <i class="pi pi-search"></i>
+          </span>
+          <input
+            pInputText
+            id="zaposlenik"
+            [(ngModel)]="selectedEmployee"
+            placeholder="Pretraži zaposlenika"
+            class="w-full" />
+        </div>
+      </div>
+
+      <div class="field col-12 md:col-2">
+        <label>&nbsp;</label>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-times"
+          class="p-button-outlined p-button-danger w-full"
+          label="Poništi"
+          (click)="selectedEmployee = ''; selectedDate = null">
+        </button>
+      </div>
+    </div>
+
+    <!-- Greška -->
+    <div *ngIf="error && !loading()" class="text-center text-red-500 my-5">
+      <i class="pi pi-exclamation-circle text-3xl mb-2"></i>
+      <p>Greška prilikom dohvaćanja arhive.</p>
+      <button pButton label="Pokušaj ponovno" icon="pi pi-refresh" (click)="ngOnInit()"></button>
+    </div>
+
+    <!-- Prazno -->
+    <div *ngIf="!error && !loading() && filtriraneNarudzbe.length === 0" class="text-center text-500 my-5">
+      <i class="pi pi-inbox text-3xl mb-2"></i>
+      <p>Nema arhiviranih narudžbi za prikaz.</p>
+    </div>
+
+    <!-- Tablica -->
+    <p-table
+      *ngIf="!error && !loading() && filtriraneNarudzbe.length > 0"
+      [value]="filtriraneNarudzbe"
+      [paginator]="true"
+      [rows]="10"
+      responsiveLayout="scroll"
+      class="p-datatable-gridlines">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Korisnik</th>
+          <th>Datum</th>
+          <th>Ukupno</th>
+          <th>Zaposlenik</th>
+          <th class="text-center">PDF</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-narudzba>
+        <tr>
+          <td>{{ narudzba.originalOrderId }}</td>
+          <td>
+            <div class="flex flex-column">
+              <span class="font-medium text-900">{{ narudzba.fullName }}</span>
+              <small class="text-600">{{ narudzba.email }}</small>
+            </div>
+          </td>
+          <td>{{ narudzba.archivedAt | date:'dd.MM.yyyy HH:mm' }}</td>
+          <td>{{ narudzba.totalPrice | currency:'EUR' }}</td>
+          <td>{{ narudzba.resolvedBy }}</td>
+          <td class="text-center">
+            <button
+              pButton
+              icon="pi pi-file-pdf"
+              class="p-button-text p-button-sm"
+              (click)="preuzmiJednuNarudzbuPDF(narudzba)">
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+  </div>
+</div>
