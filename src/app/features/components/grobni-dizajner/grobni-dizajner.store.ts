@@ -2,6 +2,7 @@ import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { StoneMaterial } from '../../models/stone-material.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class GrobniDizajnerStore {
@@ -26,7 +27,7 @@ export class GrobniDizajnerStore {
   constructor(private http: HttpClient) {}
 
   fetchMaterijali(): Observable<StoneMaterial[]> {
-    return this.http.get<StoneMaterial[]>('http://localhost:3000/api/stone-materials')
+    return this.http.get<StoneMaterial[]>(`${environment.apiUrl}/stone-materials`)
       .pipe(tap(data => {
         this._materijali.set(data);
         this._odabraniMaterijal.set(data[0] || null);

@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { CartStore } from './store/cart.store';
 import { CartItem } from '../../models/cart.model';

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { PogrebniArtikl } from '../../../models/pogrebni-artikli.model';
 import { AuthStore } from '../../../../core/store/auth.store';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ArtikliStore {
@@ -14,7 +15,7 @@ export class ArtikliStore {
   constructor(private http: HttpClient, private authStore: AuthStore) {}
 
   fetchAll(): Observable<PogrebniArtikl[]> {
-    return this.http.get<PogrebniArtikl[]>('http://localhost:3000/api/artikli')
+    return this.http.get<PogrebniArtikl[]>(`${environment.apiUrl}/artikli`)
       .pipe(tap(artikli => this._artikli.set(artikli)));
   }
 
@@ -26,14 +27,14 @@ export class ArtikliStore {
     this._artikli.set([]);
   }
   add(artikl: Partial<PogrebniArtikl>) {
-    return this.http.post<PogrebniArtikl>('http://localhost:3000/api/artikli', artikl);
+    return this.http.post<PogrebniArtikl>(`${environment.apiUrl}/artikli`, artikl);
   }
   
   update(id: number, artikl: Partial<PogrebniArtikl>) {
-    return this.http.put<PogrebniArtikl>(`http://localhost:3000/api/artikli/${id}`, artikl);
+    return this.http.put<PogrebniArtikl>(`${environment.apiUrl}/artikli/${id}`, artikl);
   }
   
   delete(id: number) {
-    return this.http.delete(`http://localhost:3000/api/artikli/${id}`);
+    return this.http.delete(`${environment.apiUrl}/artikli/${id}`);
   }
 }
