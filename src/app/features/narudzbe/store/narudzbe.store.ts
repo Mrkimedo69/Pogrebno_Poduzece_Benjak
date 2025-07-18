@@ -23,7 +23,7 @@ export class NarudzbeStore {
 
   ucitajAktivneNarudzbe(): void {
     this._loading.set(true);
-    this.http.get<OrderModel[]>(`${environment.apiUrl}/orders?status=pending`).subscribe({
+    this.http.get<OrderModel[]>(`${environment.apiUrl}/api/orders?status=pending`).subscribe({
       next: (data) => {
         this._aktivneNarudzbe.set(data);
         this.toast.add({ severity: 'success', summary: 'Učitano', detail: 'Aktivne narudžbe učitane' });
@@ -37,7 +37,7 @@ export class NarudzbeStore {
 
   ucitajArhiviraneNarudzbe(): void {
     this._loading.set(true);
-    this.http.get<ArchivedOrderModel[]>(`${environment.apiUrl}/orders/archived`).subscribe({
+    this.http.get<ArchivedOrderModel[]>(`${environment.apiUrl}/api/orders/archived`).subscribe({
       next: (data) => {
         this._arhiviraneNarudzbe.set(data);
         this.toast.add({ severity: 'success', summary: 'Učitano', detail: 'Arhiva učitana' });
@@ -50,7 +50,7 @@ export class NarudzbeStore {
   }
 
   promijeniStatus(id: number, noviStatus: OrderStatus): Observable<any> {
-    return this.http.patch(`${environment.apiUrl}/orders/${id}/status`, { status: noviStatus }).pipe(
+    return this.http.patch(`${environment.apiUrl}/api/orders/${id}/status`, { status: noviStatus }).pipe(
       tap(() => {
         const novaLista = this._aktivneNarudzbe().filter((n) => n.id !== id);
         this._aktivneNarudzbe.set(novaLista);
@@ -60,6 +60,6 @@ export class NarudzbeStore {
   }
 
   dohvatiNarudzbuPoId(id: number): Observable<OrderModel> {
-    return this.http.get<OrderModel>(`${environment.apiUrl}/orders/${id}`);
+    return this.http.get<OrderModel>(`${environment.apiUrl}/api/orders/${id}`);
   }
 }

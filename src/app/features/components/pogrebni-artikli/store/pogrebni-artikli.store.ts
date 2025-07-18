@@ -15,7 +15,7 @@ export class ArtikliStore {
   constructor(private http: HttpClient, private authStore: AuthStore) {}
 
   fetchAll(): Observable<PogrebniArtikl[]> {
-    return this.http.get<PogrebniArtikl[]>(`${environment.apiUrl}/artikli`)
+    return this.http.get<PogrebniArtikl[]>(`${environment.apiUrl}/api/artikli`)
       .pipe(tap(artikli => this._artikli.set(artikli)));
   }
 
@@ -27,14 +27,20 @@ export class ArtikliStore {
     this._artikli.set([]);
   }
   add(artikl: Partial<PogrebniArtikl>) {
-    return this.http.post<PogrebniArtikl>(`${environment.apiUrl}/artikli`, artikl);
+    return this.http.post<PogrebniArtikl>(`${environment.apiUrl}/api/artikli`, artikl);
   }
   
   update(id: number, artikl: Partial<PogrebniArtikl>) {
-    return this.http.put<PogrebniArtikl>(`${environment.apiUrl}/artikli/${id}`, artikl);
+    return this.http.put<PogrebniArtikl>(`${environment.apiUrl}/api/artikli/${id}`, artikl);
   }
   
   delete(id: number) {
-    return this.http.delete(`${environment.apiUrl}/artikli/${id}`);
+    return this.http.delete(`${environment.apiUrl}/api/artikli/${id}`);
   }
+  uploadImage(file: File): Observable<{ imageUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ imageUrl: string }>(`${environment.apiUrl}/api/upload`, formData);
+  }
+
 }

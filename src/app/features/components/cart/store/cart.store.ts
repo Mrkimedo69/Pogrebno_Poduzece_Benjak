@@ -82,15 +82,15 @@ export class CartStore {
     const artikli = this.filterByCategory(items, 'artikl');
     const cvijece = this.filterByCategory(items, 'cvijet');
 
-    this.http.post(`${environment.apiUrl}/cart/sync`, { artikli, cvijece }).subscribe();
+    this.http.post(`${environment.apiUrl}/api/cart/sync`, { artikli, cvijece }).subscribe();
   }
 
   private clearBackendCart() {
-    this.http.post(`${environment.apiUrl}/cart/clear`, {}).subscribe();
+    this.http.post(`${environment.apiUrl}/api/cart/clear`, {}).subscribe();
   }
 
   private updateItemOnBackend(id: number, quantity: number) {
-    this.http.patch(`${environment.apiUrl}/cart/item`, { id, type: 'artikl', quantity }).subscribe();
+    this.http.patch(`${environment.apiUrl}/api/cart/item`, { id, type: 'artikl', quantity }).subscribe();
   }
 
   private filterByCategory(items: CartItem[], category: 'artikl' | 'cvijet') {
@@ -114,10 +114,10 @@ export class CartStore {
 
     return forkJoin({
       artikli: artikliIds.length > 0
-        ? this.http.post<any[]>(`${environment.apiUrl}/artikli/batch`, { ids: artikliIds })
+        ? this.http.post<any[]>(`${environment.apiUrl}/api/artikli/batch`, { ids: artikliIds })
         : of([]),
       cvijece: cvijeceIds.length > 0
-        ? this.http.post<any[]>(`${environment.apiUrl}/flowers/batch`, { ids: cvijeceIds })
+        ? this.http.post<any[]>(`${environment.apiUrl}/api/flowers/batch`, { ids: cvijeceIds })
         : of([])
     }).pipe(
       map(({ artikli, cvijece }) => {
@@ -164,7 +164,7 @@ export class CartStore {
       }))
     };
 
-    return this.http.post(`${environment.apiUrl}/orders`, payload).pipe(
+    return this.http.post(`${environment.apiUrl}/api/orders`, payload).pipe(
       tap(() => {
         this.clearCart();
       })

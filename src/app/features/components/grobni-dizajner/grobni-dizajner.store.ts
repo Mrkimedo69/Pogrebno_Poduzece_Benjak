@@ -27,7 +27,7 @@ export class GrobniDizajnerStore {
   constructor(private http: HttpClient) {}
 
   fetchMaterijali(): Observable<StoneMaterial[]> {
-    return this.http.get<StoneMaterial[]>(`${environment.apiUrl}/stone-materials`)
+    return this.http.get<StoneMaterial[]>(`${environment.apiUrl}/api/stone-materials`)
       .pipe(tap(data => {
         this._materijali.set(data);
         this._odabraniMaterijal.set(data[0] || null);
