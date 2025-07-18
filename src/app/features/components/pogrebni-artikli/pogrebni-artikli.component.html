@@ -150,6 +150,8 @@
 <section *ngIf="!isAdmin" class="surface-100 text-center py-6 px-3 mt-6 border-top-1 surface-border">
   <h3 class="text-2xl md:text-3xl font-semibold mb-2 text-primary-700">Niste pronašli što tražite?</h3>
   <p class="mb-4 text-md md:text-lg text-gray-600">Kontaktirajte nas za posebne zahtjeve ili narudžbe.</p>
-  <button pButton label="Kontakt" icon="pi pi-phone" class="p-button-lg"></button>
+  <a routerLink="/kontakt">
+    <button pButton label="Kontaktirajte nas" icon="pi pi-envelope" class="p-button-lg"></button>
+  </a>
 </section>
 <p-confirmDialog></p-confirmDialog>
