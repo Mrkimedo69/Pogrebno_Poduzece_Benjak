@@ -6,6 +6,7 @@ import { NotificationComponent } from '../../../shared/components/notification/n
 import { PogrebniArtikl } from '../../models/pogrebni-artikli.model';
 import { ArtikliStore } from './store/pogrebni-artikli.store';
 import { ConfirmationService } from 'primeng/api';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-pogrebni-artikli',
@@ -99,20 +100,33 @@ export class PogrebniArtikliComponent implements OnInit {
       rejectLabel: 'Ne',
       accept: () => {
         this.artikliStore.delete(id).subscribe(() => {
-          this.artikliStore.fetchAll();
-          this.notificationService.showSuccess('Obrisano', 'Artikl je uspješno obrisan.');
+          this.isLoading = true;
+          this.artikliStore.fetchAll().subscribe(() => {
+            this.isLoading = false;
+            this.currentPage = 1;
+            this.notificationService.showSuccess('Obrisano', 'Artikl je uspješno obrisan.');
+          });
         });
       }
     });
   }
   
-  closeModal(potrebanRefresh: boolean) {
-    this.modalOpen = false;
-    this.selectedArtikl = null;
-  
-    if (potrebanRefresh) {
-      this.artikliStore.fetchAll();
-    }
-  
+closeModal(potrebanRefresh: boolean) {
+  this.modalOpen = false;
+  this.selectedArtikl = null;
+
+  if (potrebanRefresh) {
+    this.isLoading = true;
+    this.artikliStore.fetchAll().subscribe(() => {
+      this.isLoading = false;
+      this.currentPage = 1;
+    });
+  }
 }
+
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return 'assets/placeholder_artikli.png';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiUrl}${path}`;
+  }
 }

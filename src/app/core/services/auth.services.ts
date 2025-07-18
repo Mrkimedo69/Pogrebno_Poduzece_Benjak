@@ -4,10 +4,11 @@ import { AuthResponse } from '../models/auth.model';
 import { AuthStore } from '../store/auth.store';
 import { CartStore } from '../../features/components/cart/store/cart.store';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private api = 'http://localhost:3000/api/auth';
+  private api = environment.apiUrl + '/api/auth';
 
   constructor(
     private http: HttpClient,
@@ -16,8 +17,6 @@ export class AuthService {
     private router: Router
   ) {}
 
-
-  // HTTP pozivi
   login(data: { email: string; password: string }) {
     return this.http.post<AuthResponse>(`${this.api}/login`, data);
   }
@@ -27,7 +26,6 @@ export class AuthService {
       next: ({ user, token }) => {
         this.authStore.login(user, token);
   
-        // 🎯 REDIRECT prema roli
         if (user.role === 'employee') {
           this.router.navigate(['/narudzbe']);
         } else if (user.role === 'admin') {
@@ -47,12 +45,10 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.api}/register`, data);
   }
 
-  // TOKEN dohvaća iz store-a
   getToken(): string | null {
     return this.authStore.token();
   }
 
-  // LOGOUT sinkronizira se s cartom i store-om
   logout() {
     const token = this.authStore.token();
 
@@ -63,7 +59,6 @@ export class AuthService {
     this.authStore.logout();
   }
 
-  // Korisnik dohvaćen iz store-a
   get currentUser() {
     return this.authStore.user();
   }

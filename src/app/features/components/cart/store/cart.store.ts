@@ -3,6 +3,7 @@ import { AuthStore } from '../../../../core/store/auth.store';
 import { CartItem } from '../../../models/cart.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, forkJoin, map, tap } from 'rxjs';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CartStore {
@@ -81,15 +82,15 @@ export class CartStore {
     const artikli = this.filterByCategory(items, 'artikl');
     const cvijece = this.filterByCategory(items, 'cvijet');
 
-    this.http.post('http://localhost:3000/api/cart/sync', { artikli, cvijece }).subscribe();
+    this.http.post(`${environment.apiUrl}/api/cart/sync`, { artikli, cvijece }).subscribe();
   }
 
   private clearBackendCart() {
-    this.http.post('http://localhost:3000/api/cart/clear', {}).subscribe();
+    this.http.post(`${environment.apiUrl}/api/cart/clear`, {}).subscribe();
   }
 
   private updateItemOnBackend(id: number, quantity: number) {
-    this.http.patch('http://localhost:3000/api/cart/item', { id, type: 'artikl', quantity }).subscribe();
+    this.http.patch(`${environment.apiUrl}/api/cart/item`, { id, type: 'artikl', quantity }).subscribe();
   }
 
   private filterByCategory(items: CartItem[], category: 'artikl' | 'cvijet') {
@@ -113,10 +114,10 @@ export class CartStore {
 
     return forkJoin({
       artikli: artikliIds.length > 0
-        ? this.http.post<any[]>('http://localhost:3000/api/artikli/batch', { ids: artikliIds })
+        ? this.http.post<any[]>(`${environment.apiUrl}/api/artikli/batch`, { ids: artikliIds })
         : of([]),
       cvijece: cvijeceIds.length > 0
-        ? this.http.post<any[]>('http://localhost:3000/api/flowers/batch', { ids: cvijeceIds })
+        ? this.http.post<any[]>(`${environment.apiUrl}/api/flowers/batch`, { ids: cvijeceIds })
         : of([])
     }).pipe(
       map(({ artikli, cvijece }) => {
@@ -163,7 +164,7 @@ export class CartStore {
       }))
     };
 
-    return this.http.post('http://localhost:3000/api/orders', payload).pipe(
+    return this.http.post(`${environment.apiUrl}/api/orders`, payload).pipe(
       tap(() => {
         this.clearCart();
       })

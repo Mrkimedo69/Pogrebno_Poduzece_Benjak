@@ -44,7 +44,7 @@
       </ng-template>
       <ng-template pTemplate="body" let-item>
         <tr>
-          <td><img [src]="item.imageUrl || 'assets/placeholder_artikli.png'" width="60" class="border-round shadow-1" /></td>
+          <td><img [src]="getImageUrl(item.imageUrl)" width="60" class="border-round shadow-1" /></td>
           <td class="text-primary-700 font-medium">{{ item.name }}</td>
           <td class="text-sm text-gray-600">{{ item.description }}</td>
           <td>{{ item.price }}</td>
@@ -93,9 +93,8 @@
         <div class="w-full sm:w-6 p-2" *ngFor="let item of getCurrentItems()">
           <div class="surface-card border-round-xl p-4 shadow-2 hover:shadow-4 transition-duration-200 h-full flex flex-column">
             <div class="flex flex-column sm:flex-row align-items-center gap-4 mb-3">
-              <img [src]="item.imageUrl"
+              <img [src]="getImageUrl(item.imageUrl)"
                    alt="{{ item.name }}"
-                   (error)="item.imageUrl = 'assets/placeholder_artikli.png'"
                    class="w-full sm:w-8rem h-auto sm:h-8rem border-1 border-300 border-round object-cover" />
 
               <div class="flex-1 text-left">

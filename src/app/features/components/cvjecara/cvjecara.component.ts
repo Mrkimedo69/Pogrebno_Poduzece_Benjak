@@ -6,6 +6,7 @@ import { NotificationComponent } from '../../../shared/components/notification/n
 import { FlowerModel } from '../../models/flower.model';
 import { CvjecaraStore } from './store/cvjecara.store';
 import { ConfirmationService } from 'primeng/api';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-cvjecara',
@@ -109,5 +110,10 @@ export class CvjecaraComponent implements OnInit {
     this.modalOpen = false;
     this.selectedFlower = null;
   }
-  
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return 'assets/placeholder_flower.png';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiUrl}${path}`;
+  }
+
 }

@@ -23,8 +23,8 @@ export class AdminArtiklFormComponent implements OnInit {
       description: [''],
       price: [null, [Validators.required, Validators.min(0)]],
       stock: [0, [Validators.required, Validators.min(0)]],
-      imageUrl: ['', Validators.required],
-      category: ['', Validators.required]
+      imageUrl: [''],
+      category: ['']
     });
   }
 
@@ -69,6 +69,35 @@ export class AdminArtiklFormComponent implements OnInit {
 
   cancel() {
     this.close.emit(false);
+  }
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  onFileDrop(event: DragEvent): void {
+    event.preventDefault();
+    const file = event.dataTransfer?.files?.[0];
+    if (file) this.uploadFile(file);
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) this.uploadFile(file);
+  }
+
+  uploadFile(file: File): void {
+    this.isSubmitting = true;
+    this.artikliStore.uploadImage(file).subscribe({
+      next: (res) => {
+        this.form.patchValue({ imageUrl: res.imageUrl });
+        this.isSubmitting = false;
+      },
+      error: () => {
+        this.isSubmitting = false;
+        alert('Greška prilikom slanja slike.');
+      }
+    });
   }
 
 }

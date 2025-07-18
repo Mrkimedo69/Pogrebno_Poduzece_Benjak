@@ -5,6 +5,7 @@ import { OrderModel } from '../../models/order.model';
 import { OrderStatus } from '../../models/order-status.enum';
 import { ArchivedOrderModel } from '../../models/archived-order.model';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable()
 export class NarudzbeStore {
@@ -22,7 +23,7 @@ export class NarudzbeStore {
 
   ucitajAktivneNarudzbe(): void {
     this._loading.set(true);
-    this.http.get<OrderModel[]>('http://localhost:3000/api/orders?status=pending').subscribe({
+    this.http.get<OrderModel[]>(`${environment.apiUrl}/api/orders?status=pending`).subscribe({
       next: (data) => {
         this._aktivneNarudzbe.set(data);
         this.toast.add({ severity: 'success', summary: 'Učitano', detail: 'Aktivne narudžbe učitane' });
@@ -36,7 +37,7 @@ export class NarudzbeStore {
 
   ucitajArhiviraneNarudzbe(): void {
     this._loading.set(true);
-    this.http.get<ArchivedOrderModel[]>('http://localhost:3000/api/orders/archived').subscribe({
+    this.http.get<ArchivedOrderModel[]>(`${environment.apiUrl}/api/orders/archived`).subscribe({
       next: (data) => {
         this._arhiviraneNarudzbe.set(data);
         this.toast.add({ severity: 'success', summary: 'Učitano', detail: 'Arhiva učitana' });
@@ -49,7 +50,7 @@ export class NarudzbeStore {
   }
 
   promijeniStatus(id: number, noviStatus: OrderStatus): Observable<any> {
-    return this.http.patch(`http://localhost:3000/api/orders/${id}/status`, { status: noviStatus }).pipe(
+    return this.http.patch(`${environment.apiUrl}/api/orders/${id}/status`, { status: noviStatus }).pipe(
       tap(() => {
         const novaLista = this._aktivneNarudzbe().filter((n) => n.id !== id);
         this._aktivneNarudzbe.set(novaLista);
@@ -59,6 +60,6 @@ export class NarudzbeStore {
   }
 
   dohvatiNarudzbuPoId(id: number): Observable<OrderModel> {
-    return this.http.get<OrderModel>(`http://localhost:3000/api/orders/${id}`);
+    return this.http.get<OrderModel>(`${environment.apiUrl}/api/orders/${id}`);
   }
 }

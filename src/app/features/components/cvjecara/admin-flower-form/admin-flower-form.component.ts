@@ -28,7 +28,7 @@ import {
         description: [''],
         price: [null, [Validators.required, Validators.min(0)]],
         stock: [0, [Validators.required, Validators.min(0)]],
-        imageUrl: ['', Validators.required]
+        imageUrl: ['']
       });
     }
   
@@ -72,8 +72,38 @@ import {
     });
   }
 
-    cancel(): void {
+  cancel(): void {
         this.close.emit(false);
     }
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  onFileDrop(event: DragEvent): void {
+    event.preventDefault();
+    const file = event.dataTransfer?.files?.[0];
+    if (file) this.uploadFile(file);
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) this.uploadFile(file);
+  }
+
+  uploadFile(file: File): void {
+    this.isSubmitting = true;
+    this.store.uploadImage(file).subscribe({
+      next: (res) => {
+        this.form.patchValue({ imageUrl: res.imageUrl });
+        this.isSubmitting = false;
+      },
+      error: () => {
+        this.isSubmitting = false;
+        alert('Greška prilikom upload-a slike.');
+      }
+    });
+  }
+  
   }
   
