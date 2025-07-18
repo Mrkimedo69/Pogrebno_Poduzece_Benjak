@@ -64,6 +64,11 @@ import {
     request$.subscribe({
       next: () => {
         this.isSubmitting = false;
+
+        if (!this.flower) {
+          this.form.reset();
+        }
+
         this.close.emit(true);
       },
       error: () => {

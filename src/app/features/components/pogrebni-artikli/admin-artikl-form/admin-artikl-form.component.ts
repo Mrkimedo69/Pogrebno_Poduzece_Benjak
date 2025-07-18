@@ -59,6 +59,10 @@ export class AdminArtiklFormComponent implements OnInit {
     request$.subscribe({
       next: () => {
         this.isSubmitting = false;
+
+        if (!this.artikl) {
+          this.form.reset();
+        }
         this.close.emit(true);
       },
       error: () => {
