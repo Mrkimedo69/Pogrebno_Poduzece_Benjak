@@ -8,6 +8,7 @@ import {
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import * as THREE from 'three';
 import { GrobniDizajnerStore } from './grobni-dizajner.store';
+import { SliderChangeEvent } from 'primeng/slider';
 
 @Component({
   selector: 'app-grobni-dizajner',
@@ -164,13 +165,33 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     if (this.spomenik) updateBoja(this.spomenik);
   }
 
+  sliderDebljina = this.config.debljina * 100;
+  sliderVisina = this.config.visina * 100;
+
+  onDebljinaChange(event: SliderChangeEvent) {
+    if (event.value == undefined) return;
+
+    const vrijednostCm = event.value;
+    const vrijednostM = vrijednostCm / 100;
+    this.config.debljina = Math.min(this.MAX_DEBLJINA, Math.max(this.MIN_DEBLJINA, vrijednostM));
+    this.ponovnoNacrtajModel();
+  }
+
+  onVisinaChange(event: SliderChangeEvent) {
+    if (event.value == undefined) return;
+
+    const vrijednostCm = event.value;
+    const vrijednostM = vrijednostCm / 100;
+    this.config.visina = Math.min(this.MAX_VISINA, Math.max(this.MIN_VISINA, vrijednostM));
+    this.ponovnoNacrtajModel();
+  }
+
   createGrobniElementi() {
     const materijal = new THREE.MeshStandardMaterial({ color: this.store.bojaMramora() });
     this.grobnicaGroup = new THREE.Group();
     this.scene.add(this.grobnicaGroup);
 
     const scale = this.SCALE;
-    // definiraj širinu i dužinu prema tipu mjesta
     let sirina = 1.0;
     let duzina = 2.1;
 
@@ -185,8 +206,8 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
 
     const debljina = Math.min(this.MAX_DEBLJINA, Math.max(this.MIN_DEBLJINA, this.config.debljina));
     const visina = Math.min(this.MAX_VISINA, Math.max(this.MIN_VISINA, this.config.visina));
-
-    // skalirane vrijednosti
+    const visinaPostolja = visina * this.SCALE;
+    const debljinaGornje = debljina * this.SCALE;
     const sirinaS = sirina * scale;
     const dubinaS = duzina * scale;
     const visinaS = visina * scale;
@@ -266,24 +287,49 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
       this.grobnicaGroup.add(mesh);
       this.dodajRubove(mesh, this.grobnicaGroup);
     });
-  }
 
-  onDebljinaChange(event: Event) {
-    const vrijednostCm = parseFloat((event.target as HTMLInputElement).value);
-    const vrijednostM = vrijednostCm / 100;
+    // === POSTOLJE ===
+    // Dimenzije prednje gornje ploče (za pozicioniranje postolja)
+    const sirinaPrednjePloce = sirinaS + 2 * (strsenjeUnutraS + strsenjeVaniS - pomak);
+    const dubinaPrednjePloce = debljinaS + 2 * (strsenjeUnutraS + strsenjeVaniS);
 
-    // Ograniči vrijednosti na definirane granice
-    this.config.debljina = Math.min(this.MAX_DEBLJINA, Math.max(this.MIN_DEBLJINA, vrijednostM));
+    // Postolje dimenzije – neovisne varijable
+    const dimPostoljaSirina = sirinaPrednjePloce * 0.9;
+    const dimPostoljaDubina = dubinaPrednjePloce * 0.65;
+    const dimPostoljaVisina = 0.04 * this.SCALE;
+    const pomakUnatrag = 0.01 * this.SCALE;
+    const pomakPloceUnazadZ = 0.01 * this.SCALE;
 
-    // Ponovno nacrtaj model
-    this.ponovnoNacrtajModel();
-  }
+    const geomPostolja = new THREE.BoxGeometry(dimPostoljaSirina, dimPostoljaVisina, dimPostoljaDubina);
+    const postolje = new THREE.Mesh(geomPostolja, materijal);
 
-  onVisinaChange(event: Event) {
-    const vrijednostCm = parseFloat((event.target as HTMLInputElement).value);
-    const vrijednostM = vrijednostCm / 100;
-    this.config.visina = Math.min(this.MAX_VISINA, Math.max(this.MIN_VISINA, vrijednostM));
-    this.ponovnoNacrtajModel();
+    // Pozicioniraj postolje da leži na prednjoj gornjoj ploči
+    postolje.position.set(
+      0,
+      visinaPostolja + debljinaGornje + dimPostoljaVisina / 2,
+      dubinaS / 2 - debljinaS / 2 - pomak + pomakUnatrag
+    );
+    this.grobnicaGroup.add(postolje);
+    this.dodajRubove(postolje, this.grobnicaGroup);
+
+    // === NADGROBNA PLOČA ===
+    // Nadgrobna ploča vlastite dimenzije (neovisne o postolju)
+    const dimPlocaDuljina = 1.75 * this.SCALE; // npr. nešto kraće od stvarnih 1.95
+    const dimPlocaSirina = 0.75 * this.SCALE;
+    const dimPlocaDebljina = 0.04 * this.SCALE; // fiksno
+
+    const geomPloca = new THREE.BoxGeometry(dimPlocaSirina, dimPlocaDebljina, dimPlocaDuljina);
+    const ploca = new THREE.Mesh(geomPloca, materijal);
+
+    // Ploča spuštena na razinu donjih ploča (ili po potrebi malo iznad)
+    ploca.position.set(
+      0,
+      visinaPostolja + dimPlocaDebljina / 2 + debljinaGornje, // „sjedne“ na konstrukciju
+      - 2 * (pomakUnatrag + pomakPloceUnazadZ)
+    );
+    this.grobnicaGroup.add(ploca);
+    this.dodajRubove(ploca, this.grobnicaGroup);
+
   }
 
   dodajSpomenik() {
