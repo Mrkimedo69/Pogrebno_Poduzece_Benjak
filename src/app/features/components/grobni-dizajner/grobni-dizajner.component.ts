@@ -133,46 +133,60 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
 
   createGrobniElementi() {
     const materijal = new THREE.MeshStandardMaterial({ color: this.store.bojaMramora() });
-    const borderMaterijal = new THREE.MeshStandardMaterial({ color: '#444444' });
 
     this.grobnicaGroup = new THREE.Group();
     this.scene.add(this.grobnicaGroup);
 
     const sirina = 3.5;
     const dubina = 1.6;
-    const visina = 0.8;
+    const visina = 0.6;
     const debljina = 0.1;
+    const visinaGornje = 0.1;
+    const strsenjeVani = 0.03;
+    const strsenjeUnutra = 0.08;
+    const pomak = strsenjeUnutra - strsenjeVani;
 
-    const gornjaGeom = new THREE.BoxGeometry(sirina, 0.2, dubina);
-    this.gornjaPloca = new THREE.Mesh(gornjaGeom, materijal);
-    this.gornjaPloca.position.y = 0.1;
-    this.grobnicaGroup.add(this.gornjaPloca);
+    type Ploča = { size: [number, number, number], pos: [number, number, number] };
 
-    const straniceInfo = [
-      { x: -sirina / 2 + debljina / 2, z: 0 },
-      { x:  sirina / 2 - debljina / 2, z: 0 },
-      { x: 0, z: -dubina / 2 + debljina / 2 },
-      { x: 0, z:  dubina / 2 - debljina / 2 }
+    // DONJE PLOČE – bočne pune, prednja/stražnja kraće
+    const ploceDonje: Ploča[] = [
+      // Lijeva bočna (puna dubina)
+      { size: [debljina, visina, dubina], pos: [-sirina / 2 + debljina / 2, visina / 2, 0] },
+      // Desna bočna
+      { size: [debljina, visina, dubina], pos: [ sirina / 2 - debljina / 2, visina / 2, 0] },
+      // Stražnja (kraća)
+      { size: [sirina - 2 * debljina, visina, debljina], pos: [0, visina / 2, -dubina / 2 + debljina / 2] },
+      // Prednja (kraća)
+      { size: [sirina - 2 * debljina, visina, debljina], pos: [0, visina / 2,  dubina / 2 - debljina / 2] }
     ];
 
-    straniceInfo.forEach(s => {
-      let geom = (s.x === 0)
-        ? new THREE.BoxGeometry(sirina - 2 * debljina, visina, debljina)
-        : new THREE.BoxGeometry(debljina, visina, dubina);
-
-      const mesh = new THREE.Mesh(geom, borderMaterijal);
-      mesh.position.set(s.x, visina / 2, s.z);
+    ploceDonje.forEach(p => {
+      const geom = new THREE.BoxGeometry(...p.size);
+      const mesh = new THREE.Mesh(geom, materijal);
+      mesh.position.set(...p.pos);
       this.grobnicaGroup.add(mesh);
-      this.stranice.push(mesh);
       this.dodajRubove(mesh, this.grobnicaGroup);
     });
 
-    const nadgrobnaPlocaGeom = new THREE.BoxGeometry(sirina, 0.05, dubina);
-    const nadgrobnaPloca = new THREE.Mesh(nadgrobnaPlocaGeom, materijal);
-    nadgrobnaPloca.position.set(0, visina + 0.025, 0);
-    this.grobnicaGroup.add(nadgrobnaPloca);
+    // GORNJE PLOČE – iste logike, s izbočenjem
+    const ploceGornje: Ploča[] = [
+      // Stražnja (kraća)
+      { size: [debljina + 2 * (strsenjeUnutra + strsenjeVani), visinaGornje, dubina + 2 * (strsenjeUnutra + strsenjeVani - pomak)], pos: [-sirina / 2 + debljina / 2 + pomak, visina + visinaGornje / 2, 0] },
+      // Prednja (kraća)
+      { size: [debljina + 2 * (strsenjeUnutra + strsenjeVani), visinaGornje, dubina + 2 * (strsenjeUnutra + strsenjeVani - pomak)], pos: [ sirina / 2 - debljina / 2 - pomak, visina + visinaGornje / 2, 0] },
+      // Lijeva bočna
+      { size: [sirina - (2 * debljina + 2 * (strsenjeUnutra + strsenjeVani + pomak)), visinaGornje, debljina + 2 * (strsenjeUnutra + strsenjeVani)], pos: [0, visina + visinaGornje / 2, -dubina / 2 + debljina / 2 + pomak] },
+      // Desna bočna
+      { size: [sirina - (2 * debljina + 2 * (strsenjeUnutra + strsenjeVani + pomak)), visinaGornje, debljina + 2 * (strsenjeUnutra + strsenjeVani)], pos: [0, visina + visinaGornje / 2,  dubina / 2 - debljina / 2 - pomak] }
+    ];
 
-    this.dodajSpomenik();
+    ploceGornje.forEach(p => {
+      const geom = new THREE.BoxGeometry(...p.size);
+      const mesh = new THREE.Mesh(geom, materijal);
+      mesh.position.set(...p.pos);
+      this.grobnicaGroup.add(mesh);
+      this.dodajRubove(mesh, this.grobnicaGroup);
+    });
   }
 
   dodajSpomenik() {
