@@ -22,6 +22,8 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
 
   svgContent: SafeHtml | null = null;
 
+  animationId: number | null = null;
+
   scene!: THREE.Scene;
   camera!: THREE.PerspectiveCamera;
   renderer!: THREE.WebGLRenderer;
@@ -29,6 +31,22 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   gornjaPloca!: THREE.Mesh;
   stranice: THREE.Mesh[] = [];
   spomenik!: THREE.Mesh | THREE.Group;
+
+  readonly SCALE = 1.5;
+  readonly MIN_DEBLJINA = 0.02;
+  readonly MAX_DEBLJINA = 0.06; 
+  readonly MIN_VISINA = 0.10;
+  readonly MAX_VISINA = 0.20; 
+
+
+  tipMjesta: 'jedno' | 'duplo' = 'jedno';
+
+  config = {
+    visina: 0.12,
+    debljina: 0.03,
+    strsenjeUnutra: 0.10,
+    strsenjeVani: 0.02
+  };
 
   constructor(
     public store: GrobniDizajnerStore,
@@ -62,6 +80,8 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
         this.animate();
         this.azuriraj3DBoju();
       }, 0);
+    }else {
+      this.stopAnimation();
     }
   }
 
@@ -71,6 +91,13 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     this.dodajSpomenik();
     this.azuriraj3DBoju();
   }
+
+  ponovnoNacrtajModel() {
+    if (!this.scene) return;
+    this.scene.remove(this.grobnicaGroup);
+    this.createGrobniElementi();
+  }
+
 
   ucitajSVG(naziv: string) {
     fetch(`assets/spomenici/${naziv}.svg`)
@@ -90,7 +117,8 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    this.camera.position.set(0, 2, 6);
+    this.camera.position.set(0, 1.5, 5);
+    this.camera.lookAt(0, 0.6, 0); 
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(width, height);
@@ -105,12 +133,17 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   }
 
   animate = () => {
-    requestAnimationFrame(this.animate);
+  this.animationId = requestAnimationFrame(this.animate);
     if (this.grobnicaGroup) {
       this.grobnicaGroup.rotation.y += 0.002;
-      this.grobnicaGroup.position.y = 0.4;
     }
     this.renderer.render(this.scene, this.camera);
+  }
+  stopAnimation() {
+    if (this.animationId !== null) {
+      cancelAnimationFrame(this.animationId);
+      this.animationId = null;
+    }
   }
 
   azuriraj3DBoju() {
@@ -133,46 +166,124 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
 
   createGrobniElementi() {
     const materijal = new THREE.MeshStandardMaterial({ color: this.store.bojaMramora() });
-    const borderMaterijal = new THREE.MeshStandardMaterial({ color: '#444444' });
-
     this.grobnicaGroup = new THREE.Group();
     this.scene.add(this.grobnicaGroup);
 
-    const sirina = 3.5;
-    const dubina = 1.6;
-    const visina = 0.8;
-    const debljina = 0.1;
+    const scale = this.SCALE;
+    // definiraj širinu i dužinu prema tipu mjesta
+    let sirina = 1.0;
+    let duzina = 2.1;
 
-    const gornjaGeom = new THREE.BoxGeometry(sirina, 0.2, dubina);
-    this.gornjaPloca = new THREE.Mesh(gornjaGeom, materijal);
-    this.gornjaPloca.position.y = 0.1;
-    this.grobnicaGroup.add(this.gornjaPloca);
+    if (this.tipMjesta === 'duplo') {
+      sirina = 2.0;
+    }
 
-    const straniceInfo = [
-      { x: -sirina / 2 + debljina / 2, z: 0 },
-      { x:  sirina / 2 - debljina / 2, z: 0 },
-      { x: 0, z: -dubina / 2 + debljina / 2 },
-      { x: 0, z:  dubina / 2 - debljina / 2 }
+    const {
+      strsenjeVani,
+      strsenjeUnutra
+    } = this.config;
+
+    const debljina = Math.min(this.MAX_DEBLJINA, Math.max(this.MIN_DEBLJINA, this.config.debljina));
+    const visina = Math.min(this.MAX_VISINA, Math.max(this.MIN_VISINA, this.config.visina));
+
+    // skalirane vrijednosti
+    const sirinaS = sirina * scale;
+    const dubinaS = duzina * scale;
+    const visinaS = visina * scale;
+    const debljinaS = debljina * scale;
+    const visinaGornjeS = debljina * scale;
+    const strsenjeUnutraS = strsenjeUnutra * scale;
+    const strsenjeVaniS = strsenjeVani * scale;
+
+    const pomak = strsenjeUnutraS - strsenjeVaniS;
+
+    type Ploča = { size: [number, number, number], pos: [number, number, number] };
+
+    // DONJE PLOČE
+    const ploceDonje: Ploča[] = [
+      // Lijeva bočna (puna dubina)
+      { size: [debljinaS, visinaS, dubinaS - 2 * debljinaS], pos: [-sirinaS / 2 + debljinaS / 2, visinaS / 2, 0] },
+      // Desna bočna
+      { size: [debljinaS, visinaS, dubinaS - 2 * debljinaS], pos: [ sirinaS / 2 - debljinaS / 2, visinaS / 2, 0] },
+      // Stražnja (kraća)
+      { size: [sirinaS, visinaS, debljinaS], pos: [0, visinaS / 2, -dubinaS / 2 + debljinaS / 2] },
+      // Prednja (kraća)
+      { size: [sirinaS, visinaS, debljinaS], pos: [0, visinaS / 2,  dubinaS / 2 - debljinaS / 2] }
     ];
 
-    straniceInfo.forEach(s => {
-      let geom = (s.x === 0)
-        ? new THREE.BoxGeometry(sirina - 2 * debljina, visina, debljina)
-        : new THREE.BoxGeometry(debljina, visina, dubina);
-
-      const mesh = new THREE.Mesh(geom, borderMaterijal);
-      mesh.position.set(s.x, visina / 2, s.z);
+    ploceDonje.forEach(p => {
+      const geom = new THREE.BoxGeometry(...p.size);
+      const mesh = new THREE.Mesh(geom, materijal);
+      mesh.position.set(...p.pos);
       this.grobnicaGroup.add(mesh);
-      this.stranice.push(mesh);
       this.dodajRubove(mesh, this.grobnicaGroup);
     });
 
-    const nadgrobnaPlocaGeom = new THREE.BoxGeometry(sirina, 0.05, dubina);
-    const nadgrobnaPloca = new THREE.Mesh(nadgrobnaPlocaGeom, materijal);
-    nadgrobnaPloca.position.set(0, visina + 0.025, 0);
-    this.grobnicaGroup.add(nadgrobnaPloca);
+    // GORNJE PLOČE
+    const ploceGornje: Ploča[] = [
+      // Lijeva bočna
+      {
+        size: [
+          debljinaS + 2 * (strsenjeUnutraS + strsenjeVaniS),
+          visinaGornjeS,
+          dubinaS - 2 * (debljinaS + strsenjeVaniS + strsenjeUnutraS + pomak)
+        ],
+        pos: [-sirinaS / 2 + debljinaS / 2 + pomak, visinaS + visinaGornjeS / 2, 0]
+      },
+      // Desna bočna
+      {
+        size: [
+          debljinaS + 2 * (strsenjeUnutraS + strsenjeVaniS),
+          visinaGornjeS,
+          dubinaS - 2 * (debljinaS + strsenjeVaniS + strsenjeUnutraS + pomak)
+        ],
+        pos: [sirinaS / 2 - debljinaS / 2 - pomak, visinaS + visinaGornjeS / 2, 0]
+      },
+      // Stražnja (kraća)
+      {
+        size: [
+          sirinaS + 2 * (strsenjeUnutraS + strsenjeVaniS - pomak),
+          visinaGornjeS,
+          debljinaS + 2 * (strsenjeUnutraS + strsenjeVaniS)
+        ],
+        pos: [0, visinaS + visinaGornjeS / 2, -dubinaS / 2 + debljinaS / 2 + pomak]
+      },
+      // Prednja (kraća)
+      {
+        size: [
+          sirinaS + 2 * (strsenjeUnutraS + strsenjeVaniS - pomak),
+          visinaGornjeS,
+          debljinaS + 2 * (strsenjeUnutraS + strsenjeVaniS)
+        ],
+        pos: [0, visinaS + visinaGornjeS / 2, dubinaS / 2 - debljinaS / 2 - pomak]
+      }
+    ];
 
-    this.dodajSpomenik();
+    ploceGornje.forEach(p => {
+      const geom = new THREE.BoxGeometry(...p.size);
+      const mesh = new THREE.Mesh(geom, materijal);
+      mesh.position.set(...p.pos);
+      this.grobnicaGroup.add(mesh);
+      this.dodajRubove(mesh, this.grobnicaGroup);
+    });
+  }
+
+  onDebljinaChange(event: Event) {
+    const vrijednostCm = parseFloat((event.target as HTMLInputElement).value);
+    const vrijednostM = vrijednostCm / 100;
+
+    // Ograniči vrijednosti na definirane granice
+    this.config.debljina = Math.min(this.MAX_DEBLJINA, Math.max(this.MIN_DEBLJINA, vrijednostM));
+
+    // Ponovno nacrtaj model
+    this.ponovnoNacrtajModel();
+  }
+
+  onVisinaChange(event: Event) {
+    const vrijednostCm = parseFloat((event.target as HTMLInputElement).value);
+    const vrijednostM = vrijednostCm / 100;
+    this.config.visina = Math.min(this.MAX_VISINA, Math.max(this.MIN_VISINA, vrijednostM));
+    this.ponovnoNacrtajModel();
   }
 
   dodajSpomenik() {
