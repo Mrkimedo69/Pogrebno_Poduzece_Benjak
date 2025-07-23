@@ -19,6 +19,7 @@ import { BadgeModule } from 'primeng/badge';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CalendarModule } from 'primeng/calendar';
 import { LoaderComponent } from './components/loader/loader.component';
+import { SliderModule } from 'primeng/slider';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { LoaderComponent } from './components/loader/loader.component';
     BadgeModule,
     ProgressSpinnerModule,
     CalendarModule,
+    SliderModule,
   ],
   exports:[
     MenubarModule,
@@ -67,6 +69,7 @@ import { LoaderComponent } from './components/loader/loader.component';
     ProgressSpinnerModule,
     CalendarModule,
     LoaderComponent,
+    SliderModule,
   ]
 })
 export class SharedModule { }

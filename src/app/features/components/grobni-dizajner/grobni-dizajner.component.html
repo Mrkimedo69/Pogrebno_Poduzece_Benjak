@@ -36,6 +36,53 @@
       </div>
     </div>
 
+      <!-- Tip mjesta -->
+  <div class="col-12 md:col-6">
+    <h4 class="mb-2 text-lg font-medium text-primary-700">Odaberite tip grobnog mjesta</h4>
+    <p-dropdown
+      [options]="[
+        { label: 'Jednostruki grob', value: 'jedno' },
+        { label: 'Dvostruki grob', value: 'duplo' }
+      ]"
+      [(ngModel)]="tipMjesta"
+      (ngModelChange)="toggle3D()"
+      placeholder="Odaberite tip"
+      class="w-full shadow-1 border-round"
+    />
+  </div>
+
+    <!-- Debljina mramora (slider) -->
+    <div class="col-12 md:col-6">
+      <h4 class="mb-2 text-lg font-medium text-primary-700">Debljina mramorne ploče (cm)</h4>
+      <input
+        type="range"
+        min="2"
+        max="6"
+        step="1"
+        [value]="config.debljina * 100"
+        (input)="onDebljinaChange($event)"
+        class="w-full"
+      />
+      <div class="mt-1 text-sm text-gray-600">
+        Odabrano: {{ (config.debljina * 100) | number:'1.1-1' }} cm
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label for="visinaSlider" class="block text-sm font-medium text-gray-700 mb-2">Visina okvira (cm)</label>
+      <input type="range"
+            id="visinaSlider"
+            min="12"
+            max="20"
+            step="1"
+            [value]="config.visina * 100"
+            (input)="onVisinaChange($event)"
+            class="w-full">
+      <div class="text-center mt-1 text-sm text-gray-600">
+        {{ (config.visina * 100) | number: '1.0-1' }} cm
+      </div>
+    </div>
+
     <!-- 2D Prikaz -->
     <div class="bg-gray-50 border-round shadow-1 p-4 flex flex-column align-items-center gap-4">
       <div class="text-center">
