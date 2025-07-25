@@ -82,6 +82,23 @@
         </div>
         <div class="text-sm text-gray-600 mt-1">Odabrano: {{ sliderVisina }} cm</div>
       </div>
+
+      <!-- Nagib tla -->
+      <div>
+        <label class="block text-primary-700 font-semibold mb-2">Nagib tla (%)</label>
+        <div class="pt-3">
+          <p-slider
+            [min]="0"
+            [max]="15"
+            [step]="1"
+            [(ngModel)]="sliderNagib"
+            (onChange)="onNagibChange($event)"
+            class="w-full"
+          ></p-slider>
+        </div>
+        <div class="text-sm text-gray-600 mt-1">Odabrano: {{ sliderNagib }} %</div>
+      </div>
+
     </div>
 
 
