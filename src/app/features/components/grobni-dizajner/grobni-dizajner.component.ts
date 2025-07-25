@@ -9,6 +9,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import * as THREE from 'three';
 import { GrobniDizajnerStore } from './grobni-dizajner.store';
 import { SliderChangeEvent } from 'primeng/slider';
+import { PravokutnaPloca } from '../../models/rectangle.model';
+import { TrapeznaPloca } from '../../models/trapeze.model';
 
 @Component({
   selector: 'app-grobni-dizajner',
@@ -19,6 +21,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   @ViewChild('threeContainer', { static: false }) threeContainer!: ElementRef;
 
   prikazi3D = false;
+  prikazi2D = false;
   threeInicijaliziran = false;
 
   svgContent: SafeHtml | null = null;
@@ -33,15 +36,16 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   stranice: THREE.Mesh[] = [];
   spomenik!: THREE.Mesh | THREE.Group;
 
-  readonly SCALE = 1.5;
+  ploca2dData: (PravokutnaPloca | TrapeznaPloca)[] = [];
+
+  readonly SCALE = 2;
   readonly MIN_DEBLJINA = 0.02;
   readonly MAX_DEBLJINA = 0.06; 
   readonly MIN_VISINA = 0.10;
   readonly MAX_VISINA = 0.20; 
-  readonly MAX_NAGIB = 0.15; // 15 cm
-  readonly MIN_NAGIB = 0.0; // 0 cm
+  readonly MAX_NAGIB = 0.15;
+  readonly MIN_NAGIB = 0.0;
   sliderNagib = 0;
-
 
   tipMjesta: 'jedno' | 'duplo' = 'jedno';
 
@@ -73,6 +77,176 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     }
   }
 
+  toggle2D() {
+    this.prikazi2D = !this.prikazi2D;
+
+    if (this.prikazi2D) {
+      this.generiraj2DModel();
+    }
+  }
+
+  generiraj2DModel() {
+    this.ploca2dData = [];
+
+    let sirina = 1.0; // m
+    let duzina = 2.1; // m
+
+    if (this.tipMjesta === 'duplo') {
+      sirina = 2.0;
+    }
+
+    const {
+      strsenjeVani,
+      strsenjeUnutra,
+      debljina,
+      visina,
+      nagibTla
+    } = this.config;
+
+    const boja = this.store.bojaMramora();
+    const pomak = strsenjeUnutra - strsenjeVani;
+
+    const visinaPrednja = visina;
+    const visinaStraznja = visina + (nagibTla / 100) * duzina;
+
+    // === 1. Prednja i stražnja ploča ===
+    this.ploca2dData.push({
+      naziv: 'Prednja ploča',
+      width: sirina,
+      height: visinaPrednja,
+      boja
+    });
+
+    this.ploca2dData.push({
+      naziv: 'Stražnja ploča',
+      width: sirina,
+      height: visinaStraznja,
+      boja
+    });
+
+    // === 2. Bočne ploče kao trapezi ===
+    this.ploca2dData.push({
+      naziv: 'Lijeva bočna ploča',
+      width: duzina,
+      height1: visinaPrednja,
+      height2: visinaStraznja,
+      boja
+    });
+
+    this.ploca2dData.push({
+      naziv: 'Desna bočna ploča',
+      width: duzina,
+      height1: visinaPrednja,
+      height2: visinaStraznja,
+      boja
+    });
+
+    // === 3. Središnja ploča (dupli grob) ===
+    if (this.tipMjesta === 'duplo') {
+      const sredisnjaDebljina = debljina + strsenjeUnutra + strsenjeVani;
+      const sredisnjaDuljina = duzina - 2 * (debljina + strsenjeUnutra + strsenjeVani + pomak);
+
+      this.ploca2dData.push({
+        naziv: 'Središnja ploča',
+        width: sredisnjaDebljina,
+        height: sredisnjaDuljina,
+        boja
+      });
+    }
+
+    // === 4. Gornje ploče ===
+    const gornjePloce = [
+      {
+        naziv: 'Gornja ploča (lijeva)',
+        width: debljina + 2 * (strsenjeUnutra + strsenjeVani),
+        height: duzina - 2 * (debljina + strsenjeUnutra + strsenjeVani + pomak)
+      },
+      {
+        naziv: 'Gornja ploča (desna)',
+        width: debljina + 2 * (strsenjeUnutra + strsenjeVani),
+        height: duzina - 2 * (debljina + strsenjeUnutra + strsenjeVani + pomak)
+      },
+      {
+        naziv: 'Gornja ploča (prednja)',
+        width: sirina + 2 * (strsenjeUnutra + strsenjeVani - pomak),
+        height: debljina + 2 * (strsenjeUnutra + strsenjeVani)
+      },
+      {
+        naziv: 'Gornja ploča (stražnja)',
+        width: sirina + 2 * (strsenjeUnutra + strsenjeVani - pomak),
+        height: debljina + 2 * (strsenjeUnutra + strsenjeVani)
+      }
+    ];
+
+    this.ploca2dData.push(...gornjePloce.map(p => ({ ...p, boja })));
+
+    // === 5. Postolje ===
+    const postoljeSirina = (sirina + 2 * (strsenjeUnutra + strsenjeVani - pomak)) * 0.9;
+    const postoljeVisina = (debljina + 2 * (strsenjeUnutra + strsenjeVani)) * 0.65;
+
+    this.ploca2dData.push({
+      naziv: 'Postolje',
+      width: postoljeSirina,
+      height: postoljeVisina,
+      boja
+    });
+
+    // === 6. Nadgrobna ploča(e) ===
+    const nadgrobnaDuljina = 1.75;
+    const nadgrobnaSirina = 0.75;
+
+    if (this.tipMjesta === 'duplo') {
+      this.ploca2dData.push({
+        naziv: 'Nadgrobna ploča (lijeva)',
+        width: nadgrobnaSirina,
+        height: nadgrobnaDuljina,
+        boja
+      });
+
+      this.ploca2dData.push({
+        naziv: 'Nadgrobna ploča (desna)',
+        width: nadgrobnaSirina,
+        height: nadgrobnaDuljina,
+        boja
+      });
+    } else {
+      this.ploca2dData.push({
+        naziv: 'Nadgrobna ploča',
+        width: nadgrobnaSirina,
+        height: nadgrobnaDuljina,
+        boja
+      });
+    }
+  }
+
+  getTrapezPoints(ploca: TrapeznaPloca): string {
+    const w = ploca.width * 100;
+    const h1 = ploca.height1 * 100;
+    const h2 = ploca.height2 * 100;
+    return `0,${h1} ${w},${h2} ${w},0 0,0`;
+  }
+
+  isPravokutna(ploca: any): ploca is PravokutnaPloca {
+    return 'height' in ploca;
+  }
+
+  isTrapezna(ploca: any): ploca is TrapeznaPloca {
+    return 'height1' in ploca && 'height2' in ploca;
+  }
+
+  getMaxHeight(ploca: TrapeznaPloca): number {
+    return Math.max(ploca.height1, ploca.height2);
+  }
+
+  getDimenzijePloca(ploca: PravokutnaPloca | TrapeznaPloca): string {
+    if ('height' in ploca) {
+      return `${ploca.width.toFixed(2)} m × ${ploca.height.toFixed(2)} m`;
+    } else if ('height1' in ploca && 'height2' in ploca) {
+      return `${ploca.width.toFixed(2)} m × ${ploca.height1.toFixed(2)}–${ploca.height2.toFixed(2)} m`;
+    }
+    return '';
+  }
+
   toggle3D() {
     this.prikazi3D = !this.prikazi3D;
     if (this.prikazi3D) {
@@ -102,7 +276,6 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     this.scene.remove(this.grobnicaGroup);
     this.createGrobniElementi();
   }
-
 
   ucitajSVG(naziv: string) {
     fetch(`assets/spomenici/${naziv}.svg`)
@@ -138,11 +311,11 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   }
 
   animate = () => {
-  this.animationId = requestAnimationFrame(this.animate);
-    if (this.grobnicaGroup) {
-      this.grobnicaGroup.rotation.y += 0.002;
-    }
-    this.renderer.render(this.scene, this.camera);
+    this.animationId = requestAnimationFrame(this.animate);
+      if (this.grobnicaGroup) {
+        this.grobnicaGroup.rotation.y += 0.002;
+      }
+      this.renderer.render(this.scene, this.camera);
   }
   stopAnimation() {
     if (this.animationId !== null) {
@@ -179,6 +352,16 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     const vrijednostM = vrijednostCm / 100;
     this.config.debljina = Math.min(this.MAX_DEBLJINA, Math.max(this.MIN_DEBLJINA, vrijednostM));
     this.ponovnoNacrtajModel();
+    if (this.prikazi2D) {
+      this.generiraj2DModel();
+    }
+  }
+
+  onTipMjestaChange() {
+    this.ponovnoNacrtajModel();
+    if (this.prikazi2D) {
+      this.generiraj2DModel();
+    }
   }
 
   onVisinaChange(event: SliderChangeEvent) {
@@ -188,6 +371,9 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     const vrijednostM = vrijednostCm / 100;
     this.config.visina = Math.min(this.MAX_VISINA, Math.max(this.MIN_VISINA, vrijednostM));
     this.ponovnoNacrtajModel();
+    if (this.prikazi2D) {
+      this.generiraj2DModel();
+    }
   }
 
   createGrobniElementi() {
@@ -219,19 +405,27 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     const visinaGornjeS = debljina * scale;
     const strsenjeUnutraS = strsenjeUnutra * scale;
     const strsenjeVaniS = strsenjeVani * scale;
-    const nagibPostotak = this.config.nagibTla ?? 0; // npr. 5 (%) ako slider postavi na 5%
-    const nagibVisinaMetar = (nagibPostotak / 100) * duzina; // duzina u metrima
-    const nagibS = nagibVisinaMetar * scale; // nagib u 3D prostoru
+    const nagibPostotak = this.config.nagibTla ?? 0;
+    const nagibVisinaMetar = (nagibPostotak / 100) * duzina;
+    const nagibS = nagibVisinaMetar * scale;
+        const pomak = strsenjeUnutraS - strsenjeVaniS;
 
-
-    const pomak = strsenjeUnutraS - strsenjeVaniS;
+    if (this.tipMjesta === 'duplo') {
+      const sredisnjaPlocaDebljina = debljinaS + strsenjeUnutraS + strsenjeVaniS;
+      const sredisnjaPlocaVisina = visinaGornjeS;
+      const sredisnjaPloca = new THREE.Mesh(
+        new THREE.BoxGeometry(sredisnjaPlocaDebljina, sredisnjaPlocaVisina, dubinaS - 2 * (debljinaS + strsenjeVaniS + strsenjeUnutraS + pomak)),
+        materijal
+      );
+      sredisnjaPloca.position.set(0, visinaS + visinaGornjeS / 2, 0);
+      this.grobnicaGroup.add(sredisnjaPloca);
+      this.dodajRubove(sredisnjaPloca, this.grobnicaGroup);
+    }
 
     type Ploča = { size: [number, number, number], pos: [number, number, number] };
 
-    // Donje ploče uz nagib (visina prednje konstantna, stražnja podignuta za nagibS)
     const visinaPrednja = visinaS;
     const visinaStraznja = visinaS + nagibS;
-    const sredinaDubine = 0;
 
     const bočnePloče = [
       {
@@ -248,12 +442,11 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
 
     bočnePloče.forEach(({ posX, visina1, visina2 }) => {
       const shape = new THREE.Shape();
-      shape.moveTo(debljinaS, 0);                                // Donji prednji brid
-      shape.lineTo(debljinaS, visina1);                          // Gornji prednji brid
-      shape.lineTo(dubinaS - debljinaS, visina1);                // Gornji stražnji brid (isti kao prednji!)
-      shape.lineTo(dubinaS - debljinaS, - nagibS);       // Donji stražnji brid spušten
-      shape.lineTo(debljinaS, 0);                                // Zatvori
-
+      shape.moveTo(debljinaS, 0);
+      shape.lineTo(debljinaS, visina1);
+      shape.lineTo(dubinaS - debljinaS, visina1);
+      shape.lineTo(dubinaS - debljinaS, - nagibS);
+      shape.lineTo(debljinaS, 0);
 
       const extrudeSettings = { steps: 1, depth: debljinaS, bevelEnabled: false };
       const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
@@ -264,7 +457,6 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
       this.dodajRubove(mesh, this.grobnicaGroup);
     });
 
-    // Stražnja ploča – viša za nagib
     const straznja = new THREE.Mesh(
       new THREE.BoxGeometry(sirinaS, visinaStraznja, debljinaS),
       materijal
@@ -273,7 +465,6 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     this.grobnicaGroup.add(straznja);
     this.dodajRubove(straznja, this.grobnicaGroup);
 
-    // Prednja ploča – ostaje ista
     const prednja = new THREE.Mesh(
       new THREE.BoxGeometry(sirinaS, visinaPrednja, debljinaS),
       materijal
@@ -281,7 +472,6 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     prednja.position.set(0, visinaPrednja / 2, dubinaS / 2 - debljinaS / 2);
     this.grobnicaGroup.add(prednja);
     this.dodajRubove(prednja, this.grobnicaGroup);
-
 
     // GORNJE PLOČE
     const ploceGornje: Ploča[] = [
@@ -332,11 +522,9 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     });
 
     // === POSTOLJE ===
-    // Dimenzije prednje gornje ploče (za pozicioniranje postolja)
     const sirinaPrednjePloce = sirinaS + 2 * (strsenjeUnutraS + strsenjeVaniS - pomak);
     const dubinaPrednjePloce = debljinaS + 2 * (strsenjeUnutraS + strsenjeVaniS);
 
-    // Postolje dimenzije – neovisne varijable
     const dimPostoljaSirina = sirinaPrednjePloce * 0.9;
     const dimPostoljaDubina = dubinaPrednjePloce * 0.65;
     const dimPostoljaVisina = 0.04 * this.SCALE;
@@ -346,7 +534,6 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     const geomPostolja = new THREE.BoxGeometry(dimPostoljaSirina, dimPostoljaVisina, dimPostoljaDubina);
     const postolje = new THREE.Mesh(geomPostolja, materijal);
 
-    // Pozicioniraj postolje da leži na prednjoj gornjoj ploči
     postolje.position.set(
       0,
       visinaPostolja + debljinaGornje + dimPostoljaVisina / 2,
@@ -356,30 +543,89 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     this.dodajRubove(postolje, this.grobnicaGroup);
 
     // === NADGROBNA PLOČA ===
-    // Nadgrobna ploča vlastite dimenzije (neovisne o postolju)
-    const dimPlocaDuljina = 1.75 * this.SCALE; // npr. nešto kraće od stvarnih 1.95
+    const dimPlocaDuljina = 1.75 * this.SCALE;
     const dimPlocaSirina = 0.75 * this.SCALE;
-    const dimPlocaDebljina = 0.04 * this.SCALE; // fiksno
+    const dimPlocaDebljina = 0.04 * this.SCALE;
 
     const geomPloca = new THREE.BoxGeometry(dimPlocaSirina, dimPlocaDebljina, dimPlocaDuljina);
-    const ploca = new THREE.Mesh(geomPloca, materijal);
+    if (this.tipMjesta === 'duplo') {
+      const razmak = 0.05 * this.SCALE;
+      const pomakX = 0.4 * this.SCALE;
 
-    // Ploča spuštena na razinu donjih ploča (ili po potrebi malo iznad)
-    ploca.position.set(
-      0,
-      visinaPostolja + dimPlocaDebljina / 2 + debljinaGornje, // „sjedne“ na konstrukciju
-      - 2 * (pomakUnatrag + pomakPloceUnazadZ)
-    );
-    this.grobnicaGroup.add(ploca);
-    this.dodajRubove(ploca, this.grobnicaGroup);
+      for (const offset of [-pomakX, pomakX]) {
+        const duplaPloca = new THREE.Mesh(geomPloca, materijal);
+        duplaPloca.position.set(
+          offset,
+          visinaPostolja + dimPlocaDebljina / 2 + debljinaGornje,
+          -2 * (pomakUnatrag + pomakPloceUnazadZ)
+        );
+        this.grobnicaGroup.add(duplaPloca);
+        this.dodajRubove(duplaPloca, this.grobnicaGroup);
+      }
+    } else {
+      const ploca = new THREE.Mesh(geomPloca, materijal);
+      ploca.position.set(
+        0,
+        visinaPostolja + dimPlocaDebljina / 2 + debljinaGornje,
+        -2 * (pomakUnatrag + pomakPloceUnazadZ)
+      );
+      this.grobnicaGroup.add(ploca);
+      this.dodajRubove(ploca, this.grobnicaGroup);
+    }
 
   }
+
+  izracunajUkupnuPovrsinuMaterijala(): number {
+    if (!this.grobnicaGroup) return 0;
+
+    let ukupnaPovrsina = 0;
+
+    const izracunajPovrsinu = (mesh: THREE.Mesh) => {
+      const geometry = mesh.geometry;
+
+      if (!geometry || !(geometry instanceof THREE.BufferGeometry)) return 0;
+
+      geometry.computeBoundingBox();
+      const box = geometry.boundingBox;
+
+      if (!box) return 0;
+
+      const širina = (box.max.x - box.min.x) / this.SCALE;
+      const visina = (box.max.y - box.min.y) / this.SCALE;
+      const dubina = (box.max.z - box.min.z) / this.SCALE;
+
+      const povrsine = [
+        širina * visina,
+        širina * dubina,
+        visina * dubina
+      ];
+
+      return 2 * (povrsine[0] + povrsine[1] + povrsine[2]);
+    };
+
+    this.grobnicaGroup.traverse(obj => {
+      if (obj instanceof THREE.Mesh) {
+        ukupnaPovrsina += izracunajPovrsinu(obj);
+      }
+    });
+
+    return +(ukupnaPovrsina).toFixed(2);
+  }
+
+  get povrsinaMaterijalaM2(): number {
+    return this.izracunajUkupnuPovrsinuMaterijala();
+  }
+
   onNagibChange(event: SliderChangeEvent) {
     if (event.value == undefined) return;
-    this.config.nagibTla = event.value;
+    const vrijednost = Math.max(this.MIN_NAGIB * 100, Math.min(this.MAX_NAGIB * 100, event.value));
+    this.sliderNagib = vrijednost;
+    this.config.nagibTla = vrijednost;
     this.ponovnoNacrtajModel();
+    if (this.prikazi2D) {
+      this.generiraj2DModel();
+    }
   }
-
 
   dodajSpomenik() {
     if (this.spomenik) {
