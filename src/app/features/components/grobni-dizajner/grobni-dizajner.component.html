@@ -1,156 +1,175 @@
 <section class="surface-section py-6 px-4">
-  <div class="max-w-screen-lg mx-auto">
-    <h2 class="text-3xl md:text-4xl font-bold text-center text-primary-800 mb-6">
+  <div class="mx-auto" style="max-width: 1200px">
+
+    <!-- Naslov i opis -->
+    <h2 class="text-3xl md:text-4xl font-bold text-center text-primary-800 mb-4">
       Interaktivni dizajn grobnice i spomenika
     </h2>
 
-    <p class="text-lg text-center text-gray-600 max-w-2xl mx-auto mb-6">
+    <p class="text-lg text-center text-color-secondary mb-5" style="max-width: 700px; margin: 0 auto;">
       Prilagodite izgled i dimenzije grobnog prostora te pogledajte 2D i 3D model u stvarnom vremenu.
     </p>
 
-    <!-- Grid: konfiguracijske opcije -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6 items-end">
-      <!-- Materijal -->
-      <div>
-        <label class="block text-primary-700 font-semibold mb-2">Materijal</label>
+    <!-- Kontrole -->
+    <div class="grid formgrid p-fluid mb-6">
+      <div class="field col-12 md:col-6 lg:col-4">
+        <label class="font-bold mb-2">Materijal</label>
         <p-dropdown
           [options]="store.materijali()"
           [(ngModel)]="store.odabraniMaterijal"
           (ngModelChange)="osvjeziSVG()"
           placeholder="Odaberite materijal"
           optionLabel="name"
-          class="w-full"
         ></p-dropdown>
       </div>
 
-      <!-- Oblik -->
-      <div>
-        <label class="block text-primary-700 font-semibold mb-2">Oblik spomenika</label>
+      <div class="field col-12 md:col-6 lg:col-4">
+        <label class="font-bold mb-2">Oblik spomenika</label>
         <p-dropdown
           [options]="store.oblici"
           [(ngModel)]="store.odabraniOblik"
           (ngModelChange)="osvjeziSVG()"
           placeholder="Odaberite oblik"
           optionLabel="label"
-          class="w-full"
         ></p-dropdown>
       </div>
 
-      <!-- Tip groba -->
-      <div>
-        <label class="block text-primary-700 font-semibold mb-2">Tip grobnog mjesta</label>
+      <div class="field col-12 md:col-6 lg:col-4">
+        <label class="font-bold mb-2">Tip grobnog mjesta</label>
         <p-dropdown
           [options]="[
             { label: 'Jednostruki grob', value: 'jedno' },
             { label: 'Dvostruki grob', value: 'duplo' }
           ]"
           [(ngModel)]="tipMjesta"
-          (ngModelChange)="toggle3D()"
+          (ngModelChange)="onTipMjestaChange()"
           placeholder="Odaberite tip"
-          class="w-full"
         ></p-dropdown>
       </div>
 
-      <!-- Debljina -->
-      <div>
-        <label class="block text-primary-700 font-semibold mb-2">Debljina mramorne ploče (cm)</label>
-        <div class="pt-3">
-          <p-slider
-            [min]="2"
-            [max]="6"
-            [step]="1"
-            [(ngModel)]="sliderDebljina"
-            (onChange)="onDebljinaChange($event)"
-            class="w-full"
-          ></p-slider>
-        </div>
-        <div class="text-sm text-gray-600 mt-1">Odabrano: {{ sliderDebljina }} cm</div>
+      <div class="field col-12 md:col-6 lg:col-4">
+        <label class="font-bold mb-2">Debljina mramorne ploče (cm)</label>
+        <p-slider
+          [min]="2"
+          [max]="6"
+          [step]="1"
+          [(ngModel)]="sliderDebljina"
+          (onChange)="onDebljinaChange($event)"
+        ></p-slider>
+        <small class="text-color-secondary">Odabrano: {{ sliderDebljina }} cm</small>
       </div>
 
-      <!-- Visina -->
-      <div>
-        <label class="block text-primary-700 font-semibold mb-2">Visina okvira (cm)</label>
-        <div class="pt-3">
-          <p-slider
-            [min]="12"
-            [max]="20"
-            [step]="1"
-            [(ngModel)]="sliderVisina"
-            (onChange)="onVisinaChange($event)"
-            class="w-full"
-          ></p-slider>
-        </div>
-        <div class="text-sm text-gray-600 mt-1">Odabrano: {{ sliderVisina }} cm</div>
+      <div class="field col-12 md:col-6 lg:col-4">
+        <label class="font-bold mb-2">Visina okvira (cm)</label>
+        <p-slider
+          [min]="12"
+          [max]="20"
+          [step]="1"
+          [(ngModel)]="sliderVisina"
+          (onChange)="onVisinaChange($event)"
+        ></p-slider>
+        <small class="text-color-secondary">Odabrano: {{ sliderVisina }} cm</small>
       </div>
 
-      <!-- Nagib tla -->
-      <div>
-        <label class="block text-primary-700 font-semibold mb-2">Nagib tla (%)</label>
-        <div class="pt-3">
-          <p-slider
-            [min]="0"
-            [max]="15"
-            [step]="1"
-            [(ngModel)]="sliderNagib"
-            (onChange)="onNagibChange($event)"
-            class="w-full"
-          ></p-slider>
-        </div>
-        <div class="text-sm text-gray-600 mt-1">Odabrano: {{ sliderNagib }} %</div>
+      <div class="field col-12 md:col-6 lg:col-4">
+        <label class="font-bold mb-2">Nagib tla (%)</label>
+        <p-slider
+          [min]="0"
+          [max]="15"
+          [step]="1"
+          [(ngModel)]="sliderNagib"
+          (onChange)="onNagibChange($event)"
+        ></p-slider>
+        <small class="text-color-secondary">Odabrano: {{ sliderNagib }} %</small>
       </div>
-
     </div>
 
+    <!-- Gumbi -->
+    <div class="flex flex-wrap justify-content-center gap-3 mb-5">
+      <button pButton label="Zatraži ponudu" icon="pi pi-envelope" class="p-button-outlined p-button-lg"></button>
+      <button
+        pButton
+        [label]="prikazi2D ? 'Sakrij 2D prikaz' : 'Prikaži 2D prikaz'"
+        icon="pi pi-image"
+        class="p-button-lg"
+        (click)="toggle2D()">
+      </button>
+      <button
+        pButton
+        [label]="prikazi3D ? 'Sakrij 3D prikaz' : 'Prikaži 3D model'"
+        icon="pi pi-cube"
+        class="p-button-lg"
+        (click)="toggle3D()">
+      </button>
+    </div>
 
     <!-- 2D Prikaz -->
-    <div class="surface-card p-4 border-1 border-gray-300 border-round shadow-1 mb-6">
+    <div *ngIf="prikazi2D" class="surface-card p-4 border-1 border-round mb-6">
       <h4 class="text-center text-primary-700 font-semibold mb-4">2D Pregled</h4>
-      <div class="flex flex-column align-items-center gap-3">
-        <div [innerHTML]="svgContent" style="width: 100px; height: 120px;"></div>
-        <div class="flex gap-3 flex-wrap justify-content-center">
-          <div class="surface-700 text-white text-xs flex align-items-center justify-content-center border-round w-8rem h-6rem">Prednja</div>
-          <div class="surface-700 text-white text-xs flex align-items-center justify-content-center border-round w-3rem h-6rem">Lijeva</div>
-          <div class="surface-700 text-white text-xs flex align-items-center justify-content-center border-round w-3rem h-6rem">Desna</div>
-          <div class="surface-700 text-white text-xs flex align-items-center justify-content-center border-round w-8rem h-6rem">Stražnja</div>
+
+      <div class="grid">
+        <div
+          *ngFor="let ploca of ploca2dData"
+          class="col-12 sm:col-6 lg:col-3 p-2"
+        >
+          <div class="border-1 border-round p-3 text-center bg-gray-100">
+            <div class="font-semibold text-sm mb-2">{{ ploca.naziv }}</div>
+
+            <svg
+              *ngIf="isTrapezna(ploca)"
+              [attr.width]="ploca.width * 100"
+              [attr.height]="getMaxHeight(ploca) * 100"
+              class="mx-auto border"
+            >
+              <polygon
+                [attr.points]="getTrapezPoints(ploca)"
+                [attr.fill]="ploca.boja || '#ccc'"
+                stroke="black"
+              />
+            </svg>
+
+            <svg
+              *ngIf="isPravokutna(ploca)"
+              [attr.width]="ploca.width * 100"
+              [attr.height]="ploca.height * 100"
+              class="mx-auto border"
+            >
+              <rect
+                x="0"
+                y="0"
+                [attr.width]="ploca.width * 100"
+                [attr.height]="ploca.height * 100"
+                [attr.fill]="ploca.boja || '#ccc'"
+                stroke="black"
+              />
+            </svg>
+
+            <div class="text-xs mt-2 text-color-secondary">
+              <ng-container *ngIf="isTrapezna(ploca)">
+                {{ ploca.width.toFixed(2) }} m x {{ ploca.height1.toFixed(2) }}-{{ ploca.height2.toFixed(2) }} m
+              </ng-container>
+              <ng-container *ngIf="isPravokutna(ploca)">
+                {{ ploca.width.toFixed(2) }} m x {{ ploca.height.toFixed(2) }} m
+              </ng-container>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Cijena -->
-    <div class="text-center text-2xl font-bold text-green-700 mb-5">
-      Ukupna cijena: {{ store.cijena() }} €
-    </div>
-
-    <!-- CTA gumbi -->
-    <div class="w-full flex justify-center items-center gap-4 mb-6">
-      <div class="w-full text-center mb-6">
-        <div class="inline-flex gap-4">
-          <button 
-            pButton 
-            label="Zatraži ponudu" 
-            icon="pi pi-envelope" 
-            class="p-button-lg p-button-outlined"
-          ></button>
-
-          <button 
-            pButton 
-            [label]="prikazi3D ? 'Sakrij 3D prikaz' : 'Prikaži 3D model'" 
-            icon="pi pi-cube" 
-            class="p-button-lg"
-            (click)="toggle3D()"
-          ></button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 3D prikaz -->
-    <div *ngIf="prikazi3D" class="surface-border border-1 p-3 border-round">
-      <h4 class="text-xl font-semibold text-primary-700 text-center mb-3">3D Prikaz</h4>
-      <div #threeContainer style="width: 100%; max-width: 1000px; height: 800px; margin: auto;" class="border-1 border-gray-300 border-round"></div>
-      <div class="mt-4 text-center text-sm text-gray-600">
+    <!-- 3D Prikaz -->
+    <div *ngIf="prikazi3D" class="surface-card p-4 border-1 border-round mb-6">
+      <h4 class="text-center text-xl font-semibold text-primary-700 mb-3">3D Prikaz</h4>
+      <div #threeContainer style="width: 100%; max-width: 1000px; height: 800px; margin: auto;" class="border-1 border-round mb-4"></div>
+      <div class="text-center text-sm text-color-secondary">
         <p><strong>Materijal:</strong> {{ store.odabraniMaterijal()?.name }}</p>
         <p><strong>Oblik:</strong> {{ store.odabraniOblik().label }}</p>
+        <p class="text-2xl font-bold text-green-700 mt-3 mb-2">
+          Ukupna cijena: {{ store.cijena() }} €
+        </p>
+        <p><strong>Ukupna površina materijala:</strong> {{ povrsinaMaterijalaM2 }} m²</p>
       </div>
     </div>
+
   </div>
 </section>
