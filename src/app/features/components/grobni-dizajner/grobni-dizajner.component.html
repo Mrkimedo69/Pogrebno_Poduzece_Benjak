@@ -27,9 +27,8 @@
         <label class="font-bold mb-2">Oblik spomenika</label>
         <p-dropdown
           [options]="store.oblici"
-          [(ngModel)]="store.odabraniOblik"
-          (ngModelChange)="osvjeziSVG()"
-          placeholder="Odaberite oblik"
+          [(ngModel)]="odabraniOblik"
+          (ngModelChange)="onOblikChange($event)"
           optionLabel="label"
         ></p-dropdown>
       </div>
