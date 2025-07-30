@@ -33,8 +33,7 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/logo.png",
-              "src/assets/spomenici/klasicni.svg"
+              "src/logo.png"
             ],
             "styles": [
               "node_modules/primeflex/primeflex.css",

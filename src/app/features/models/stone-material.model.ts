@@ -1,9 +1,9 @@
 export interface StoneMaterial {
   id: number;
   name: string;
-  textureUrl: string;
-  color: string;
-  pricePerM3: number;
+  textureUrl?: string;
+  colorHex: string;
+  pricePerM2: number;
   isAvailable: boolean;
   createdAt: Date;
 }

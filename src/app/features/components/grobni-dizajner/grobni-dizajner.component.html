@@ -16,20 +16,19 @@
         <label class="font-bold mb-2">Materijal</label>
         <p-dropdown
           [options]="store.materijali()"
-          [(ngModel)]="store.odabraniMaterijal"
-          (ngModelChange)="osvjeziSVG()"
+          [ngModel]="store.odabraniMaterijal()"
+          (ngModelChange)="onMaterijalChange($event)"
           placeholder="Odaberite materijal"
-          optionLabel="name"
-        ></p-dropdown>
+          optionLabel="name">
+        </p-dropdown>
       </div>
 
       <div class="field col-12 md:col-6 lg:col-4">
         <label class="font-bold mb-2">Oblik spomenika</label>
         <p-dropdown
           [options]="store.oblici"
-          [(ngModel)]="store.odabraniOblik"
-          (ngModelChange)="osvjeziSVG()"
-          placeholder="Odaberite oblik"
+          [(ngModel)]="odabraniOblik"
+          (ngModelChange)="onOblikChange($event)"
           optionLabel="label"
         ></p-dropdown>
       </div>
@@ -165,7 +164,7 @@
         <p><strong>Materijal:</strong> {{ store.odabraniMaterijal()?.name }}</p>
         <p><strong>Oblik:</strong> {{ store.odabraniOblik().label }}</p>
         <p class="text-2xl font-bold text-green-700 mt-3 mb-2">
-          Ukupna cijena: {{ store.cijena() }} €
+          Ukupna cijena: {{ store.cijena()*povrsinaMaterijalaM2 | number: '1.2-2'}} €
         </p>
         <p><strong>Ukupna površina materijala:</strong> {{ povrsinaMaterijalaM2 }} m²</p>
       </div>
