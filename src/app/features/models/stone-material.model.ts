@@ -3,7 +3,7 @@ export interface StoneMaterial {
   name: string;
   textureUrl: string;
   color: string;
-  pricePerM3: number;
+  pricePerM2: number;
   isAvailable: boolean;
   createdAt: Date;
 }

@@ -1,8 +1,8 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { StoneMaterial } from '../../models/stone-material.model';
-import { environment } from '../../../../environments/environment';
+import { StoneMaterial } from '../../../models/stone-material.model';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class GrobniDizajnerStore {
@@ -12,16 +12,14 @@ export class GrobniDizajnerStore {
   private readonly _odabraniMaterijal = signal<StoneMaterial | null>(null);
   readonly odabraniMaterijal = computed(() => this._odabraniMaterijal());
 
-  private readonly _odabraniOblik = signal<{ label: string; value: string; cijena: number }>({
-    label: 'Klasični',
-    value: 'klasicni',
-    cijena: 100
-  });
   readonly oblici = [
-    { label: 'Klasični', value: 'klasicni', cijena: 100 },
-    { label: 'Polukružni', value: 'polukruzni', cijena: 120 },
-    { label: 'Moderni', value: 'moderni', cijena: 150 }
+    { label: 'Klasični luk', value: 'upright-arc', cijena: 120 },
+    { label: 'Nadgrobni spomenik s nagnutom prednjom plohom', value: 'slant', cijena: 110 },
+    { label: 'Uspravna ploča - serpentin oblik', value: 'serpentine', cijena: 130 }
   ];
+
+  private readonly _odabraniOblik = signal(this.oblici[0]);
+
   readonly odabraniOblik = computed(() => this._odabraniOblik());
 
   constructor(private http: HttpClient) {}
@@ -52,13 +50,13 @@ export class GrobniDizajnerStore {
   });
 
   readonly cijena = computed(() => {
-    const m = this._odabraniMaterijal()?.pricePerM3 || 0;
+    const m = this._odabraniMaterijal()?.pricePerM2 || 0;
     const o = this._odabraniOblik()?.cijena || 0;
     return m + o;
   });
 
   readonly trenutniPrikaz = computed(() => {
-    const mat = this._odabraniMaterijal()?.pricePerM3 ?? 'prazno';
+    const mat = this._odabraniMaterijal()?.pricePerM2 ?? 'prazno';
     const obl = this._odabraniOblik()?.value ?? 'prazno';
     return `assets/dizajn/${mat}-${obl}.png`;
   });
