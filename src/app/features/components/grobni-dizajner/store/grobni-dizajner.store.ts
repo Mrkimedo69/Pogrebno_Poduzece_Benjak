@@ -1,8 +1,8 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
 import { StoneMaterial } from '../../../models/stone-material.model';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class GrobniDizajnerStore {
@@ -41,13 +41,15 @@ export class GrobniDizajnerStore {
   }
 
   readonly bojaMramora = computed(() => {
-    switch (this._odabraniMaterijal()?.color) {
-      case 'crni': return '#2c2c2c';
-      case 'sivi': return '#888888';
-      case 'bijeli': return '#e0e0e0';
-      default: return '#cccccc';
-    }
+    return this._odabraniMaterijal()?.colorHex ?? '#cccccc';
   });
+
+  readonly teksturaMaterijala = computed(() => {
+    const path = this._odabraniMaterijal()?.textureUrl;
+    if (!path || path.trim() === '') return null;
+    return path.startsWith('http') ? path : `${environment.apiUrl}${path}`;
+  });
+
 
   readonly cijena = computed(() => {
     const m = this._odabraniMaterijal()?.pricePerM2 || 0;

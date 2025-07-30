@@ -5,13 +5,13 @@ import {
   AfterViewInit,
   OnInit
 } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import * as THREE from 'three';
 import { GrobniDizajnerStore } from './store/grobni-dizajner.store';
 import { SliderChangeEvent } from 'primeng/slider';
 import { PravokutnaPloca } from '../../models/rectangle.model';
 import { TrapeznaPloca } from '../../models/trapeze.model';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { StoneMaterial } from '../../models/stone-material.model';
 
 @Component({
   selector: 'app-grobni-dizajner',
@@ -25,8 +25,6 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   prikazi2D = false;
   threeInicijaliziran = false;
 
-  svgContent: SafeHtml | null = null;
-
   animationId: number | null = null;
 
   scene!: THREE.Scene;
@@ -38,6 +36,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   spomenik!: THREE.Mesh | THREE.Group;
 
   odabraniOblik = this.store.odabraniOblik();
+  odabraniMaterijal = this.store.odabraniMaterijal();
 
   ploca2dData: (PravokutnaPloca | TrapeznaPloca)[] = [];
 
@@ -61,8 +60,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   };
 
   constructor(
-    public store: GrobniDizajnerStore,
-    private sanitizer: DomSanitizer
+    public store: GrobniDizajnerStore
   ) {}
 
   ngOnInit() {
@@ -91,8 +89,8 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   generiraj2DModel() {
     this.ploca2dData = [];
 
-    let sirina = 1.0; // m
-    let duzina = 2.1; // m
+    let sirina = 1.0;
+    let duzina = 2.1; 
 
     if (this.tipMjesta === 'duplo') {
       sirina = 2.0;
@@ -268,8 +266,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   }
 
   osvjeziSVG() {
-    const oblik = this.store.odabraniOblik().value;
-    this.ucitajSVG(oblik);
+    if (!this.grobnicaGroup) return;
     this.dodajSpomenik();
     this.azuriraj3DBoju();
   }
@@ -278,18 +275,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     if (!this.scene) return;
     this.scene.remove(this.grobnicaGroup);
     this.createGrobniElementi();
-  }
-
-  ucitajSVG(naziv: string) {
-    fetch(`assets/spomenici/${naziv}.svg`)
-      .then(res => res.text())
-      .then(svg => {
-        const boja = this.store.bojaMramora();
-        const obojani = svg
-          .replace(/fill="[^"]*"/g, `fill="${boja}"`)
-          .replace(/style="[^\"]*fill:[^;\"]*;?/g, `style="fill:${boja};`);
-        this.svgContent = this.sanitizer.bypassSecurityTrustHtml(obojani);
-      });
+    this.azuriraj3DBoju();
   }
 
   initThreeJS() {
@@ -328,21 +314,35 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   }
 
   azuriraj3DBoju() {
+    const textureUrl = this.store.teksturaMaterijala();
     const novaBoja = new THREE.Color(this.store.bojaMramora());
 
-    const updateBoja = (objekt: THREE.Object3D) => {
-      if (objekt instanceof THREE.Mesh) {
-        const mat = objekt.material as THREE.MeshStandardMaterial;
-        mat.color.set(novaBoja);
-      }
-      if (objekt instanceof THREE.Group) {
-        objekt.children.forEach(child => updateBoja(child));
-      }
-    };
+    // fallback boja materijal
+    const fallbackMaterijal = new THREE.MeshStandardMaterial({ color: novaBoja });
 
-    updateBoja(this.gornjaPloca);
-    this.stranice.forEach(updateBoja);
-    if (this.spomenik) updateBoja(this.spomenik);
+    // ako textureUrl nije postavljen ili je prazan → koristi boju
+    if (!textureUrl || textureUrl.trim() === '') {
+      this.applyMaterialToScene(fallbackMaterijal);
+      return;
+    }
+
+    const loader = new THREE.TextureLoader();
+    loader.load(
+      textureUrl,
+      (texture) => {
+        // uspješno učitana tekstura
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(2, 2);
+        const material = new THREE.MeshStandardMaterial({ map: texture });
+        this.applyMaterialToScene(material);
+      },
+      undefined,
+      (err) => {
+        console.error('❌ Greška kod učitavanja teksture, fallback na boju:', err);
+        this.applyMaterialToScene(fallbackMaterijal);
+      }
+    );
   }
 
   sliderDebljina = this.config.debljina * 100;
@@ -377,6 +377,13 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     if (this.prikazi2D) {
       this.generiraj2DModel();
     }
+  }
+  applyMaterialToScene(materijal: THREE.MeshStandardMaterial) {
+    this.grobnicaGroup.traverse((obj) => {
+      if (obj instanceof THREE.Mesh) {
+        obj.material = materijal.clone();
+      }
+    });
   }
 
   createGrobniElementi() {
@@ -853,5 +860,9 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     this.odabraniOblik = noviOblik;
     this.osvjeziSVG();
   }
-
+  onMaterijalChange(materijal: StoneMaterial) {
+    this.store.setOdabraniMaterijal(materijal);
+    this.odabraniMaterijal = materijal;
+    this.osvjeziSVG();
+  }
 }
