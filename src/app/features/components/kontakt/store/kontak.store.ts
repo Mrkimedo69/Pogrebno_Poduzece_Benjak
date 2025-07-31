@@ -8,6 +8,7 @@ export class KontaktStore {
   readonly poruka = signal('');
 
   readonly loading = signal(false);
+  b_email : string = 'tdmrkimedo69@gmail.com'
 
   reset() {
     this.ime.set('');
@@ -26,20 +27,34 @@ export class KontaktStore {
     const templateParams = {
       from_name: this.ime(),
       from_email: this.email(),
-      message: this.poruka()
+      message: this.poruka(),
+      email: this.b_email
     };
 
-    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams, 'YOUR_PUBLIC_KEY')
-      .then((response) => {
-        console.log('Email poslan!', response.status, response.text);
-        alert('Hvala na poruci! Javit ćemo vam se uskoro.');
-        this.reset();
-      }, (err) => {
-        console.error('Greška pri slanju', err);
+    emailjs.send('service_q3qy93h', 'template_znx7sqs', templateParams, 'r8hrQX47rt6c6KvwV')
+      .then(() => {
+        const replyParams = {
+          from_name: this.ime(),
+          from_email: this.email(),
+          email: this.b_email
+        };
+
+        emailjs.send('service_q3qy93h', 'template_eazbu4f', replyParams, 'r8hrQX47rt6c6KvwV')
+          .then(() => {
+            alert('Hvala na poruci! Javit ćemo vam se uskoro.');
+            this.reset();
+          })
+          .catch((err) => {
+            console.error('Greška pri slanju potvrde korisniku:', err);
+          });
+      })
+      .catch((err) => {
+        console.error('Greška pri slanju firmi:', err);
         alert('Došlo je do greške. Pokušajte kasnije.');
       })
       .finally(() => {
         this.loading.set(false);
       });
-  }
+
+    }
 }

@@ -4,6 +4,7 @@ import { CartItem } from '../../../models/cart.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, forkJoin, map, tap } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
+import { OrderModel } from '../../../models/order.model';
 
 @Injectable({ providedIn: 'root' })
 export class CartStore {
@@ -18,6 +19,9 @@ export class CartStore {
 
   readonly artiklQuantities = computed(() => this.buildQuantitiesMap('artikl'));
   readonly cvijetQuantities = computed(() => this.buildQuantitiesMap('cvijet'));
+
+  private readonly _userOrders = signal<OrderModel[]>([]);
+  readonly userOrders = computed(() => this._userOrders());
 
   constructor(private auth: AuthStore, private http: HttpClient) {
     if (this.auth.isLoggedIn() && this.hasLocalItems()) {
@@ -187,4 +191,10 @@ export class CartStore {
   private clearStorage() {
     localStorage.removeItem(this.LOCAL_KEY);
   }
+
+  fetchUserOrders() {
+    this.http.get<OrderModel[]>(`${environment.apiUrl}/api/orders/user_orders`)
+      .subscribe(orders => this._userOrders.set(orders));
+  }
+
 }

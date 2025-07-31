@@ -14,10 +14,10 @@
           <div *ngFor="let item of itemsWithDetails; let i = index" class="flex gap-3 align-items-center border-bottom pb-3">
             
             <div class="w-6rem h-6rem flex-shrink-0">
-              <img [src]="item.imageUrl || 'assets/img/placeholder.png'"
-                   alt="{{ item.name }}"
-                   (error)="item.imageUrl = 'assets/placeholder_artikli.png'"
-                   class="border-round shadow-2 w-full h-full object-cover" />
+            <img [src]="getImageUrl(item)"
+                alt="{{ item.name }}"
+                (error)="item.imageUrl = getFallbackImage(item.category)"
+                class="border-round shadow-2 w-full h-full object-cover" />
             </div>
 
             <div class="flex-grow-1">
@@ -77,6 +77,7 @@
         </div>
 
         <app-order-dialog (submitOrder)="onOrderSubmit($event)"></app-order-dialog>
+                <app-user-order-history></app-user-order-history>
       </ng-container>
 
       <ng-template #emptyCart>
@@ -84,6 +85,7 @@
           <p class="text-gray-500 text-lg mb-4">Vaša košarica je trenutno prazna.</p>
           <button pButton label="Natrag na početnu stranicu" icon="pi pi-arrow-left" routerLink="/" class="p-button-outlined"></button>
         </div>
+        <app-user-order-history></app-user-order-history>
       </ng-template>
     </div>
   </div>
