@@ -20,6 +20,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CalendarModule } from 'primeng/calendar';
 import { LoaderComponent } from './components/loader/loader.component';
 import { SliderModule } from 'primeng/slider';
+import { AccordionModule } from 'primeng/accordion';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { SliderModule } from 'primeng/slider';
     ProgressSpinnerModule,
     CalendarModule,
     SliderModule,
+    AccordionModule,
   ],
   exports:[
     MenubarModule,
@@ -70,6 +72,7 @@ import { SliderModule } from 'primeng/slider';
     CalendarModule,
     LoaderComponent,
     SliderModule,
+    AccordionModule,
   ]
 })
 export class SharedModule { }

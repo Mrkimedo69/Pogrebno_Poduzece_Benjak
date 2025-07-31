@@ -3,6 +3,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { CartStore } from './store/cart.store';
 import { CartItem } from '../../models/cart.model';
 import { OrderDialogComponent } from './order-dialog/order-dialog.component';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-cart',
@@ -29,6 +30,16 @@ export class CartComponent implements OnInit {
       this.total = this.cartStore.total();
       this.isLoaded = true;
     });
+  }
+
+  getImageUrl(item: CartItem): string {
+    if (item.imageUrl?.startsWith('http')) return item.imageUrl;
+    if (item.imageUrl) return `${environment.apiUrl}${item.imageUrl}`;
+    return this.getFallbackImage(item.category);
+  }
+
+  getFallbackImage(category: 'cvijet' | 'artikl'): string {
+    return category === 'cvijet' ? 'assets/placeholder_flower.png' : 'assets/placeholder_artikli.png';
   }
 
   openOrderDialog() {

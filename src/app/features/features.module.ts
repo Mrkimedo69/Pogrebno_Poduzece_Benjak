@@ -13,6 +13,7 @@ import { NarudzbeComponent } from './narudzbe/narudzbe.component';
 import { NarudzbaDetaljiComponent } from './narudzbe/narudzba-detalji/narudzba-detalji.component';
 import { ArhivaNarudzbiComponent } from './narudzbe/arhiva-narudzbi/arhiva-narudzbi.component';
 import { OrderDialogComponent } from './components/cart/order-dialog/order-dialog.component';
+import { UserOrderHistoryComponent } from './components/cart/user-order-history/user-order-history.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { OrderDialogComponent } from './components/cart/order-dialog/order-dialo
     NarudzbaDetaljiComponent,
     ArhivaNarudzbiComponent,
     OrderDialogComponent,
+    UserOrderHistoryComponent,
   ],
   imports: [
     CommonModule,
