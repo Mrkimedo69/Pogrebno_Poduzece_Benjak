@@ -33,20 +33,6 @@ export class KontaktStore {
 
     emailjs.send('service_q3qy93h', 'template_znx7sqs', templateParams, 'r8hrQX47rt6c6KvwV')
       .then(() => {
-        const replyParams = {
-          from_name: this.ime(),
-          from_email: this.email(),
-          email: this.b_email
-        };
-
-        emailjs.send('service_q3qy93h', 'template_eazbu4f', replyParams, 'r8hrQX47rt6c6KvwV')
-          .then(() => {
-            alert('Hvala na poruci! Javit ćemo vam se uskoro.');
-            this.reset();
-          })
-          .catch((err) => {
-            console.error('Greška pri slanju potvrde korisniku:', err);
-          });
       })
       .catch((err) => {
         console.error('Greška pri slanju firmi:', err);
