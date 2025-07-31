@@ -162,7 +162,7 @@ export class CartStore {
         id: i.id,
         name: i.name,
         quantity: i.quantity,
-        price: i.price,
+        price: i.price.toFixed(2),
         category: i.category,
         type: i.category
       }))
