@@ -77,7 +77,7 @@
         </div>
 
         <app-order-dialog (submitOrder)="onOrderSubmit($event)"></app-order-dialog>
-                <app-user-order-history></app-user-order-history>
+        <app-user-order-history *ngIf="isLoggedIn()"></app-user-order-history>
       </ng-container>
 
       <ng-template #emptyCart>
@@ -85,7 +85,7 @@
           <p class="text-gray-500 text-lg mb-4">Vaša košarica je trenutno prazna.</p>
           <button pButton label="Natrag na početnu stranicu" icon="pi pi-arrow-left" routerLink="/" class="p-button-outlined"></button>
         </div>
-        <app-user-order-history></app-user-order-history>
+        <app-user-order-history *ngIf="isLoggedIn()"></app-user-order-history>
       </ng-template>
     </div>
   </div>

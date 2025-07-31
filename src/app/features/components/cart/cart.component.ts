@@ -4,6 +4,7 @@ import { CartStore } from './store/cart.store';
 import { CartItem } from '../../models/cart.model';
 import { OrderDialogComponent } from './order-dialog/order-dialog.component';
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../core/services/auth.services';
 
 @Component({
   selector: 'app-cart',
@@ -19,7 +20,8 @@ export class CartComponent implements OnInit {
   constructor(
     private cartStore: CartStore,
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private messageService: MessageService,
+     public authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -30,6 +32,9 @@ export class CartComponent implements OnInit {
       this.total = this.cartStore.total();
       this.isLoaded = true;
     });
+  }
+  isLoggedIn(): boolean {
+    return this.authService.isLoggedIn;
   }
 
   getImageUrl(item: CartItem): string {
