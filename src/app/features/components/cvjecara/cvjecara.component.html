@@ -124,7 +124,7 @@
                   (click)="naruci(cvijet)">
                 </button>
                 <small *ngIf="getItemQuantity(cvijet.id) > 0" class="text-sm text-gray-600 mt-2 text-center">
-                  Dodano: {{ cvijet.id }}
+                  Dodano: {{  getItemQuantity(cvijet.id) }}
                 </small>
               </div>
             </ng-template>

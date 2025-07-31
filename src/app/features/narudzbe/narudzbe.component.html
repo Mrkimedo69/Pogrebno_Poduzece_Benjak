@@ -30,6 +30,7 @@
         <tr>
           <th>ID</th>
           <th>Korisnik</th>
+          <th>Datum kreiranja</th>
           <th>Status</th>
         </tr>
       </ng-template>
@@ -43,6 +44,7 @@
               <span class="text-sm text-gray-500">{{ narudzba.email }}</span>
             </div>
           </td>
+          <td>{{ narudzba.createdAt | date:'dd.MM.yyyy HH:mm'}}</td>
           <td>
             <p-badge
               [value]="narudzba.status"

@@ -1,0 +1,26 @@
+<section class="mt-6">
+  <h3 class="text-xl font-bold mb-3">Povijest narudžbi</h3>
+
+  <div *ngIf="cartStore.userOrders().length > 0; else noOrders">
+    <p-accordion [multiple]="true">
+      <p-accordionTab 
+        *ngFor="let order of sortOrders(cartStore.userOrders())"
+        [header]="getOrderLabel(order)">
+        
+        <div class="mb-2 text-sm">
+          <p-badge [value]="order.status" [severity]="getStatusColor(order.status)"></p-badge>
+        </div>
+
+        <ul class="list-disc list-inside text-sm text-gray-700 mt-2">
+          <li *ngFor="let item of order.items">
+            {{ item.name }} — {{ item.quantity }}x — {{ item.price | currency:'EUR' }}
+          </li>
+        </ul>
+      </p-accordionTab>
+    </p-accordion>
+  </div>
+
+  <ng-template #noOrders>
+    <p class="text-gray-500 text-sm">Nemate prethodnih narudžbi.</p>
+  </ng-template>
+</section>

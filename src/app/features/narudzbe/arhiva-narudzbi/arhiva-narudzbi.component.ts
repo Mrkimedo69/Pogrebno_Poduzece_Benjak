@@ -70,7 +70,11 @@ export class ArhivaNarudzbiComponent implements OnInit {
       y += 8;
       doc.text(`Zaposlenik: ${narudzba.resolvedBy}`, marginLeft, y);
       y += 8;
-      doc.text(`Datum: ${new Date(narudzba.archivedAt).toLocaleString()}`, marginLeft, y);
+      doc.text(`Datum: ${new Date(narudzba.archivedAt).toLocaleString('hr-HR')}`, marginLeft, y);
+      y += 8;
+      doc.text(`Kreirano: ${new Date(narudzba.createdAt).toLocaleString('hr-HR')}`, marginLeft, y);
+      y += 8;
+      doc.text(`Status: ${narudzba.status === 'resolved' ? 'Riješeno' : 'Odbijeno'}`, marginLeft, y);
       y += 8;
       doc.text(`Ukupna cijena: ${narudzba.totalPrice} €`, marginLeft, y);
       y += 15;
@@ -111,5 +115,12 @@ export class ArhivaNarudzbiComponent implements OnInit {
       doc.save(`Narudzba_#${narudzba.originalOrderId}_${narudzba.fullName}.pdf`);
     };
   }
-  
+  getStatusColor(status: string): 'success' | 'danger' | 'warning' {
+    switch (status) {
+      case 'resolved': return 'success';
+      case 'rejected': return 'danger';
+      default: return 'warning';
+    }
+  }
+
 }

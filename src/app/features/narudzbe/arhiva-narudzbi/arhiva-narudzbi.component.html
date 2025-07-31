@@ -84,7 +84,9 @@
         <tr>
           <th>ID</th>
           <th>Korisnik</th>
-          <th>Datum</th>
+          <th>Stvoreno</th>
+          <th>Arhivirano</th>
+          <th>Status</th>
           <th>Ukupno</th>
           <th>Zaposlenik</th>
           <th class="text-center">PDF</th>
@@ -100,7 +102,14 @@
               <small class="text-600">{{ narudzba.email }}</small>
             </div>
           </td>
+          <td>{{ narudzba.createdAt | date:'dd.MM.yyyy HH:mm' }}</td>
           <td>{{ narudzba.archivedAt | date:'dd.MM.yyyy HH:mm' }}</td>
+          <td>
+            <p-badge
+              [value]="narudzba.status"
+              [severity]="getStatusColor(narudzba.status)">
+            </p-badge>
+          </td>
           <td>{{ narudzba.totalPrice | currency:'EUR' }}</td>
           <td>{{ narudzba.resolvedBy }}</td>
           <td class="text-center">
