@@ -66,4 +66,34 @@ export class GrobniDizajnerStore {
   posaljiZahtjevPonude(payload: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/api/monument-request`, payload);
   }
+
+  fetchAll(): Observable<StoneMaterial[]> {
+    return this.http.get<StoneMaterial[]>(`${environment.apiUrl}/api/stone-materials/admin`)
+      .pipe(tap(data => this._materijali.set(data)));
+  }
+
+  add(data: Partial<StoneMaterial>) {
+    return this.http.post<StoneMaterial>(`${environment.apiUrl}/api/stone-materials`, data);
+  }
+
+  update(id: number, data: Partial<StoneMaterial>) {
+    return this.http.put<StoneMaterial>(`${environment.apiUrl}/api/stone-materials/${id}`, data);
+  }
+
+  delete(id: number) {
+    return this.http.delete(`${environment.apiUrl}/api/stone-materials/${id}`);
+  }
+
+  uploadTexture(file: File): Observable<{ textureUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ textureUrl: string }>(`${environment.apiUrl}/api/upload`, formData);
+  }
+
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiUrl}${path}`;
+  }
+
 }

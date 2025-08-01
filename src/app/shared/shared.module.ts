@@ -21,6 +21,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { LoaderComponent } from './components/loader/loader.component';
 import { SliderModule } from 'primeng/slider';
 import { AccordionModule } from 'primeng/accordion';
+import { TagModule } from 'primeng/tag';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @NgModule({
   declarations: [
@@ -51,6 +53,8 @@ import { AccordionModule } from 'primeng/accordion';
     CalendarModule,
     SliderModule,
     AccordionModule,
+    TagModule,
+    CheckboxModule,
   ],
   exports:[
     MenubarModule,
@@ -73,6 +77,8 @@ import { AccordionModule } from 'primeng/accordion';
     LoaderComponent,
     SliderModule,
     AccordionModule,
+    TagModule,
+    CheckboxModule,
   ]
 })
 export class SharedModule { }

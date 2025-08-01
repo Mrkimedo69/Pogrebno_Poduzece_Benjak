@@ -17,6 +17,7 @@ import { UserOrderHistoryComponent } from './components/cart/user-order-history/
 import { EmployeeMonumentRequestComponent } from './narudzbe/employee-monument-request/employee-monument-request.component';
 import { NarudzbeStore } from './narudzbe/store/narudzbe.store';
 import { MonumentRequestDialogComponent } from './components/grobni-dizajner/monument-request-dialog/monument-request-dialog.component';
+import { AdminMaterialFormComponent } from './components/grobni-dizajner/admin-material-form/admin-material-form.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { MonumentRequestDialogComponent } from './components/grobni-dizajner/mon
     UserOrderHistoryComponent,
     EmployeeMonumentRequestComponent,
     MonumentRequestDialogComponent,
+    AdminMaterialFormComponent,
   ],
   imports: [
     CommonModule,

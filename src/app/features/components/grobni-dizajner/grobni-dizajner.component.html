@@ -1,4 +1,4 @@
-<section class="surface-section py-6 px-4">
+<section *ngIf="!isAdmin" class="surface-section py-6 px-4">
   <div class="mx-auto" style="max-width: 1200px">
 
     <!-- Naslov i opis -->
@@ -99,6 +99,14 @@
         icon="pi pi-cube"
         class="p-button-lg"
         (click)="toggle3D()">
+      </button>
+      <button
+        *ngIf="isAdmin"
+        pButton
+        label="Uredi materijale"
+        icon="pi pi-cog"
+        class="p-button-warning p-button-lg"
+        (click)="onAddNewMaterial()">
       </button>
     </div>
 
@@ -220,6 +228,20 @@
       (submitRequest)="onSendRequest($event)"
       (close)="dialogVisible = false">
     </app-monument-request-dialog>
+    <p-dialog
+      [(visible)]="materialDialogOpen"
+      [modal]="true"
+      [style]="{ width: '100%', maxWidth: '600px' }"
+      [contentStyle]="{ 'max-height': '80vh', 'overflow-y': 'auto' }"
+      header="{{ selectedMaterial ? 'Uredi materijal' : 'Novi materijal' }}"
+      (onHide)="onCloseMaterialDialog(false)"
+    >
+      <app-admin-material-form
+        [material]="selectedMaterial"
+        (close)="onCloseMaterialDialog($event)">
+      </app-admin-material-form>
+    </p-dialog>
+
 
     <!-- 3D Prikaz -->
     <div *ngIf="prikazi3D" class="surface-card p-4 border-1 border-round mb-6">
@@ -237,3 +259,67 @@
 
   </div>
 </section>
+
+<section class="surface-section py-6 px-4">
+  <div class="mx-auto" style="max-width: 1200px">
+
+    <h2 class="text-3xl md:text-4xl font-bold text-center text-primary-800 mb-5">
+      Upravljanje materijalima
+    </h2>
+
+    <!-- Prikaz liste materijala (samo za admina) -->
+    <div *ngIf="isAdmin" class="surface-card border-1 border-round p-4 shadow-2">
+
+      <div class="flex justify-content-between align-items-center mb-4">
+        <h3 class="text-xl font-bold text-primary-800 m-0">Popis svih materijala</h3>
+        <button pButton icon="pi pi-plus" label="Dodaj novi" class="p-button-success"
+                (click)="onAddNewMaterial()"></button>
+      </div>
+
+      <div class="grid">
+        <div *ngFor="let mat of store.materijali()" class="col-12 md:col-6 lg:col-4 p-2">
+          <div class="border-1 border-round p-3 bg-gray-50 h-full cursor-pointer hover:surface-hover transition"
+               (click)="onEditMaterial(mat)">
+            <div class="font-semibold text-primary-700 text-lg mb-2">{{ mat.name }}</div>
+
+            <div class="flex items-center gap-2 mb-2">
+              <span>Boja:</span>
+              <span class="w-2rem h-2rem border-round" [style.backgroundColor]="mat.colorHex"
+                    style="border: 1px solid #ccc;"></span>
+            </div>
+
+            <div class="mb-2">
+              <span class="text-gray-600">Cijena:</span>
+              <strong>{{ mat.pricePerM2 }} €/m²</strong>
+            </div>
+
+            <div *ngIf="mat.textureUrl">
+            <img [src]="store.getImageUrl(mat.textureUrl)"
+                class="mt-2 w-full h-5rem border-1 border-300 border-round object-cover" />
+            </div>
+
+            <p-tag class="mt-3 block" [value]="mat.isAvailable ? 'Dostupan' : 'Nedostupan'"
+                   [severity]="mat.isAvailable ? 'success' : 'danger'"></p-tag>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dijalog za dodavanje/uređivanje -->
+  <p-dialog
+    [(visible)]="materialDialogOpen"
+    [modal]="true"
+    [style]="{ width: '100%', maxWidth: '600px' }"
+    [contentStyle]="{ 'max-height': '80vh', 'overflow-y': 'auto' }"
+    header="{{ selectedMaterial ? 'Uredi materijal' : 'Novi materijal' }}"
+    (onHide)="onCloseMaterialDialog(false)"
+  >
+    <app-admin-material-form
+      [material]="selectedMaterial"
+      (close)="onCloseMaterialDialog($event)">
+    </app-admin-material-form>
+  </p-dialog>
+</section>
+
+
