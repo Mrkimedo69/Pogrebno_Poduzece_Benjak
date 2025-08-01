@@ -13,6 +13,7 @@ import { TrapeznaPloca } from '../../models/trapeze.model';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { StoneMaterial } from '../../models/stone-material.model';
 import html2canvas from 'html2canvas';
+import { AuthStore } from '../../../core/store/auth.store';
 
 @Component({
   selector: 'app-grobni-dizajner',
@@ -23,9 +24,19 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   @ViewChild('threeContainer', { static: false }) threeContainer!: ElementRef;
   @ViewChild('hidden2dContainer') hidden2dContainer!: ElementRef;
 
+  constructor(
+    public store: GrobniDizajnerStore,
+    private authStore:AuthStore
+  ) {}
+
   prikazi3D = false;
   prikazi2D = false;
   threeInicijaliziran = false;
+
+  isAdmin = this.authStore.isAdmin();
+  materialDialogOpen = false;
+  selectedMaterial: StoneMaterial | null = null;
+
 
   animationId: number | null = null;
 
@@ -61,9 +72,6 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     nagibTla: 0.0
   };
 
-  constructor(
-    public store: GrobniDizajnerStore
-  ) {}
 
   ngOnInit() {
     this.store.fetchMaterijali().subscribe(() => {
@@ -935,6 +943,24 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     await this.onSendRequest(data);
 
     this.dialogVisible = false;
+  }
+  onAddNewMaterial() {
+    this.selectedMaterial = null;
+    this.materialDialogOpen = true;
+  }
+
+  onEditMaterial(material: StoneMaterial) {
+    this.selectedMaterial = { ...material };
+    this.materialDialogOpen = true;
+  }
+
+  onCloseMaterialDialog(refresh: boolean) {
+    this.materialDialogOpen = false;
+    this.selectedMaterial = null;
+
+    if (refresh) {
+      this.store.fetchMaterijali().subscribe();
+    }
   }
 
 }
