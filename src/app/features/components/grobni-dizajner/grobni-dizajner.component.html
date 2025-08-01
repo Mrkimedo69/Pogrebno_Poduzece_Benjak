@@ -85,7 +85,7 @@
 
     <!-- Gumbi -->
     <div class="flex flex-wrap justify-content-center gap-3 mb-5">
-      <button pButton label="Zatraži ponudu" icon="pi pi-envelope" class="p-button-outlined p-button-lg"></button>
+      <button pButton label="Zatraži ponudu" icon="pi pi-envelope" class="p-button-outlined p-button-lg" (click)="openDialog()"></button>
       <button
         pButton
         [label]="prikazi2D ? 'Sakrij 2D prikaz' : 'Prikaži 2D prikaz'"
@@ -102,8 +102,67 @@
       </button>
     </div>
 
+    <!-- Skriveni statični 2D prikaz za generiranje slike (manje dimenzije, brže slanje) -->
+    <div
+      #hidden2dContainer
+      *ngIf="ploca2dData?.length"
+      style="position: absolute; top: -9999px; left: -9999px; width: 1100px; padding: 12px; background: white;"
+    >
+      <div style="text-align: center; margin-bottom: 12px;">
+        <h3 style="margin-bottom: 0; font-size: 16px;">2D Prikaz dizajna</h3>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;">
+        <div
+          *ngFor="let ploca of ploca2dData"
+          style="border: 1px solid #ccc; padding: 6px; text-align: center; font-size: 12px;"
+        >
+          <div style="font-weight: bold; margin-bottom: 6px;">{{ ploca.naziv }}</div>
+
+          <svg
+            *ngIf="isTrapezna(ploca)"
+            [attr.width]="ploca.width * 70"
+            [attr.height]="getMaxHeight(ploca) * 80"
+            style="border: 1px solid #000;"
+          >
+            <polygon
+              [attr.points]="getTrapezPoints(ploca)"
+              [attr.fill]="ploca.boja || '#ccc'"
+              stroke="black"
+            />
+          </svg>
+
+          <svg
+            *ngIf="isPravokutna(ploca)"
+            [attr.width]="ploca.width * 70"
+            [attr.height]="ploca.height * 80"
+            style="border: 1px solid #000;"
+          >
+            <rect
+              x="0"
+              y="0"
+              [attr.width]="ploca.width * 70"
+              [attr.height]="ploca.height * 80"
+              [attr.fill]="ploca.boja || '#ccc'"
+              stroke="black"
+            />
+          </svg>
+
+          <div style="margin-top: 4px; color: #666;">
+            <ng-container *ngIf="isTrapezna(ploca)">
+              {{ ploca.width * 100 }} cm x {{ ploca.height1 * 100 }}-{{ ploca.height2 * 100 }} cm
+            </ng-container>
+            <ng-container *ngIf="isPravokutna(ploca)">
+              {{ ploca.width * 100 }} cm x {{ ploca.height * 100 }} cm
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
     <!-- 2D Prikaz -->
-    <div *ngIf="prikazi2D" class="surface-card p-4 border-1 border-round mb-6">
+    <div *ngIf="prikazi2D" class="two-d-section surface-card p-4 border-1 border-round mb-6">
       <h4 class="text-center text-primary-700 font-semibold mb-4">2D Pregled</h4>
 
       <div class="grid">
@@ -145,16 +204,22 @@
 
             <div class="text-xs mt-2 text-color-secondary">
               <ng-container *ngIf="isTrapezna(ploca)">
-                {{ ploca.width.toFixed(2) }} m x {{ ploca.height1.toFixed(2) }}-{{ ploca.height2.toFixed(2) }} m
+                {{ ploca.width * 100 }} cm x {{ ploca.height1 * 100 }}-{{ ploca.height2 * 100 }} cm
               </ng-container>
               <ng-container *ngIf="isPravokutna(ploca)">
-                {{ ploca.width.toFixed(2) }} m x {{ ploca.height.toFixed(2) }} m
+                {{ ploca.width * 100 }} cm x {{ ploca.height * 100 }} cm
               </ng-container>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <app-monument-request-dialog
+      [visible]="dialogVisible"
+      [email]="userEmail"
+      (submitRequest)="onSendRequest($event)"
+      (close)="dialogVisible = false">
+    </app-monument-request-dialog>
 
     <!-- 3D Prikaz -->
     <div *ngIf="prikazi3D" class="surface-card p-4 border-1 border-round mb-6">

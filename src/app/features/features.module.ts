@@ -14,6 +14,9 @@ import { NarudzbaDetaljiComponent } from './narudzbe/narudzba-detalji/narudzba-d
 import { ArhivaNarudzbiComponent } from './narudzbe/arhiva-narudzbi/arhiva-narudzbi.component';
 import { OrderDialogComponent } from './components/cart/order-dialog/order-dialog.component';
 import { UserOrderHistoryComponent } from './components/cart/user-order-history/user-order-history.component';
+import { EmployeeMonumentRequestComponent } from './narudzbe/employee-monument-request/employee-monument-request.component';
+import { NarudzbeStore } from './narudzbe/store/narudzbe.store';
+import { MonumentRequestDialogComponent } from './components/grobni-dizajner/monument-request-dialog/monument-request-dialog.component';
 
 @NgModule({
   declarations: [
@@ -30,10 +33,15 @@ import { UserOrderHistoryComponent } from './components/cart/user-order-history/
     ArhivaNarudzbiComponent,
     OrderDialogComponent,
     UserOrderHistoryComponent,
+    EmployeeMonumentRequestComponent,
+    MonumentRequestDialogComponent,
   ],
   imports: [
     CommonModule,
     SharedModule,
+  ],
+  providers: [
+    NarudzbeStore
   ]
 })
 export class FeaturesModule { }

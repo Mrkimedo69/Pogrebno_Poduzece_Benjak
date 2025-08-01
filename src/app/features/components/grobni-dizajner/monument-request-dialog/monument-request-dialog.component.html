@@ -1,0 +1,74 @@
+<p-dialog 
+  header="Zatraži ponudu" 
+  [(visible)]="visible" 
+  [modal]="true" 
+  [closable]="false"
+  [style]="{ width: '500px' }"
+  [breakpoints]="{ '960px': '95vw' }"
+>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="p-fluid">
+
+    <div class="field mb-4">
+      <label for="email" class="font-semibold">Email</label>
+      <span class="p-input-icon-left w-full">
+        <i class="pi pi-envelope"></i>
+        <input 
+          id="email" 
+          type="email" 
+          pInputText 
+          formControlName="email" 
+          class="p-inputtext w-full" 
+          placeholder="npr. ime@email.com"
+        />
+      </span>
+    </div>
+
+    <div class="field mb-4">
+      <label for="phone" class="font-semibold">Broj telefona</label>
+      <span class="p-input-icon-left w-full">
+        <i class="pi pi-phone"></i>
+        <input 
+          id="phone" 
+          type="text" 
+          pInputText 
+          formControlName="phone" 
+          class="p-inputtext w-full" 
+          placeholder="npr. 091 123 4567"
+        />
+      </span>
+    </div>
+
+    <div class="field mb-4">
+      <label for="message" class="font-semibold">Dodatna poruka</label>
+      <textarea 
+        id="message" 
+        pInputTextarea 
+        formControlName="message" 
+        rows="4"
+        autoResize="true"
+        class="w-full"
+        placeholder="Ovdje možete upisati dodatne napomene...">
+      </textarea>
+    </div>
+
+    <div class="flex justify-content-end gap-2 mt-4">
+      <button 
+        pButton 
+        type="button" 
+        label="Odustani" 
+        icon="pi pi-times" 
+        class="p-button-outlined" 
+        (click)="onClose()"
+      ></button>
+      
+      <button 
+        pButton 
+        type="submit" 
+        label="Pošalji zahtjev" 
+        icon="pi pi-send" 
+        [disabled]="form.invalid"
+      ></button>
+    </div>
+    
+  </form>
+</p-dialog>

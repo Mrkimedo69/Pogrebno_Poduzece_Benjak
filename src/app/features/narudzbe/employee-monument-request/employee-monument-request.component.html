@@ -1,0 +1,27 @@
+<p-accordion [multiple]="true">
+  <p-accordionTab *ngFor="let req of store.requests(); let i = index" [header]="'Zahtjev #' + (i + 1) + ' - ' + req.userEmail">
+    <div class="grid grid-nogutter text-sm">
+      <div class="col-12 md:col-6">
+        <p><strong>Email:</strong> {{ req.userEmail }}</p>
+        <p><strong>Telefon:</strong> {{ req.userPhone }}</p>
+        <p><strong>Napomena:</strong> {{ req.userNote }}</p>
+      </div>
+      <div class="col-12 md:col-6">
+        <p><strong>Materijal:</strong> {{ req.material }}</p>
+        <p><strong>Oblik spomenika:</strong> {{ req.monumentShape }}</p>
+        <p><strong>Tip groba:</strong> {{ req.graveType === 'jedno' ? 'Jednostruki' : 'Dvostruki' }}</p>
+        <p><strong>Ukupna površina:</strong> {{ req.totalArea }} m²</p>
+        <p><strong>Ukupna cijena:</strong> {{ req.totalPrice | number: '1.2-2'}} €</p>
+      </div>
+    </div>
+
+    <img [src]="req.image2DBase64" class="my-3 w-full max-w-md mx-auto border" />
+
+    <p class="font-semibold mt-4">Popis 2D ploča:</p>
+    <ul class="text-sm">
+      <li *ngFor="let part of req.designParts">
+        {{ part.naziv }} - {{ getDimenzije(part) }}
+      </li>
+    </ul>
+  </p-accordionTab>
+</p-accordion>

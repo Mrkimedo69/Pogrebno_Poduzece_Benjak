@@ -62,4 +62,8 @@ export class GrobniDizajnerStore {
     const obl = this._odabraniOblik()?.value ?? 'prazno';
     return `assets/dizajn/${mat}-${obl}.png`;
   });
+
+  posaljiZahtjevPonude(payload: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/api/monument-request`, payload);
+  }
 }
