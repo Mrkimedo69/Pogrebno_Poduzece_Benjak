@@ -7,11 +7,12 @@ import { GrobniDizajnerComponent } from './features/components/grobni-dizajner/g
 import { KontaktComponent } from './features/components/kontakt/kontakt.component';
 import { AuthComponent } from './core/components/header/auth/auth/auth.component';
 import { CartComponent } from './features/components/cart/cart.component';
-import { AdminGuard, AuthRedirectGuard, EmployeeGuard } from './core/guard/auth.guard';
+import { AdminGuard, AuthGuard, AuthRedirectGuard, EmployeeGuard } from './core/guard/auth.guard';
 import { AdminArtiklFormComponent } from './features/components/pogrebni-artikli/admin-artikl-form/admin-artikl-form.component';
 import { NarudzbeComponent } from './features/narudzbe/narudzbe.component';
 import { NarudzbaDetaljiComponent } from './features/narudzbe/narudzba-detalji/narudzba-detalji.component';
 import { ArhivaNarudzbiComponent } from './features/narudzbe/arhiva-narudzbi/arhiva-narudzbi.component';
+import { EmployeeMonumentRequestComponent } from './features/narudzbe/employee-monument-request/employee-monument-request.component';
 
 const routes: Routes = [
   {
@@ -38,6 +39,11 @@ const routes: Routes = [
     path: 'admin-panel',
     component: AdminArtiklFormComponent,
     canActivate: [AdminGuard]
+  },
+  {
+    path: 'narudzbe/monument-request',
+    component: EmployeeMonumentRequestComponent,
+    canActivate: [EmployeeGuard],
   },
   {
     path: 'narudzbe/archiva',

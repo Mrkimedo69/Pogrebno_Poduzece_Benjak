@@ -12,6 +12,7 @@ import { PravokutnaPloca } from '../../models/rectangle.model';
 import { TrapeznaPloca } from '../../models/trapeze.model';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { StoneMaterial } from '../../models/stone-material.model';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-grobni-dizajner',
@@ -20,6 +21,7 @@ import { StoneMaterial } from '../../models/stone-material.model';
 })
 export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   @ViewChild('threeContainer', { static: false }) threeContainer!: ElementRef;
+  @ViewChild('hidden2dContainer') hidden2dContainer!: ElementRef;
 
   prikazi3D = false;
   prikazi2D = false;
@@ -65,6 +67,8 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.store.fetchMaterijali().subscribe(() => {
+      this.odabraniMaterijal = this.store.odabraniMaterijal();
+      this.odabraniOblik = this.store.odabraniOblik();
       this.osvjeziSVG();
     });
   }
@@ -864,5 +868,73 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     this.store.setOdabraniMaterijal(materijal);
     this.odabraniMaterijal = materijal;
     this.osvjeziSVG();
+    if (this.prikazi2D) {
+      this.generiraj2DModel();
+    }
   }
+
+  async capture2DImage(): Promise<string | null> {
+    const element = this.hidden2dContainer?.nativeElement;
+    if (!element) return null;
+
+    const canvas = await html2canvas(element, {
+      width: 1100,
+      scale: 1
+    });
+
+    return canvas.toDataURL('image/png');
+  }
+
+  dialogVisible = false;
+  userEmail = '';
+
+  openRequestDialog() {
+    this.dialogVisible = true;
+  }
+
+  async onSendRequest(data: { email: string; phone: string; message: string }) {
+    const slikaBase64 = await this.capture2DImage();
+
+    if (!slikaBase64) {
+      console.error('Greška kod spremanja slike.');
+      return;
+    }
+
+    const payload = {
+      userEmail: data.email,
+      userPhone: data.phone,
+      userNote: data.message,
+      material: this.odabraniMaterijal?.name || '',
+      materialWidth: this.sliderDebljina || 0,
+      monumentShape: this.odabraniOblik.label || '',
+      graveType: this.tipMjesta,
+      totalArea: this.povrsinaMaterijalaM2,
+      totalPrice: this.store.cijena() * this.povrsinaMaterijalaM2 || 0,
+      designParts: this.ploca2dData,
+      image2DBase64: slikaBase64
+    };
+
+
+    this.store.posaljiZahtjevPonude(payload).subscribe({
+      next: () => {
+        this.dialogVisible = false;
+        alert('Zahtjev uspješno poslan!');
+      },
+      error: (err) => {
+        console.error('Greška pri slanju zahtjeva:', err);
+        alert('Došlo je do greške pri slanju zahtjeva.');
+      }
+    });
+  }
+
+  openDialog() {
+    this.dialogVisible = true;
+  }
+
+  async onSubmitRequest(data: any) {
+    await this.onSendRequest(data);
+
+    this.dialogVisible = false;
+  }
+
 }

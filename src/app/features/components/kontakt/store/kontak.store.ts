@@ -1,8 +1,10 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import emailjs from 'emailjs-com';
+import { MessageService } from 'primeng/api';
 
 @Injectable({ providedIn: 'root' })
 export class KontaktStore {
+  private readonly toast = inject(MessageService);
   readonly ime = signal('');
   readonly email = signal('');
   readonly poruka = signal('');
@@ -33,10 +35,11 @@ export class KontaktStore {
 
     emailjs.send('service_q3qy93h', 'template_znx7sqs', templateParams, 'r8hrQX47rt6c6KvwV')
       .then(() => {
+        this.toast.add({ severity: 'success', summary: 'Učitano', detail: 'Uspješno poslana poruka.' });
       })
       .catch((err) => {
         console.error('Greška pri slanju firmi:', err);
-        alert('Došlo je do greške. Pokušajte kasnije.');
+        this.toast.add({ severity: 'error', summary: 'Greška', detail: 'Došlo je do greške. Pokušajte kasnije.' });
       })
       .finally(() => {
         this.loading.set(false);

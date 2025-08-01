@@ -33,6 +33,11 @@ export class HeaderComponent {
             label: 'Arhiva narudžbi',
             icon: 'pi pi-server',
             routerLink: '/narudzbe/archiva'
+          },
+          {
+            label: 'Zahtjevi za dizajn',
+            icon: 'pi pi-image',
+            routerLink: '/narudzbe/monument-request'
           }
         ];
       } else {

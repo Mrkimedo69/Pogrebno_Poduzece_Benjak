@@ -6,6 +6,7 @@ import { OrderStatus } from '../../models/order-status.enum';
 import { ArchivedOrderModel } from '../../models/archived-order.model';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { MonumentDesignRequest } from '../../models/request.model';
 
 @Injectable()
 export class NarudzbeStore {
@@ -20,6 +21,9 @@ export class NarudzbeStore {
 
   private readonly _loading = signal(false);
   readonly loading = this._loading.asReadonly();
+
+  private readonly _requests = signal<MonumentDesignRequest[]>([]);
+  readonly requests = this._requests.asReadonly();
 
   ucitajAktivneNarudzbe(): void {
     this._loading.set(true);
@@ -61,5 +65,23 @@ export class NarudzbeStore {
 
   dohvatiNarudzbuPoId(id: number): Observable<OrderModel> {
     return this.http.get<OrderModel>(`${environment.apiUrl}/api/orders/${id}`);
+  }
+
+  loadRequests(): void {
+    this._loading.set(true);
+    this.http.get<MonumentDesignRequest[]>(`${environment.apiUrl}/api/monument-request`).subscribe({
+      next: (data) => {
+        this._requests.set(data);
+        this.toast.add({ severity: 'success', summary: 'Učitano', detail: 'Zahtjevi učitani' });
+      },
+      error: () => {
+        this.toast.add({ severity: 'error', summary: 'Greška', detail: 'Greška pri učitavanju zahtjeva' });
+      },
+      complete: () => this._loading.set(false),
+    });
+  }
+
+  getRequestById(id: number): Observable<MonumentDesignRequest> {
+    return this.http.get<MonumentDesignRequest>(`${environment.apiUrl}/api/monument-request/${id}`);
   }
 }
