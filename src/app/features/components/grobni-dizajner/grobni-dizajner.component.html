@@ -260,7 +260,7 @@
   </div>
 </section>
 
-<section class="surface-section py-6 px-4">
+<section *ngIf="isAdmin" class="surface-section py-6 px-4">
   <div class="mx-auto" style="max-width: 1200px">
 
     <h2 class="text-3xl md:text-4xl font-bold text-center text-primary-800 mb-5">
@@ -268,7 +268,7 @@
     </h2>
 
     <!-- Prikaz liste materijala (samo za admina) -->
-    <div *ngIf="isAdmin" class="surface-card border-1 border-round p-4 shadow-2">
+    <div class="surface-card border-1 border-round p-4 shadow-2">
 
       <div class="flex justify-content-between align-items-center mb-4">
         <h3 class="text-xl font-bold text-primary-800 m-0">Popis svih materijala</h3>

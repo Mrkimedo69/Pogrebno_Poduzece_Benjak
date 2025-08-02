@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChange
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { StoneMaterial } from "../../../models/stone-material.model";
 import { GrobniDizajnerStore } from "../store/grobni-dizajner.store";
+import { firstValueFrom } from "rxjs";
 
 @Component({
   selector: 'app-admin-material-form',
@@ -14,6 +15,8 @@ export class AdminMaterialFormComponent implements OnChanges {
   form: FormGroup;
   isSubmitting = false;
   currenttextureUrl = ''
+  isDragging: boolean | undefined;
+  selectedFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -48,24 +51,80 @@ export class AdminMaterialFormComponent implements OnChanges {
     if (this.form.invalid) return;
 
     this.isSubmitting = true;
-    const req$ = this.material
-      ? this.store.update(this.material.id, this.form.value)
-      : this.store.add(this.form.value);
 
-    req$.subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        this.close.emit(true);
-      },
-      error: () => {
-        this.isSubmitting = false;
-        alert('Greška pri spremanju.');
-      }
+    const upload$ = this.selectedFile
+      ? firstValueFrom(this.store.uploadTexture(this.selectedFile))
+      : Promise.resolve({ textureUrl: this.form.value.textureUrl });
+
+    upload$.then((res: any) => {
+      console.warn(res);
+      
+      const payload = {
+        ...this.form.value,
+        textureUrl: res.imageUrl || '',
+        pricePerM2: parseFloat(this.form.value.pricePerM2)
+      };
+
+      const req$ = this.material
+        ? this.store.update(this.material.id, payload)
+        : this.store.add(payload);
+
+      req$.subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.selectedFile = null;
+          this.close.emit(true);
+        },
+        error: () => {
+          this.isSubmitting = false;
+          alert('Greška pri spremanju.');
+        }
+      });
     });
+  }
+
+    onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
   }
 
   onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    this.selectedFile = file;
+    this.previewImage(file);
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+
+    const file = event.dataTransfer?.files?.[0];
+    if (!file) return;
+
+    this.selectedFile = file;
+    this.previewImage(file);
+  }
+
+  previewImage(file: File) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.currenttextureUrl = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+
+  uploadDroppedFile(file: File) {
     if (!file) return;
 
     this.isSubmitting = true;
@@ -80,4 +139,5 @@ export class AdminMaterialFormComponent implements OnChanges {
       }
     });
   }
+
 }

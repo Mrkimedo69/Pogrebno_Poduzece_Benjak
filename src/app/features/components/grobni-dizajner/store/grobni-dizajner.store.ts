@@ -87,7 +87,7 @@ export class GrobniDizajnerStore {
   uploadTexture(file: File): Observable<{ textureUrl: string }> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<{ textureUrl: string }>(`${environment.apiUrl}/api/upload`, formData);
+    return this.http.post<{ textureUrl: string }>(`${environment.apiUrl}/api/upload/upload-texture`, formData);
   }
 
   getImageUrl(path: string | null | undefined): string {
