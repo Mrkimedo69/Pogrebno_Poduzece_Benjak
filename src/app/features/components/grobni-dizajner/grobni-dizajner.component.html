@@ -10,6 +10,11 @@
       Prilagodite izgled i dimenzije grobnog prostora te pogledajte 2D i 3D model u stvarnom vremenu.
     </p>
 
+    <p class="text-sm text-center text-yellow-900 mb-3 mx-auto w-fit px-4 py-2 border-round"
+      style="background-color: #fff3cd; border: 1px solid #ffeeba;">
+      ⚠️ Prikazana cijena je informativna i služi kao približna procjena. Konačna cijena ovisi o stvarnim specifikacijama i provjeri od strane poduzeća.
+    </p>
+
     <!-- Kontrole -->
     <div class="grid formgrid p-fluid mb-6">
       <div class="field col-12 md:col-6 lg:col-4">
@@ -84,31 +89,43 @@
     </div>
 
     <!-- Gumbi -->
-    <div class="flex flex-wrap justify-content-center gap-3 mb-5">
-      <button pButton label="Zatraži ponudu" icon="pi pi-envelope" class="p-button-outlined p-button-lg" (click)="openDialog()"></button>
-      <button
-        pButton
-        [label]="prikazi2D ? 'Sakrij 2D prikaz' : 'Prikaži 2D prikaz'"
-        icon="pi pi-image"
-        class="p-button-lg"
-        (click)="toggle2D()">
+    <div class="flex flex-column align-items-center gap-3 mb-6">
+
+      <button 
+        pButton 
+        label="Zatraži ponudu" 
+        icon="pi pi-envelope" 
+        class="p-button-outlined p-button-lg"
+        (click)="openDialog()">
       </button>
-      <button
-        pButton
-        [label]="prikazi3D ? 'Sakrij 3D prikaz' : 'Prikaži 3D model'"
-        icon="pi pi-cube"
-        class="p-button-lg"
-        (click)="toggle3D()">
-      </button>
-      <button
-        *ngIf="isAdmin"
-        pButton
-        label="Uredi materijale"
-        icon="pi pi-cog"
-        class="p-button-warning p-button-lg"
-        (click)="onAddNewMaterial()">
-      </button>
+
+      <div 
+        class="w-fit flex justify-content-center text-sm px-4 py-3 border-round"
+        style="background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404;">
+        <strong>Napomena:</strong> Prije nego zatražite ponudu, potrebno je prethodno otvoriti 2D i 3D prikaz 
+        kako bi se svi podaci i vizualni elementi ispravno učitali.
+      </div>
+
+      <div class="flex flex-wrap justify-content-center gap-3">
+        <button
+          pButton
+          [label]="prikazi2D ? 'Sakrij 2D prikaz' : 'Prikaži 2D prikaz'"
+          icon="pi pi-image"
+          class="p-button-lg"
+          (click)="toggle2D()">
+        </button>
+
+        <button
+          pButton
+          [label]="prikazi3D ? 'Sakrij 3D prikaz' : 'Prikaži 3D model'"
+          icon="pi pi-images"
+          class="p-button-lg"
+          (click)="toggle3D()">
+        </button>
+      </div>
+
     </div>
+
 
     <!-- Skriveni statični 2D prikaz za generiranje slike (manje dimenzije, brže slanje) -->
     <div
@@ -158,10 +175,10 @@
 
           <div style="margin-top: 4px; color: #666;">
             <ng-container *ngIf="isTrapezna(ploca)">
-              {{ ploca.width * 100 }} cm x {{ ploca.height1 * 100 }}-{{ ploca.height2 * 100 }} cm
+              {{ ploca.width * 100 | number: '1.0-0' }} cm x {{ ploca.height1 * 100 | number: '1.0-0' }}-{{ ploca.height2 * 100 | number: '1.0-0' }} cm
             </ng-container>
             <ng-container *ngIf="isPravokutna(ploca)">
-              {{ ploca.width * 100 }} cm x {{ ploca.height * 100 }} cm
+              {{ ploca.width * 100 | number: '1.0-0' }} cm x {{ ploca.height * 100 | number: '1.0-0' }} cm
             </ng-container>
           </div>
         </div>
@@ -212,10 +229,10 @@
 
             <div class="text-xs mt-2 text-color-secondary">
               <ng-container *ngIf="isTrapezna(ploca)">
-                {{ ploca.width * 100 }} cm x {{ ploca.height1 * 100 }}-{{ ploca.height2 * 100 }} cm
+                {{ ploca.width * 100 | number: '1.0-0' }} cm x {{ ploca.height1 * 100 | number: '1.0-0' }}-{{ ploca.height2 * 100 | number: '1.0-0'}} cm
               </ng-container>
               <ng-container *ngIf="isPravokutna(ploca)">
-                {{ ploca.width * 100 }} cm x {{ ploca.height * 100 }} cm
+                {{ ploca.width * 100 | number: '1.0-0' }} cm x {{ ploca.height * 100 | number: '1.0-0' }} cm
               </ng-container>
             </div>
           </div>
@@ -248,8 +265,6 @@
       <h4 class="text-center text-xl font-semibold text-primary-700 mb-3">3D Prikaz</h4>
       <div #threeContainer style="width: 100%; max-width: 1000px; height: 800px; margin: auto;" class="border-1 border-round mb-4"></div>
       <div class="text-center text-sm text-color-secondary">
-        <p><strong>Materijal:</strong> {{ store.odabraniMaterijal()?.name }}</p>
-        <p><strong>Oblik:</strong> {{ store.odabraniOblik().label }}</p>
         <p class="text-2xl font-bold text-green-700 mt-3 mb-2">
           Ukupna cijena: {{ store.cijena()*povrsinaMaterijalaM2 | number: '1.2-2'}} €
         </p>

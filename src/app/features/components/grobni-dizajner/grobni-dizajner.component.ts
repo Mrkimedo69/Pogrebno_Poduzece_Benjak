@@ -32,6 +32,9 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
   prikazi3D = false;
   prikazi2D = false;
   threeInicijaliziran = false;
+  dialogVisible = false;
+  userEmail = '';
+
 
   isAdmin = this.authStore.isAdmin();
   materialDialogOpen = false;
@@ -53,13 +56,13 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
 
   ploca2dData: (PravokutnaPloca | TrapeznaPloca)[] = [];
 
-  readonly SCALE = 1.5;
-  readonly MIN_DEBLJINA = 0.02;
-  readonly MAX_DEBLJINA = 0.06; 
-  readonly MIN_VISINA = 0.10;
-  readonly MAX_VISINA = 0.20; 
-  readonly MAX_NAGIB = 0.15;
-  readonly MIN_NAGIB = 0.0;
+  SCALE = GrobniDizajnerStore.SCALE;
+  MIN_DEBLJINA = GrobniDizajnerStore.MIN_DEBLJINA;
+  MAX_DEBLJINA = GrobniDizajnerStore.MAX_DEBLJINA; 
+  MIN_VISINA = GrobniDizajnerStore.MIN_VISINA;
+  MAX_VISINA = GrobniDizajnerStore.MAX_VISINA; 
+  MAX_NAGIB = GrobniDizajnerStore.MAX_NAGIB;
+  MIN_NAGIB = GrobniDizajnerStore.MIN_NAGIB;
   sliderNagib = 0;
 
   tipMjesta: 'jedno' | 'duplo' = 'jedno';
@@ -72,6 +75,8 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     nagibTla: 0.0
   };
 
+  sliderDebljina = this.config.debljina * 100;
+  sliderVisina = this.config.visina * 100;
 
   ngOnInit() {
     this.store.fetchMaterijali().subscribe(() => {
@@ -95,6 +100,23 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
 
     if (this.prikazi2D) {
       this.generiraj2DModel();
+    }
+  }
+
+  toggle3D() {
+    this.prikazi3D = !this.prikazi3D;
+    if (this.prikazi3D) {
+      setTimeout(() => {
+        if (this.renderer && this.renderer.domElement) {
+          this.renderer.dispose();
+          this.threeContainer.nativeElement.innerHTML = '';
+        }
+        this.initThreeJS();
+        this.animate();
+        this.azuriraj3DBoju();
+      }, 0);
+    }else {
+      this.stopAnimation();
     }
   }
 
@@ -260,23 +282,6 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     return '';
   }
 
-  toggle3D() {
-    this.prikazi3D = !this.prikazi3D;
-    if (this.prikazi3D) {
-      setTimeout(() => {
-        if (this.renderer && this.renderer.domElement) {
-          this.renderer.dispose();
-          this.threeContainer.nativeElement.innerHTML = '';
-        }
-        this.initThreeJS();
-        this.animate();
-        this.azuriraj3DBoju();
-      }, 0);
-    }else {
-      this.stopAnimation();
-    }
-  }
-
   osvjeziSVG() {
     if (!this.grobnicaGroup) return;
     this.dodajSpomenik();
@@ -318,6 +323,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
       }
       this.renderer.render(this.scene, this.camera);
   }
+  
   stopAnimation() {
     if (this.animationId !== null) {
       cancelAnimationFrame(this.animationId);
@@ -357,9 +363,6 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     );
   }
 
-  sliderDebljina = this.config.debljina * 100;
-  sliderVisina = this.config.visina * 100;
-
   onDebljinaChange(event: SliderChangeEvent) {
     if (event.value == undefined) return;
 
@@ -390,6 +393,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
       this.generiraj2DModel();
     }
   }
+
   applyMaterialToScene(materijal: THREE.MeshStandardMaterial) {
     this.grobnicaGroup.traverse((obj) => {
       if (obj instanceof THREE.Mesh) {
@@ -597,45 +601,9 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
       this.dodajSpomenik();
   }
 
-  izracunajUkupnuPovrsinuMaterijala(): number {
-    if (!this.grobnicaGroup) return 0;
-
-    let ukupnaPovrsina = 0;
-
-    const izracunajPovrsinu = (mesh: THREE.Mesh) => {
-      const geometry = mesh.geometry;
-
-      if (!geometry || !(geometry instanceof THREE.BufferGeometry)) return 0;
-
-      geometry.computeBoundingBox();
-      const box = geometry.boundingBox;
-
-      if (!box) return 0;
-
-      const širina = (box.max.x - box.min.x) / this.SCALE;
-      const visina = (box.max.y - box.min.y) / this.SCALE;
-      const dubina = (box.max.z - box.min.z) / this.SCALE;
-
-      const povrsine = [
-        širina * visina,
-        širina * dubina,
-        visina * dubina
-      ];
-
-      return 2 * (povrsine[0] + povrsine[1] + povrsine[2]);
-    };
-
-    this.grobnicaGroup.traverse(obj => {
-      if (obj instanceof THREE.Mesh) {
-        ukupnaPovrsina += izracunajPovrsinu(obj);
-      }
-    });
-
-    return +(ukupnaPovrsina).toFixed(2);
-  }
-
   get povrsinaMaterijalaM2(): number {
-    return this.izracunajUkupnuPovrsinuMaterijala();
+    if (!this.grobnicaGroup) return 0;
+    return this.store.izracunajPovrsinu(this.grobnicaGroup, this.SCALE);
   }
 
   onNagibChange(event: SliderChangeEvent) {
@@ -872,6 +840,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     this.odabraniOblik = noviOblik;
     this.osvjeziSVG();
   }
+
   onMaterijalChange(materijal: StoneMaterial) {
     this.store.setOdabraniMaterijal(materijal);
     this.odabraniMaterijal = materijal;
@@ -892,9 +861,6 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
 
     return canvas.toDataURL('image/png');
   }
-
-  dialogVisible = false;
-  userEmail = '';
 
   openRequestDialog() {
     this.dialogVisible = true;
@@ -944,6 +910,7 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
 
     this.dialogVisible = false;
   }
+
   onAddNewMaterial() {
     this.selectedMaterial = null;
     this.materialDialogOpen = true;

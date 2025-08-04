@@ -23,6 +23,7 @@ import { SliderModule } from 'primeng/slider';
 import { AccordionModule } from 'primeng/accordion';
 import { TagModule } from 'primeng/tag';
 import { CheckboxModule } from 'primeng/checkbox';
+import { MessageModule } from 'primeng/message';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { CheckboxModule } from 'primeng/checkbox';
     AccordionModule,
     TagModule,
     CheckboxModule,
+    MessageModule,
   ],
   exports:[
     MenubarModule,
@@ -79,6 +81,7 @@ import { CheckboxModule } from 'primeng/checkbox';
     AccordionModule,
     TagModule,
     CheckboxModule,
+    MessageModule,
   ]
 })
 export class SharedModule { }
