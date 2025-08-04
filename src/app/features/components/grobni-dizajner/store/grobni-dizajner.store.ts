@@ -3,9 +3,19 @@ import { StoneMaterial } from '../../../models/stone-material.model';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
+import * as THREE from 'three';
 
 @Injectable({ providedIn: 'root' })
 export class GrobniDizajnerStore {
+
+  static readonly SCALE = 1.5;
+  static readonly MIN_DEBLJINA = 0.02;
+  static readonly MAX_DEBLJINA = 0.06; 
+  static readonly MIN_VISINA = 0.10;
+  static readonly MAX_VISINA = 0.20; 
+  static readonly MAX_NAGIB = 0.15;
+  static readonly MIN_NAGIB = 0.0;
+
   private readonly _materijali = signal<StoneMaterial[]>([]);
   readonly materijali = computed(() => this._materijali());
 
@@ -95,5 +105,31 @@ export class GrobniDizajnerStore {
     if (path.startsWith('http')) return path;
     return `${environment.apiUrl}${path}`;
   }
+
+  izracunajPovrsinu(grobnicaGroup: THREE.Group, scale: number): number {
+    let ukupnaPovrsina = 0;
+
+    const izracunaj = (mesh: THREE.Mesh): number => {
+      const geometry = mesh.geometry;
+      if (!geometry || !(geometry instanceof THREE.BufferGeometry)) return 0;
+      geometry.computeBoundingBox();
+      const box = geometry.boundingBox;
+      if (!box) return 0;
+
+      const širina = (box.max.x - box.min.x) / scale;
+      const visina = (box.max.y - box.min.y) / scale;
+      const dubina = (box.max.z - box.min.z) / scale;
+      return 2 * (širina * visina + širina * dubina + visina * dubina);
+    };
+
+    grobnicaGroup.traverse(obj => {
+      if (obj instanceof THREE.Mesh) {
+        ukupnaPovrsina += izracunaj(obj);
+      }
+    });
+
+    return +ukupnaPovrsina.toFixed(2);
+  }
+
 
 }

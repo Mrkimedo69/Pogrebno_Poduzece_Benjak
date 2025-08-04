@@ -5,6 +5,7 @@
 /tmp
 /out-tsc
 /bazel-out
+/assets/mramori
 
 # Node
 /node_modules

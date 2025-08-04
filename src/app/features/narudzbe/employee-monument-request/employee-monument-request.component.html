@@ -10,6 +10,7 @@
         <p><strong>Materijal:</strong> {{ req.material }}</p>
         <p><strong>Oblik spomenika:</strong> {{ req.monumentShape }}</p>
         <p><strong>Tip groba:</strong> {{ req.graveType === 'jedno' ? 'Jednostruki' : 'Dvostruki' }}</p>
+        <p><strong>Debljina materijala:</strong> {{ req.materialWidth }} cm</p>
         <p><strong>Ukupna površina:</strong> {{ req.totalArea }} m²</p>
         <p><strong>Ukupna cijena:</strong> {{ req.totalPrice | number: '1.2-2'}} €</p>
       </div>
