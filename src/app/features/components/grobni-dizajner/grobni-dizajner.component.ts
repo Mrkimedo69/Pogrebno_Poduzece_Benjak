@@ -275,9 +275,9 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
 
   getDimenzijePloca(ploca: PravokutnaPloca | TrapeznaPloca): string {
     if ('height' in ploca) {
-      return `${ploca.width.toFixed(2)} m × ${ploca.height.toFixed(2)} m`;
+      return `${ploca.width.toFixed(2)} m x ${ploca.height.toFixed(2)} m`;
     } else if ('height1' in ploca && 'height2' in ploca) {
-      return `${ploca.width.toFixed(2)} m × ${ploca.height1.toFixed(2)}–${ploca.height2.toFixed(2)} m`;
+      return `${ploca.width.toFixed(2)} m x ${ploca.height1.toFixed(2)}-${ploca.height2.toFixed(2)} m`;
     }
     return '';
   }
@@ -335,10 +335,8 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     const textureUrl = this.store.teksturaMaterijala();
     const novaBoja = new THREE.Color(this.store.bojaMramora());
 
-    // fallback boja materijal
     const fallbackMaterijal = new THREE.MeshStandardMaterial({ color: novaBoja });
 
-    // ako textureUrl nije postavljen ili je prazan → koristi boju
     if (!textureUrl || textureUrl.trim() === '') {
       this.applyMaterialToScene(fallbackMaterijal);
       return;
@@ -348,7 +346,6 @@ export class GrobniDizajnerComponent implements OnInit, AfterViewInit {
     loader.load(
       textureUrl,
       (texture) => {
-        // uspješno učitana tekstura
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set(2, 2);

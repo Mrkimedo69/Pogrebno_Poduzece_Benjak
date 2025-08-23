@@ -26,7 +26,6 @@ export class NarudzbeComponent implements OnInit {
   }
 
   idiNaDetalje(id: number) {
-    console.log('Kliknuto ID:', id);
     this.router.navigate(['/narudzbe', id]);
   }
   

@@ -17,7 +17,7 @@ export class EmployeeMonumentRequestComponent implements OnInit {
   getDimenzije(part: any): string {
     const width = part?.width ? (part.width * 100).toFixed(0) : '0';
     if ('height1' in part && 'height2' in part) {
-      return `${width} cm x ${(part.height1 * 100).toFixed(0)}–${(part.height2 * 100).toFixed(0)} cm`;
+      return `${width} cm x ${(part.height1 * 100).toFixed(0)}-${(part.height2 * 100).toFixed(0)} cm`;
     } else if ('height' in part) {
       return `${width} cm x ${(part.height * 100).toFixed(0)} cm`;
     }

@@ -155,6 +155,12 @@ export class CartStore {
     return map;
   }
   submitOrder(userData: { fullName: string; email: string; phone: string }): Observable<any> {
+      const toNum = (v: any) => {
+        if (typeof v === 'number') return v;
+        if (v == null) return 0;
+        const n = Number(String(v).replace(',', '.'));
+        return Number.isFinite(n) ? n : 0;
+      };
     const payload = {
       ...userData,
       totalPrice: this.total(),
@@ -162,7 +168,7 @@ export class CartStore {
         id: i.id,
         name: i.name,
         quantity: i.quantity,
-        price: i.price.toFixed(2),
+        price: (toNum(i.price)).toFixed(2),
         category: i.category,
         type: i.category
       }))
