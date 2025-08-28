@@ -106,7 +106,7 @@
 
             <div class="flex flex-column sm:flex-row align-items-start sm:align-items-center justify-content-between gap-2 mt-auto">
               <span class="text-lg font-medium text-green-600">
-                <i class="pi pi-euro mr-1"></i>{{ item.price }}
+                <i class="pi pi-euro mr-1"></i>{{ item.price | number:'1.2-2' }}
               </span>
 
               <button
